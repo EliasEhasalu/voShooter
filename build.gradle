@@ -9,9 +9,16 @@ buildscript {
     }
 }
 
+    
+plugins {
+    id 'jacoco'
+}
+
 allprojects {
     apply plugin: "eclipse"
     apply plugin: "java"
+    apply plugin: "jacoco"
+
 
     sourceCompatibility = 1.8
 
@@ -33,14 +40,6 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
-    
-    dependencies {
-        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.7.1'
-    }
-
-    test {
-        useJUnitPlatform()
-    }
 }
 
 project(":desktop") {
@@ -61,7 +60,6 @@ project(":desktop") {
 project(":core") {
     apply plugin: "java-library"
 
-
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
@@ -70,5 +68,22 @@ project(":core") {
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
+    }
+
+    dependencies {
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.7.1'
+    }
+
+    test {
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+    
+    jacocoTestReport {
+        dependsOn test
+    }
+
+    jacoco {
+        toolVersion = "0.8.6"
     }
 }

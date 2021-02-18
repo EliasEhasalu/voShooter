@@ -1,5 +1,4 @@
 sourceCompatibility = 1.8
-sourceSets.main.java.srcDirs = [ "src/" ]
 sourceSets.main.resources.srcDirs = ["../core/assets"]
 
 project.ext.mainClassName = "ee.taltech.voshooter.desktop.DesktopLauncher"
