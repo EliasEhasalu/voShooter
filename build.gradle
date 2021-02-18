@@ -1,6 +1,5 @@
 buildscript {
     
-
     repositories {
         mavenLocal()
         mavenCentral()
@@ -8,14 +7,13 @@ buildscript {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         google()
     }
-    dependencies {
-        
-
-    }
 }
 
 allprojects {
     apply plugin: "eclipse"
+    apply plugin: "java"
+
+    sourceCompatibility = 1.8
 
     version = '1.0'
     ext {
@@ -35,6 +33,14 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
+    
+    dependencies {
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.7.1'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
 }
 
 project(":desktop") {
@@ -49,7 +55,6 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-desktop"
-        
     }
 }
 
@@ -65,6 +70,5 @@ project(":core") {
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
-        
     }
 }
