@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Game;
 
+import ee.taltech.voshooter.entity.player.Player;
 import ee.taltech.voshooter.gamestate.GameState;
+import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.rendering.Renderer;
 
 public final class VoShooter extends Game {
@@ -20,10 +22,12 @@ public final class VoShooter extends Game {
      */
     @Override
     public void create() {
-        // Initialize sprite layer.
         gameState = new GameState();
+        Player p = new Player(new Pos(200f, 200f));
+        gameState.addEntity(p);
+
         batch = new SpriteBatch();
-        renderer = new Renderer(batch, gameState.getDrawables());
+        renderer = new Renderer(batch, gameState);
     }
 
     /**
@@ -47,6 +51,6 @@ public final class VoShooter extends Game {
      */
     @Override
     public void dispose() {
-        batch.dispose();
+        renderer.clean();
     }
 }

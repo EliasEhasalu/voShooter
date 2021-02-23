@@ -1,5 +1,6 @@
 package ee.taltech.voshooter.gamestate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,7 +9,7 @@ import ee.taltech.voshooter.rendering.Drawable;
 
 public class GameState {
 
-    private List<Entity> entities;
+    private List<Entity> entities = new ArrayList<>();
 
     /**
      * @return The list of drawable entities.
