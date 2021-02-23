@@ -1,17 +1,19 @@
 package ee.taltech.voshooter;
 
-import com.badlogic.gdx.ApplicationAdapter;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Game;
 
-public final class Game extends ApplicationAdapter {
+import ee.taltech.voshooter.gamestate.GameState;
+import ee.taltech.voshooter.rendering.Renderer;
+
+public final class VoShooter extends Game {
 
     private SpriteBatch batch;
-    private Texture texture;
-    private Sprite sprite;
+    private Renderer renderer;
+    private GameState gameState;
 
     /**
      * Used to initialize assets.
@@ -19,16 +21,9 @@ public final class Game extends ApplicationAdapter {
     @Override
     public void create() {
         // Initialize sprite layer.
+        gameState = new GameState();
         batch = new SpriteBatch();
-
-        // Initialize textures.
-        texture = new Texture("badlogic.jpg");
-
-        // Initialize sprites.
-        final int initialPos = 200;
-
-        sprite = new Sprite(texture);
-        sprite.setPosition(initialPos, initialPos);
+        renderer = new Renderer(batch, gameState.getDrawables());
     }
 
     /**
@@ -41,8 +36,8 @@ public final class Game extends ApplicationAdapter {
 
         batch.begin();
 
-        // Draw sprite onto batch.
-        sprite.draw(batch);
+        gameState.tick();
+        renderer.draw();
 
         batch.end();
     }
@@ -53,6 +48,5 @@ public final class Game extends ApplicationAdapter {
     @Override
     public void dispose() {
         batch.dispose();
-        texture.dispose();
     }
 }

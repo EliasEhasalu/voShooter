@@ -13,6 +13,7 @@ public class DesktopLauncher {
      */
     public static void main(String[] args) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        config.foregroundFPS = 120;
         new LwjglApplication(new Game(), config);
     }
 }
