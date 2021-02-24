@@ -1,56 +1,60 @@
 package ee.taltech.voshooter;
 
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Game;
 
-import ee.taltech.voshooter.entity.player.Player;
-import ee.taltech.voshooter.gamestate.GameState;
-import ee.taltech.voshooter.geometry.Pos;
-import ee.taltech.voshooter.rendering.Renderer;
+import ee.taltech.voshooter.screens.LoadingScreen;
+import ee.taltech.voshooter.screens.MainScreen;
+import ee.taltech.voshooter.screens.MenuScreen;
+import ee.taltech.voshooter.screens.PreferencesScreen;
 
-public final class VoShooter extends Game {
+public class VoShooter extends Game {
 
-    private SpriteBatch batch;
-    private Renderer renderer;
-    private GameState gameState;
+    private LoadingScreen loadingScreen;
+    private PreferencesScreen preferencesScreen;
+    private MenuScreen menuScreen;
+    private MainScreen mainScreen;
+
+    public enum Screen {
+        LOADING,
+        MENU,
+        PREFERENCES,
+        MAIN
+    }
 
     /**
-     * Used to initialize assets.
+     * Initialize the orchestrator object.
      */
     @Override
     public void create() {
-        gameState = new GameState();
-        Player p = new Player(new Pos(200f, 200f));
-        gameState.addEntity(p);
-
-        batch = new SpriteBatch();
-        renderer = new Renderer(batch, gameState);
+        changeScreen(VoShooter.Screen.LOADING);
     }
 
     /**
-     * Used as a rendering loop.
+     * Change the current screen.
+     * @param screen An enumerable of type Screen.
      */
-    @Override
-    public void render() {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        batch.begin();
-
-        gameState.tick();
-        renderer.draw();
-
-        batch.end();
-    }
-
-    /**
-     * Used to free memory of assets.
-     */
-    @Override
-    public void dispose() {
-        renderer.clean();
+    public void changeScreen(Screen screen) {
+        switch (screen) {
+            case MENU:
+                if (menuScreen == null) menuScreen = new MenuScreen(this);
+                setScreen(menuScreen);
+                break;
+            case PREFERENCES:
+                if (preferencesScreen == null) preferencesScreen = new PreferencesScreen(this);
+                setScreen(preferencesScreen);
+                break;
+            case MAIN:
+                if (mainScreen == null) mainScreen = new MainScreen(this);
+                setScreen(mainScreen);
+                break;
+            case LOADING:
+                if (loadingScreen == null) loadingScreen = new LoadingScreen(this);
+                setScreen(loadingScreen);
+                break;
+            default:
+                // Noop.
+        }
     }
 }
+

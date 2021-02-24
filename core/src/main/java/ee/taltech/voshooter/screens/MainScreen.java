@@ -4,33 +4,28 @@ import com.badlogic.gdx.Screen;
 
 import ee.taltech.voshooter.VoShooter;
 
-public class LoadingScreen implements Screen {
+public class MainScreen implements Screen {
 
     private VoShooter parent;
 
     /**
-     * Construct the loading screen. Pass in a reference to the orchestrator.
-     * @param parent A reference to the orchestrator to enable communication.
+     * Construct the main screen.
+     * @param parent A reference to the main orchestrator object.
      */
-    public LoadingScreen(VoShooter parent) {
+    public MainScreen(VoShooter parent) {
         this.parent = parent;
     }
 
-    /**
-     * When ready, set screen to menu.
-     */
     @Override
     public void show() {
         // TODO Auto-generated method stub
+
     }
 
-    /**
-     * When ready, set screen to menu.
-     */
     @Override
     public void render(float delta) {
         // TODO Auto-generated method stub
-        parent.changeScreen(VoShooter.Screen.MENU);
+
     }
 
     @Override
@@ -62,4 +57,5 @@ public class LoadingScreen implements Screen {
         // TODO Auto-generated method stub
 
     }
+
 }
