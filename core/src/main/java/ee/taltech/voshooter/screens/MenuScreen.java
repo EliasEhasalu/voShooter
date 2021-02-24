@@ -27,8 +27,6 @@ public class MenuScreen implements Screen {
 
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
-        // Have it handle player's input.
-        Gdx.input.setInputProcessor(stage);
     }
 
     /**
@@ -36,6 +34,8 @@ public class MenuScreen implements Screen {
      */
     @Override
     public void show() {
+        // Have it handle player's input.
+        Gdx.input.setInputProcessor(stage);
         // Add a table which will contain menu items to the stage.
         Table table = new Table();
         table.setFillParent(true);
@@ -63,7 +63,12 @@ public class MenuScreen implements Screen {
         table.add(ping).fillX().uniformX();
 
 
-        // Make the exit button exit the game.
+        preferences.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.changeScreen(VoShooter.Screen.PREFERENCES);
+            }
+        });
         exit.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {

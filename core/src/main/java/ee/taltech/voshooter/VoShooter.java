@@ -15,6 +15,7 @@ public class VoShooter extends Game {
     private PreferencesScreen preferencesScreen;
     private MenuScreen menuScreen;
     private MainScreen mainScreen;
+    private AppPreferences preferences;
 
     public VoClient client;
 
@@ -30,6 +31,7 @@ public class VoShooter extends Game {
      */
     @Override
     public void create() {
+        preferences = new AppPreferences();
         changeScreen(VoShooter.Screen.LOADING);
         client = new VoClient();
     }
@@ -59,6 +61,13 @@ public class VoShooter extends Game {
             default:
                 // Noop.
         }
+    }
+
+    /**
+    * @return The object defining the user's app preferences.
+    */
+    public AppPreferences getPreferences() {
+        return preferences;
     }
 }
 
