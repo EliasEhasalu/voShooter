@@ -135,6 +135,9 @@ public class MenuScreen implements Screen {
 
     }
 
+    /**
+     * Free memory of assets when done.
+     */
     @Override
     public void dispose() {
         stage.dispose();
