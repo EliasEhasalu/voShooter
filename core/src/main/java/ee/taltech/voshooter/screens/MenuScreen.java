@@ -43,13 +43,16 @@ public class MenuScreen implements Screen {
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         // Create the menu objects for our stage.
-        TextButton newGame = new TextButton("New Game", skin);
+        TextButton joinGame = new TextButton("Join Game", skin);
+        TextButton createGame = new TextButton("Create Game", skin);
         TextButton preferences = new TextButton("Settings", skin);
         TextButton exit = new TextButton("Exit", skin);
 
         // Add the buttons to the table.
-        table.add(newGame).fillX().uniformX();
+        table.add(joinGame).fillX().uniformX();
         table.row().pad(10, 0, 10, 0);
+        table.add(createGame).fillX().uniformX();
+        table.row().pad(20, 0, 10, 0);
         table.add(preferences).fillX().uniformX();
         table.row();
         table.add(exit).fillX().uniformX();
