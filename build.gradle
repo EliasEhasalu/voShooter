@@ -1,5 +1,5 @@
 buildscript {
-    
+
     repositories {
         mavenLocal()
         mavenCentral()
@@ -9,7 +9,6 @@ buildscript {
     }
 }
 
-    
 plugins {
     id 'jacoco'
 }
@@ -54,6 +53,7 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-desktop"
+        compile "com.esotericsoftware:kryonet:2.22.0-RC1"
     }
 }
 
@@ -68,6 +68,7 @@ project(":core") {
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
+        compile "com.esotericsoftware:kryonet:2.22.0-RC1"
     }
 
     dependencies {
@@ -78,7 +79,7 @@ project(":core") {
         useJUnitPlatform()
         finalizedBy jacocoTestReport
     }
-    
+
     jacocoTestReport {
         dependsOn test
     }

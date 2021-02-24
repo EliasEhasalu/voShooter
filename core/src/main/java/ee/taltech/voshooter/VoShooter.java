@@ -3,6 +3,7 @@ package ee.taltech.voshooter;
 
 import com.badlogic.gdx.Game;
 
+import ee.taltech.voshooter.networking.VoClient;
 import ee.taltech.voshooter.screens.LoadingScreen;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.screens.MenuScreen;
@@ -15,6 +16,8 @@ public class VoShooter extends Game {
     private MenuScreen menuScreen;
     private MainScreen mainScreen;
     private AppPreferences preferences;
+
+    public VoClient client;
 
     public enum Screen {
         LOADING,
@@ -30,6 +33,7 @@ public class VoShooter extends Game {
     public void create() {
         preferences = new AppPreferences();
         changeScreen(VoShooter.Screen.LOADING);
+        client = new VoClient();
     }
 
     /**

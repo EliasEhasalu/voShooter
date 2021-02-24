@@ -49,6 +49,7 @@ public class MenuScreen implements Screen {
         TextButton createGame = new TextButton("Create Game", skin);
         TextButton preferences = new TextButton("Settings", skin);
         TextButton exit = new TextButton("Exit", skin);
+        TextButton ping = new TextButton("Ping", skin);
 
         // Add the buttons to the table.
         table.add(joinGame).fillX().uniformX();
@@ -58,6 +59,9 @@ public class MenuScreen implements Screen {
         table.add(preferences).fillX().uniformX();
         table.row();
         table.add(exit).fillX().uniformX();
+        table.row();
+        table.add(ping).fillX().uniformX();
+
 
         preferences.addListener(new ChangeListener() {
             @Override
@@ -69,6 +73,13 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 Gdx.app.exit();
+            }
+        });
+
+        ping.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                parent.client.sendGreeting("hi!");
             }
         });
     }
