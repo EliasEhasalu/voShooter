@@ -14,6 +14,7 @@ public class VoShooter extends Game {
     private PreferencesScreen preferencesScreen;
     private MenuScreen menuScreen;
     private MainScreen mainScreen;
+    private AppPreferences preferences;
 
     public enum Screen {
         LOADING,
@@ -27,6 +28,7 @@ public class VoShooter extends Game {
      */
     @Override
     public void create() {
+        preferences = new AppPreferences();
         changeScreen(VoShooter.Screen.LOADING);
     }
 
@@ -55,6 +57,10 @@ public class VoShooter extends Game {
             default:
                 // Noop.
         }
+    }
+
+    public AppPreferences getPreferences() {
+        return preferences;
     }
 }
 
