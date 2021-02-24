@@ -13,7 +13,7 @@ import ee.taltech.voshooter.networking.Network.Hello;
 public class VoServer {
 
     Server server;
-    private int timesPinged = 0;
+    private int timesPinged = 1;
 
     /**
      * Bootstrap the server upon instantiation.

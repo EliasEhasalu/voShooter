@@ -1,5 +1,13 @@
 sourceCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
+project.ext.mainClassName = "ee.taltech.voshooter.networking.server.VoServer"
+
+task run(dependsOn: classes, type: JavaExec) {
+    main = project.mainClassName
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    ignoreExitValue = true
+}
 
 eclipse.project.name = appName + "-core"
