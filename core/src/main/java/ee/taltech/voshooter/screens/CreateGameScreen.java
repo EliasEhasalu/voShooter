@@ -4,18 +4,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
 import ee.taltech.voshooter.VoShooter;
 
 import static ee.taltech.voshooter.VoShooter.Screen.CREATE_GAME;
+import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
-public class MenuScreen implements Screen {
+public class CreateGameScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
@@ -24,7 +28,7 @@ public class MenuScreen implements Screen {
      * Construct the menu screen.
      * @param parent A reference to the orchestrator object.
      */
-    public MenuScreen(VoShooter parent) {
+    public CreateGameScreen(VoShooter parent) {
         this.parent = parent;
 
         // Create stage which will contain this screen's objects
@@ -38,8 +42,9 @@ public class MenuScreen implements Screen {
     public void show() {
         // Have it handle player's input.
         Gdx.input.setInputProcessor(stage);
+        stage.clear();
 
-        // Add a table which will contain menu items to the stage.
+        // Add a table which will contain game creation settings.
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
@@ -48,49 +53,22 @@ public class MenuScreen implements Screen {
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         // Create the menu objects for our stage.
-        TextButton joinGame = new TextButton("Join Game", skin);
-        TextButton createGame = new TextButton("Create Game", skin);
-        TextButton preferences = new TextButton("Settings", skin);
-        TextButton exit = new TextButton("Exit", skin);
-        TextButton ping = new TextButton("Ping", skin);
+        Label playerCount = new Label("Players: ", skin);
+        Label gameMode = new Label("Gamemode: ", skin);
+        TextButton back = new TextButton("Back", skin);
 
         // Add the buttons to the table.
-        table.add(joinGame).fillX().uniformX();
+        table.pad(100, 0, 0, 0);
+        table.add(playerCount).fillX().uniformX();
         table.row().pad(10, 0, 10, 0);
-        table.add(createGame).fillX().uniformX();
-        table.row().pad(20, 0, 10, 0);
-        table.add(preferences).fillX().uniformX();
-        table.row();
-        table.add(exit).fillX().uniformX();
-        table.row();
-        table.add(ping).fillX().uniformX();
+        table.add(gameMode).fillX().uniformX();
+        table.row().pad(200, 0, 0, 0);
+        table.add(back).fillX().uniformX();
 
-
-        createGame.addListener(new ChangeListener() {
+        back.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                parent.changeScreen(CREATE_GAME);
-            }
-        });
-
-        preferences.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.changeScreen(VoShooter.Screen.PREFERENCES);
-            }
-        });
-
-        exit.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                Gdx.app.exit();
-            }
-        });
-
-        ping.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                parent.client.sendGreeting("hi!");
+                parent.changeScreen(MENU);
             }
         });
     }
