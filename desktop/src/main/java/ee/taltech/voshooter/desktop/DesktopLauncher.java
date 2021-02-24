@@ -2,7 +2,7 @@ package ee.taltech.voshooter.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import ee.taltech.voshooter.Game;
+import ee.taltech.voshooter.VoShooter;
 
 public class DesktopLauncher {
 
@@ -13,6 +13,6 @@ public class DesktopLauncher {
      */
     public static void main(String[] args) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        new LwjglApplication(new Game(), config);
+        new LwjglApplication(new VoShooter(), config);
     }
 }
