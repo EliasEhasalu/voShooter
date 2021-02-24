@@ -59,7 +59,7 @@ public class MenuScreen implements Screen {
         table.row();
         table.add(exit).fillX().uniformX();
 
-        // Exit button listener, exits the game when clicked.
+        // Exit button listener, exit the game when clicked.
         exit.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
