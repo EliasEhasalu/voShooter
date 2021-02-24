@@ -3,6 +3,7 @@ package ee.taltech.voshooter;
 
 import com.badlogic.gdx.Game;
 
+import ee.taltech.voshooter.screens.CreateGameScreen;
 import ee.taltech.voshooter.screens.LoadingScreen;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.screens.MenuScreen;
@@ -14,12 +15,14 @@ public class VoShooter extends Game {
     private PreferencesScreen preferencesScreen;
     private MenuScreen menuScreen;
     private MainScreen mainScreen;
+    private CreateGameScreen createGameScreen;
 
     public enum Screen {
         LOADING,
         MENU,
         PREFERENCES,
-        MAIN
+        MAIN,
+        CREATE_GAME
     }
 
     /**
@@ -52,9 +55,12 @@ public class VoShooter extends Game {
                 if (loadingScreen == null) loadingScreen = new LoadingScreen(this);
                 setScreen(loadingScreen);
                 break;
+            case CREATE_GAME:
+                if (createGameScreen == null) createGameScreen = new CreateGameScreen(this);
+                setScreen(createGameScreen);
+                break;
             default:
                 // Noop.
         }
     }
 }
-
