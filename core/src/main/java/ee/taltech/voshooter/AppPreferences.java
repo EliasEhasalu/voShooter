@@ -14,14 +14,14 @@ public class AppPreferences {
     }
 
     /**
-     * @return Get the music volume.
+     * @return The desired music volume.
      */
     public float getMusicVolume() {
         return getPrefs().getFloat(PREF_MUSIC_VOLUME, 0.5f);
     }
 
     /**
-     * @param volume Set the music volume.
+     * @param volume The desired music volume.
      */
     public void setMusicVolume(float volume) {
         getPrefs().putFloat(PREF_MUSIC_VOLUME, volume);
@@ -30,14 +30,14 @@ public class AppPreferences {
     }
 
     /**
-     * @return Get the sound volume.
+     * @return The sound volume.
      */
     public float getSoundVolume() {
         return getPrefs().getFloat(PREF_SOUND_VOL, 0.5f);
     }
 
     /**
-     * @param volume Set the sound volume.
+     * @param volume The desired sound volume.
      */
     public void setSoundVolume(float volume) {
         getPrefs().putFloat(PREF_SOUND_VOL, volume);

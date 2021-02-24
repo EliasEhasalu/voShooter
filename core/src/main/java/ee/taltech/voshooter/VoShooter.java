@@ -59,6 +59,9 @@ public class VoShooter extends Game {
         }
     }
 
+    /**
+    * @return The object defining the user's app preferences.
+    */
     public AppPreferences getPreferences() {
         return preferences;
     }
