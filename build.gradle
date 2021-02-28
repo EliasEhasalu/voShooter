@@ -11,12 +11,21 @@ buildscript {
 
 plugins {
     id 'jacoco'
+    id 'checkstyle'
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
 }
 
 allprojects {
     apply plugin: "eclipse"
     apply plugin: "java"
     apply plugin: "jacoco"
+    apply plugin: "checkstyle"
 
 
     sourceCompatibility = 1.8
