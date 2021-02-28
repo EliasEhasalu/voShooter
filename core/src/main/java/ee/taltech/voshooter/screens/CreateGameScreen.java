@@ -19,6 +19,8 @@ public class CreateGameScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
+    private Label playerCountIndicator;
+    private Label playerGameModeIndicator;
 
     /**
      * Construct the menu screen.
@@ -52,20 +54,52 @@ public class CreateGameScreen implements Screen {
         Label playerCount = new Label("Players: ", skin);
         Label gameMode = new Label("Gamemode: ", skin);
         TextButton back = new TextButton("Back", skin);
+        TextButton createGame = new TextButton("Create game", skin);
+        Slider playerCountSlider = new Slider(0, 16, 1, false, skin);
+        Slider playerGameModeSlider = new Slider(1, 4, 1, false, skin);
+        playerCountIndicator = new Label(String.valueOf(playerCountSlider.getValue()), skin);
+        playerGameModeIndicator = new Label(String.valueOf(playerGameModeSlider.getValue()), skin);
 
         // Add the buttons to the table.
         table.pad(100, 0, 0, 0);
         table.add(playerCount).fillX().uniformX();
+        table.add(playerCountSlider).fillX().uniformX();
+        table.add(playerCountIndicator).fillX().uniformX().pad(0, 10, 0, 0);
         table.row().pad(10, 0, 10, 0);
         table.add(gameMode).fillX().uniformX();
+        table.add(playerGameModeSlider).fillX().uniformX();
+        table.add(playerGameModeIndicator).fillX().uniformX().pad(0, 10, 0, 0);
+        table.row().pad(10, 0, 10, 0);
+        table.add(createGame).fillX().uniformX().colspan(2);
         table.row().pad(200, 0, 0, 0);
-        table.add(back).fillX().uniformX();
+        table.add(back).fillX().uniformX().colspan(2);
 
         back.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 parent.changeScreen(MENU);
             }
+        });
+
+        createGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.changeScreen(MENU);
+            }
+        });
+
+        playerCountSlider.setValue(parent.getPreferences().getSoundVolume());
+        playerCountSlider.addListener(event ->  {
+            parent.getPreferences().setPlayerCount(playerCountSlider.getValue());
+            playerCountIndicator.setText(String.valueOf(playerCountSlider.getValue()));
+            return false;
+        });
+
+        playerGameModeSlider.setValue(parent.getPreferences().getSoundVolume());
+        playerGameModeSlider.addListener(event ->  {
+            parent.getPreferences().setGameMode(playerGameModeSlider.getValue());
+            playerGameModeIndicator.setText(String.valueOf(playerGameModeSlider.getValue()));
+            return false;
         });
     }
 
@@ -112,5 +146,9 @@ public class CreateGameScreen implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
+    }
+
+    public void update() {
+
     }
 }
