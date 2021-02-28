@@ -56,13 +56,21 @@ public class CreateGameScreen implements Screen {
         Label playerCount = new Label("Players: ", skin);
         Label gameMode = new Label("Gamemode: ", skin);
         TextButton back = new TextButton("Back", skin);
+        Slider playerCountSlider = new Slider(0, 16, 1, false, skin);
+        Slider playerGameModeSlider = new Slider(0, 3, 1, false, skin);
+        Label playerCountIndicator = new Label(String.valueOf(playerCountSlider.getValue()), skin);
+        Label playerGameModeIndicator = new Label(String.valueOf(playerGameModeSlider.getValue()), skin);
 
         // Add the buttons to the table.
-        table.pad(100, 0, 0, 0);
+        table.pad(100, 10, 0, 10);
         table.add(playerCount).fillX().uniformX();
-        table.row().pad(10, 0, 10, 0);
+        table.add(playerCountSlider).fillX().uniformX();
+        table.add(playerCountIndicator).fillX().uniformX();
+        table.row().pad(10, 10, 10, 10);
         table.add(gameMode).fillX().uniformX();
-        table.row().pad(200, 0, 0, 0);
+        table.add(playerGameModeSlider).fillX().uniformX();
+        table.add(playerGameModeIndicator).fillX().uniformX();
+        table.row().pad(200, 10, 0, 10);
         table.add(back).fillX().uniformX();
 
         back.addListener(new ChangeListener() {
@@ -70,6 +78,20 @@ public class CreateGameScreen implements Screen {
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 parent.changeScreen(MENU);
             }
+        });
+
+        playerCountSlider.setValue(parent.getPreferences().getSoundVolume());
+        playerCountSlider.addListener(event ->  {
+            parent.getPreferences().setPlayerCount(playerCountSlider.getValue());
+            Gdx.app.log("PlayerCount", "Players: " + playerCountSlider.getValue());
+            return false;
+        });
+
+        playerGameModeSlider.setValue(parent.getPreferences().getSoundVolume());
+        playerGameModeSlider.addListener(event ->  {
+            parent.getPreferences().setGameMode(playerGameModeSlider.getValue());
+            Gdx.app.log("GameMode", "GameMode: " + playerGameModeSlider.getValue());
+            return false;
         });
     }
 
