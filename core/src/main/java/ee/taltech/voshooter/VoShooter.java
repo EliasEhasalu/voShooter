@@ -5,6 +5,7 @@ import com.badlogic.gdx.Game;
 
 import ee.taltech.voshooter.networking.VoClient;
 import ee.taltech.voshooter.screens.CreateGameScreen;
+import ee.taltech.voshooter.screens.JoinGameScreen;
 import ee.taltech.voshooter.screens.LoadingScreen;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.screens.MenuScreen;
@@ -17,15 +18,17 @@ public class VoShooter extends Game {
     private MenuScreen menuScreen;
     private MainScreen mainScreen;
     private AppPreferences preferences;
-    public VoClient client;
     private CreateGameScreen createGameScreen;
+    private JoinGameScreen joinGameScreen;
+    public VoClient client;
 
     public enum Screen {
         LOADING,
         MENU,
         PREFERENCES,
         MAIN,
-        CREATE_GAME
+        CREATE_GAME,
+        JOIN_GAME
     }
 
     /**
@@ -63,6 +66,10 @@ public class VoShooter extends Game {
             case CREATE_GAME:
                 if (createGameScreen == null) createGameScreen = new CreateGameScreen(this);
                 setScreen(createGameScreen);
+                break;
+            case JOIN_GAME:
+                if (joinGameScreen == null) joinGameScreen = new JoinGameScreen(this);
+                setScreen(joinGameScreen);
                 break;
             default:
                 // Noop.
