@@ -3,10 +3,8 @@ package ee.taltech.voshooter.networking;
 import java.io.IOException;
 
 import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
-import ee.taltech.voshooter.networking.Network.Hello;
 
 public class VoClient {
 
@@ -14,7 +12,7 @@ public class VoClient {
     private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
 
     Client client;
-    String name;
+    public UserComms user;
 
 
     /**
@@ -27,35 +25,19 @@ public class VoClient {
         // Agree on what messages should be passed.
         Network.register(client);
 
-        client.addListener(new Listener() {
-            @Override
-            public void connected(Connection connection) {
-            }
+        // Get the remote object on the server that we can call methods on.
+        user = ObjectSpace.getRemoteObject(client, Network.USER, UserComms.class);
 
+        new Thread("Connect") {
             @Override
-            public void received(Connection connection, Object object) {
-                // Define received object handling here.
-
-                if (object instanceof Hello) {
-                    System.out.println(((Hello) object).greeting);
+            public void run() {
+                try {
+                    client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    System.exit(1);
                 }
             }
-        });
-
-        try {
-            client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    /**
-     * Send a greeting.
-     * @param content The content of the greeting.
-     */
-    public void sendGreeting(String content) {
-        Hello hello = new Hello();
-        hello.greeting = content;
-        client.sendTCP(hello);
+        }.start();
     }
 }

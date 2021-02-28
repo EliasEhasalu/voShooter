@@ -1,16 +1,21 @@
 package ee.taltech.voshooter.networking;
 
+import java.util.List;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
+
+import ee.taltech.voshooter.networking.messages.Lobby;
 
 public final class Network {
 
     public static final int PORT = 54569;
 
-    /**
-     * Hide public constructor.
-     */
+    // These IDs are used to register objects in ObjectSpaces.
+    public static final short USER = 1;
+
+    /** Hide public constructor. */
     private Network() {
     }
 
@@ -20,25 +25,13 @@ public final class Network {
      */
     public static void register(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
-        // The interfaces that will be used as remote objects must be registered.
         ObjectSpace.registerClasses(kryo);
-        // The classes of all method parameters and return values
-        // for remote objects must also be registered.
+
+        // Register all classes transported over the connection.
         kryo.register(String[].class);
+        kryo.register(List.class);
 
-        kryo.register(Hello.class);
-        kryo.register(CreateLobby.class);
-        kryo.register(LobbyCreated.class);
-    }
-
-    public static class Hello {
-        public String greeting;
-    }
-
-    public static class CreateLobby {
-    }
-
-    public static class LobbyCreated {
-        public String lobbyId;
+        kryo.register(UserComms.class);
+        kryo.register(Lobby.class);
     }
 }

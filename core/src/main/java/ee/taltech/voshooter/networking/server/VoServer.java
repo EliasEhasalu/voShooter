@@ -7,18 +7,18 @@ import java.util.List;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 import com.esotericsoftware.minlog.Log;
 
 import ee.taltech.voshooter.networking.Network;
-import ee.taltech.voshooter.networking.Network.CreateLobby;
-import ee.taltech.voshooter.networking.Network.Hello;
-import ee.taltech.voshooter.networking.server.lobby.Lobby;
+import ee.taltech.voshooter.networking.UserComms;
+import ee.taltech.voshooter.networking.messages.Lobby;
 
 public class VoServer {
 
     Server server;
 
-    private int timesPinged = 1;
+    private List<User> users = new ArrayList<>();
     private List<Lobby> lobbies = new ArrayList<>();
 
     /**
@@ -28,29 +28,19 @@ public class VoServer {
         server = new Server() {
             @Override
             protected Connection newConnection() {
-                return new VoConnection();
+                User user = new User();
+                users.add(user);
+                return user;
             }
         };
 
-        // Register classes that will be passed over the connection.
         Network.register(server);
 
         server.addListener(new Listener() {
             @Override
-            public void received(Connection c, Object object) {
-                VoConnection connection = (VoConnection) c;
-
-                if (object instanceof Hello) {
-                    System.out.println(String.format("%d - %s", timesPinged, ((Hello) object).greeting));
-                    Hello reply = new Hello();
-                    reply.greeting = String.format("you've pinged %d times", timesPinged++);
-                    connection.sendTCP(reply);
-                }
-
-                if (object instanceof CreateLobby) {
-                    Lobby newLobby = createNewLobby();
-                    newLobby.addUser(connection.user);
-                }
+            public void disconnected(Connection connection) {
+                User user = (User) connection;
+                users.remove(user);
             }
         });
 
@@ -58,14 +48,40 @@ public class VoServer {
         server.start();
     }
 
-    /**
-     * Create and return a new lobby.
-     * @return The newly created lobby object.
-     */
-    private Lobby createNewLobby() {
-        Lobby lobby = new Lobby();
-        lobbies.add(lobby);
-        return lobby;
+    public class User extends Connection implements UserComms {
+
+        private int timesPinged = 0;
+
+        /**
+         * Construct this user object.
+         */
+        User() {
+            new ObjectSpace(this).register(Network.USER, this);
+        }
+
+        /**
+         * @return The amount of times this user has pinged the server.
+         */
+        public int ping() {
+            return timesPinged++;
+        }
+
+        /**
+         * @return A list of available lobbies.
+         */
+        public List<Lobby> getLobbies() {
+            return lobbies;
+        }
+
+        /**
+         * @return The created lobby.
+         */
+        public Lobby createLobby() {
+            Lobby newLobby = new Lobby();
+            lobbies.add(newLobby);
+            newLobby.addUser(this);
+            return newLobby;
+        }
     }
 
     /**
