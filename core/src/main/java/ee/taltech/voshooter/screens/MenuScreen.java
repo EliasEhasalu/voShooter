@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 
 import static ee.taltech.voshooter.VoShooter.Screen.CREATE_GAME;
+import static ee.taltech.voshooter.VoShooter.Screen.JOIN_GAME;
 
 public class MenuScreen implements Screen {
 
@@ -66,6 +67,12 @@ public class MenuScreen implements Screen {
         table.add(ping).fillX().uniformX();
 
 
+        joinGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.changeScreen(JOIN_GAME);
+            }
+        });
         createGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
