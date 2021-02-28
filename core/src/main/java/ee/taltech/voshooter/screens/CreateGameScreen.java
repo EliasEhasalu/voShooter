@@ -144,12 +144,11 @@ public class CreateGameScreen implements Screen {
 
     }
 
+    /**
+     * Dispose of the stage.
+     */
     @Override
     public void dispose() {
         stage.dispose();
-    }
-
-    public void update() {
-
     }
 }
