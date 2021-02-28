@@ -19,6 +19,8 @@ public class PreferencesScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
+    private Label volumeMusicIndicator;
+    private Label volumeSoundIndicator;
 
     /**
      * Construct the preferences screen. Pass in a reference to the orchestrator.
@@ -47,38 +49,47 @@ public class PreferencesScreen implements Screen {
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         // Create the settings objects for our stage.
-        final Slider volumeMusicSlider = new Slider(0f, 1f, 0.1f, false, skin);
-        final Slider volumeSoundSlider = new Slider(0f, 1f, 0.1f, false, skin);
+        final Slider volumeMusicSlider = new Slider(0, 100, 5, false, skin);
+        final Slider volumeSoundSlider = new Slider(0, 100, 5, false, skin);
         final TextButton returnToMenuScreen = new TextButton("Main menu", skin);
 
         final Label titleLabel = new Label("Settings", skin);
         final Label volumeMusicLabel = new Label("Music volume", skin);
         final Label volumeSoundLabel = new Label("Sound volume", skin);
 
+        volumeMusicIndicator = new Label(String.valueOf(volumeMusicSlider.getValue()), skin);
+        volumeSoundIndicator = new Label(String.valueOf(volumeSoundSlider.getValue()), skin);
+
         // Add the sliders and labels to the table.
-        table.add(titleLabel).fillX().uniformX().pad(0, 0, 20, 0);
+        table.add(titleLabel).fillX().uniformX().pad(0, 0, 20, 0).bottom().right();
 
         table.row().pad(0, 0, 5, 30);
         table.add(volumeMusicLabel).fillX().uniformX();
         table.add(volumeMusicSlider).fillX().uniformX();
+        table.add(volumeMusicIndicator).fillX().uniformX();
 
         table.row().pad(0, 0, 100, 30);
         table.add(volumeSoundLabel).fillX().uniformX();
         table.add(volumeSoundSlider).fillX().uniformX();
+        table.add(volumeSoundIndicator).fillX().uniformX();
 
         table.row();
-        table.add(returnToMenuScreen).fillX().uniformX();
+        table.add(returnToMenuScreen).fillX().uniformX().bottom().right();
+
+        table.pack();
 
         // Slider and button functionality.
         volumeMusicSlider.setValue(parent.getPreferences().getMusicVolume());
         volumeMusicSlider.addListener(event -> {
             parent.getPreferences().setMusicVolume(volumeMusicSlider.getValue());
+            volumeMusicIndicator.setText(String.valueOf(volumeMusicSlider.getValue()));
             return false;
         });
 
         volumeSoundSlider.setValue(parent.getPreferences().getSoundVolume());
         volumeSoundSlider.addListener(event -> {
             parent.getPreferences().setSoundVolume(volumeSoundSlider.getValue());
+            volumeSoundIndicator.setText(String.valueOf(volumeSoundSlider.getValue()));
             return false;
         });
 
