@@ -8,13 +8,12 @@ import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 
 import ee.taltech.voshooter.networking.Network;
+import ee.taltech.voshooter.networking.User;
 import ee.taltech.voshooter.networking.Network.Hello;
 
 public class VoServer {
 
     Server server;
-    private int timesPinged = 1;
-
     /**
      * Bootstrap the server upon instantiation.
      */
@@ -32,13 +31,14 @@ public class VoServer {
         server.addListener(new Listener() {
             @Override
             public void received(Connection c, Object object) {
-                // VoConnection connection = (VoConnection) c;
+                VoConnection connection = (VoConnection) c;
+                User user = connection.user;
 
                 if (object instanceof Hello) {
-                    System.out.println(String.format("%d - %s", timesPinged, ((Hello) object).greeting));
+                    System.out.println(String.format("%d - %s", user.timesPinged, ((Hello) object).greeting));
                     Hello reply = new Hello();
-                    reply.greeting = String.format("you've pinged %d times", timesPinged++);
-                    c.sendTCP(reply);
+                    reply.greeting = String.format("you've pinged %d times", user.timesPinged++);
+                    connection.sendTCP(reply);
                 }
             }
         });

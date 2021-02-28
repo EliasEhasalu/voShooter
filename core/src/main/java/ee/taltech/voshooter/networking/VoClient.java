@@ -8,7 +8,7 @@ import com.esotericsoftware.kryonet.Listener;
 
 import ee.taltech.voshooter.networking.Network.Hello;
 
-public class VoClient {
+public class VoClient implements ClientInterface {
 
     private static final String HOST_ADDRESS = "localhost";
 
@@ -32,8 +32,7 @@ public class VoClient {
             }
 
             @Override
-            public void received(Connection connection, Object object) {
-                // Define received object handling here.
+            public void received(Connection c, Object object) {
 
                 if (object instanceof Hello) {
                     System.out.println(((Hello) object).greeting);

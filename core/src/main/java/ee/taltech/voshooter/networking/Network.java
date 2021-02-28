@@ -26,6 +26,7 @@ public final class Network {
         // for remote objects must also be registered.
         kryo.register(String[].class);
         kryo.register(Hello.class);
+        kryo.register(User.class);
     }
 
     public static class Hello {
