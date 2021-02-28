@@ -78,8 +78,8 @@ public class VoServer {
          */
         public Lobby createLobby() {
             Lobby newLobby = new Lobby();
-            lobbies.add(newLobby);
             newLobby.addUser(this);
+            lobbies.add(newLobby);
             return newLobby;
         }
     }

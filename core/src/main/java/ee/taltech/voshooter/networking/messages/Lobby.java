@@ -11,6 +11,12 @@ public class Lobby {
     private List<User> users = new ArrayList<>();
 
     /**
+     * Default constructor for serialization.
+     */
+    public Lobby() {
+    }
+
+    /**
      * Add a user to this lobby.
      * @param user The user to add.
      */
