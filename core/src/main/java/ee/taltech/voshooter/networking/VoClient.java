@@ -11,6 +11,7 @@ import ee.taltech.voshooter.networking.Network.Hello;
 public class VoClient {
 
     private static final String HOST_ADDRESS = "localhost";
+    private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
 
     Client client;
     String name;
@@ -42,7 +43,7 @@ public class VoClient {
         });
 
         try {
-            client.connect(5000, HOST_ADDRESS, Network.PORT);
+            client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

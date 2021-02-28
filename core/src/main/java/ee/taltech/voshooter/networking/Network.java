@@ -25,10 +25,20 @@ public final class Network {
         // The classes of all method parameters and return values
         // for remote objects must also be registered.
         kryo.register(String[].class);
+
         kryo.register(Hello.class);
+        kryo.register(CreateLobby.class);
+        kryo.register(LobbyCreated.class);
     }
 
     public static class Hello {
         public String greeting;
+    }
+
+    public static class CreateLobby {
+    }
+
+    public static class LobbyCreated {
+        public String lobbyId;
     }
 }
