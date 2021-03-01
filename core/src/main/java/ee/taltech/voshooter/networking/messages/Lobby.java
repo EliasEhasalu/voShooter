@@ -3,9 +3,6 @@ package ee.taltech.voshooter.networking.messages;
 import java.util.ArrayList;
 import java.util.List;
 
-import ee.taltech.voshooter.networking.server.VoServer.User;
-
-
 public class Lobby {
 
     private List<User> users = new ArrayList<>();
@@ -25,6 +22,14 @@ public class Lobby {
     }
 
     /**
+     * Remove a user from this lobby.
+     * @param user The user to remove.
+     */
+    public void removeUser(User user) {
+        if (users.contains(user)) users.remove(user);
+    }
+
+    /**
      * @return Whether this lobby contains the given user.
      * @param user The given user.
      */
@@ -35,5 +40,12 @@ public class Lobby {
     /** @return  The amount of users in this lobby.*/
     public int getUserCount() {
         return users.size();
+    }
+
+    /**
+     * @return The list of users in this lobby.
+     */
+    public List<User> getUsers() {
+        return users;
     }
 }

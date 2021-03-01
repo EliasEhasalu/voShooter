@@ -4,7 +4,7 @@ import java.util.List;
 
 import ee.taltech.voshooter.networking.messages.Lobby;
 
-public interface UserComms {
+public interface RemoteInterface {
     /**
      * @return Amount of times pinged.
      */

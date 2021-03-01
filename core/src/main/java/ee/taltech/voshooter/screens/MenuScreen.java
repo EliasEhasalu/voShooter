@@ -70,7 +70,7 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 parent.changeScreen(CREATE_GAME);
-                parent.client.user.createLobby();
+                parent.client.remote.createLobby();
             }
         });
 
@@ -91,8 +91,7 @@ public class MenuScreen implements Screen {
         ping.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                System.out.println(parent.client.user.ping());
-                System.out.println(parent.client.user.getLobbies().size());
+                System.out.println(parent.client.remote.ping());
             }
         });
     }

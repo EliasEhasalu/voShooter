@@ -5,15 +5,18 @@ import java.io.IOException;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
+import ee.taltech.voshooter.networking.messages.User;
+
 
 public class VoClient {
 
-    private static final String HOST_ADDRESS = "localhost";
-    private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
+    public RemoteInterface remote;
 
     Client client;
-    public UserComms user;
+    ServerEntry serverEntry;
 
+    private static final String HOST_ADDRESS = "localhost";
+    private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
 
     /**
      * Construct the client.
@@ -26,7 +29,11 @@ public class VoClient {
         Network.register(client);
 
         // Get the remote object on the server that we can call methods on.
-        user = ObjectSpace.getRemoteObject(client, Network.USER, UserComms.class);
+        remote = ObjectSpace.getRemoteObject(client, Network.REMOTE, RemoteInterface.class);
+
+        // Create a ClientInterface object, so the server can call methods on it.
+        serverEntry = new ServerEntry();
+        new ObjectSpace(client).register(Network.SERVER_ENTRY, serverEntry);
 
         new Thread("Connect") {
             @Override
@@ -39,5 +46,21 @@ public class VoClient {
                 }
             }
         }.start();
+    }
+
+    private static class ServerEntry implements ClientInterface {
+
+        /**
+         * Construct the server entry.
+         */
+        ServerEntry() {
+        }
+
+        /**
+         * @param user The user that left.
+         */
+        public void userLeft(User user) {
+            System.out.println(String.format("User %s left.", user.getName()));
+        }
     }
 }
