@@ -61,9 +61,9 @@ public class LobbyScreen implements Screen {
 
         for (int i = 0; i < 8; i++) {
             Label playerName = new Label("", skin);
-            if (i < parent.client.lobby.getUserCount()) {
-                playerName.setText(parent.client.lobby.getUsers().get(i).getName());
-            } else if (i < parent.client.lobby.getMaxUsers()) {
+            if (i < parent.gameState.currentLobby.getUsersCount()) {
+                playerName.setText(parent.gameState.currentLobby.getUsers().get(i).getName());
+            } else if (i < parent.gameState.currentLobby.getMaxUsers()) {
                 playerName.setText("EMPTY SLOT");
             }
             playerNameLabels.add(playerName);
@@ -82,7 +82,7 @@ public class LobbyScreen implements Screen {
         leaveButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                parent.client.lobby = null;
+                parent.gameState.currentLobby.clearLobby();
                 playerNameLabels.clear();
                 parent.changeScreen(MENU);
             }
