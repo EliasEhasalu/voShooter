@@ -16,12 +16,14 @@ import ee.taltech.voshooter.VoShooter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ee.taltech.voshooter.VoShooter.Screen.MAIN;
 import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
 public class LobbyScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
+    private List<Label> playerNameLabels = new ArrayList<>();
 
     /**
      * Construct the menu screen.
@@ -54,9 +56,16 @@ public class LobbyScreen implements Screen {
         // Create the menu objects for our stage.
         Label lobbyTitleLabel = new Label("Lobby", skin);
         TextButton leaveButton = new TextButton("Leave", skin);
-        List<Label> playerNameLabels = new ArrayList<>();
+        TextButton startGame = new TextButton("Start", skin);
+        if (!parent.client.clientUser.isHost()) startGame.setVisible(false);
+
         for (int i = 0; i < 8; i++) {
-            Label playerName = new Label("name", skin);
+            Label playerName = new Label("", skin);
+            if (i < parent.client.lobby.getUserCount()) {
+                playerName.setText(parent.client.lobby.getUsers().get(i).getName());
+            } else if (i < parent.client.lobby.getMaxUsers()) {
+                playerName.setText("EMPTY SLOT");
+            }
             playerNameLabels.add(playerName);
         }
 
@@ -73,7 +82,19 @@ public class LobbyScreen implements Screen {
         leaveButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                parent.client.lobby = null;
+                playerNameLabels.clear();
                 parent.changeScreen(MENU);
+            }
+        });
+
+        startGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (parent.client.clientUser.isHost()) {
+                    playerNameLabels.clear();
+                    parent.changeScreen(MAIN);
+                }
             }
         });
     }

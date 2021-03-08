@@ -3,7 +3,7 @@ package ee.taltech.voshooter.networking.messages;
 public class User {
 
     private String name;
-    private boolean isHost = false;
+    private boolean host = false;
 
     /** @return The name of this user. */
     public String getName() {
@@ -13,15 +13,15 @@ public class User {
     /**
      * @return If the user is the host for a lobby.
      */
-    public boolean getIsHost() {
-        return isHost;
+    public boolean isHost() {
+        return host;
     }
 
     /**
      * @param isHost Set if the user is a host for a lobby.
      */
-    public void setIsHost(boolean isHost) {
-        this.isHost = isHost;
+    public void setHost(boolean isHost) {
+        this.host = isHost;
     }
 
      /**
