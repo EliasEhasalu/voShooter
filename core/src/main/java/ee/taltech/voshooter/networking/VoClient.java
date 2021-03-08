@@ -44,10 +44,16 @@ public class VoClient {
                     client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                    System.exit(1);
+                    client = null;
+                    displayNoConnectionMessage();
                 }
             }
         }.start();
+    }
+
+    /** Display a message when unable to connect to the server. */
+    private void displayNoConnectionMessage() {
+        // Todo.
     }
 
     private static class ServerEntry implements ClientInterface {
