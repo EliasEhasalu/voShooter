@@ -137,7 +137,7 @@ public class VoServer {
             boolean successful = false;
 
             for (Lobby lobby : lobbies.values()) {
-                if (lobby.getLobbyCode().equals(lobbyCode)) {
+                if (lobby.getLobbyCode().equalsIgnoreCase(lobbyCode)) {
                     lobby.addUser(this);
                     currentLobby = lobby;
                     successful = true;
