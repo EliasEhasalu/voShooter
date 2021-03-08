@@ -13,8 +13,9 @@ public class VoClient {
 
     public RemoteInterface remote;
     public User clientUser = new User();
+    public boolean connectionEstablished = false;
 
-    Client client;
+    public Client client;
     ServerEntry serverEntry;
 
     private static final String HOST_ADDRESS = "localhost";
@@ -42,9 +43,9 @@ public class VoClient {
             public void run() {
                 try {
                     client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
+                    connectionEstablished = true;
                 } catch (IOException ex) {
-                    ex.printStackTrace();
-                    client = null;
+                    client.close();
                     displayNoConnectionMessage();
                 }
             }
@@ -53,7 +54,8 @@ public class VoClient {
 
     /** Display a message when unable to connect to the server. */
     private void displayNoConnectionMessage() {
-        // Todo.
+        connectionEstablished = false;
+        System.out.println("No connection!");
     }
 
     private static class ServerEntry implements ClientInterface {

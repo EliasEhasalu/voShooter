@@ -95,15 +95,17 @@ public class JoinGameScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (isNameGood && isCodeGood) {
                     parent.createNetworkClient();
-                    parent.client.remote.setUserName(playerName.getText().trim());
-                    parent.client.clientUser.setName(playerName.getText().trim());
-                    LobbyJoined response = parent.client.remote.joinLobby(gameCode.getText());
-                    if (response.wasSuccessful) {
-                        parent.changeScreen(VoShooter.Screen.LOBBY);
-                    } else {
-                        gameCodeCheck.setText("Bad code");
-                        gameCodeCheck.setColor(255, 0, 0, 255);
-                        isCodeGood = false;
+                    if (parent.client.connectionEstablished) {
+                        parent.client.remote.setUserName(playerName.getText().trim());
+                        parent.client.clientUser.setName(playerName.getText().trim());
+                        LobbyJoined response = parent.client.remote.joinLobby(gameCode.getText());
+                        if (response.wasSuccessful) {
+                            parent.changeScreen(VoShooter.Screen.LOBBY);
+                        } else {
+                            gameCodeCheck.setText("Bad code");
+                            gameCodeCheck.setColor(255, 0, 0, 255);
+                            isCodeGood = false;
+                        }
                     }
                 }
             }
