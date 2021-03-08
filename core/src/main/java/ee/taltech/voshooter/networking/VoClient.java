@@ -12,7 +12,7 @@ import ee.taltech.voshooter.networking.messages.User;
 public class VoClient {
 
     public RemoteInterface remote;
-    public User clientUser;
+    public User clientUser = new User();
 
     Client client;
     ServerEntry serverEntry;
