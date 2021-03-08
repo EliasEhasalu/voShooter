@@ -61,7 +61,7 @@ public class VoServerTest {
     void createdLobbyCodeShouldBeUnique() {
         Map<String, Integer> codes = new HashMap<String, Integer>();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1000; i++) {
             LobbyCreated l = r.createLobby(1, 1);
             String code = l.lobbyCode;
             codes.put(code, codes.getOrDefault(code, 0) + 1);
