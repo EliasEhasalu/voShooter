@@ -3,6 +3,9 @@ package ee.taltech.voshooter.networking.server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -50,6 +53,15 @@ public class VoServer {
         server.start();
     }
 
+    /** Close the server upon request. */
+    public void close() {
+        try {
+            server.dispose();
+        } catch (IOException e) {
+            //.
+        }
+    }
+
     public class Remote extends Connection implements RemoteInterface {
 
         private ClientInterface client;
@@ -57,11 +69,12 @@ public class VoServer {
         private int timesPinged = 0;
         private User user;
         private Lobby currentLobby;
+        private Random rand = new Random();
 
         /**
          * Construct this user object.
          */
-        Remote() {
+        public Remote() {
             new ObjectSpace(this).register(Network.REMOTE, this);
             client = ObjectSpace.getRemoteObject(this, Network.SERVER_ENTRY, ClientInterface.class);
 
@@ -87,10 +100,36 @@ public class VoServer {
          */
         public Lobby createLobby() {
             Lobby newLobby = new Lobby();
+            newLobby.setLobbyCode(generateLobbyCode());
             lobbies.add(newLobby);
             newLobby.addUser(user);
             currentLobby = newLobby;
             return newLobby;
+        }
+
+        /**
+         * @return A unique lobby code for a newly created lobby.
+         */
+        private String generateLobbyCode() {
+            String abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            String attempt = "";
+
+            while (true) {
+                for (int i = 0; i < 6; i++) {
+                    attempt += abc.charAt(rand.ints(0, abc.length()).findFirst().getAsInt());
+                }
+
+                Set<String> codes = lobbies.stream()
+                    .map(Lobby::getLobbyCode)
+                    .collect(Collectors.toSet());
+
+                if (codes.contains(attempt)) {
+                    attempt = "";
+                    continue;
+                }
+                break;
+            }
+            return attempt;
         }
 
         /**

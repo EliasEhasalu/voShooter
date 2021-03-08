@@ -6,6 +6,7 @@ import java.util.List;
 public class Lobby {
 
     private List<User> users = new ArrayList<>();
+    private String lobbyCode = "";
 
     /**
      * Default constructor for serialization.
@@ -47,5 +48,15 @@ public class Lobby {
      */
     public List<User> getUsers() {
         return users;
+    }
+
+    /** @return The code for this lobby. */
+    public String getLobbyCode() {
+        return lobbyCode;
+    }
+
+    /** @param code The code to set this lobby's code to. */
+    public void setLobbyCode(String code) {
+        lobbyCode = code;
     }
 }
