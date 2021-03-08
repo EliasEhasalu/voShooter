@@ -141,7 +141,7 @@ public class VoServer {
         public User getUser() {
             User u = new User();
             u.setName(name);
-            u.setIsHost(currentLobby.getHost() == this);
+            u.setHost(currentLobby.getHost() == this);
             return u;
         }
 

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import ee.taltech.voshooter.networking.server.VoServer;
 import ee.taltech.voshooter.networking.server.VoServer.Remote;
-import ee.taltech.voshooter.networking.messages.Lobby;
+import ee.taltech.voshooter.networking.messages.LobbyCreated;
 
 public class VoServerTest {
 
@@ -45,15 +45,15 @@ public class VoServerTest {
 
     @Test
     void shouldCreateLobby() {
-        Lobby l = r.createLobby(1, 1);
-        assertTrue(l instanceof Lobby);
+        LobbyCreated l = r.createLobby(1, 1);
+        assertTrue(l instanceof LobbyCreated);
     }
 
     @Test
-    void createdLobbyShouldHaveCode() {
-        Lobby l = r.createLobby(1, 1);
+    void ShouldHaveCode() {
+        LobbyCreated l = r.createLobby(1, 1);
 
-        String code = l.getLobbyCode();
+        String code = l.lobbyCode;
         assertEquals(LOBBY_CODE_LENGTH, code.length());
     }
 
@@ -62,8 +62,8 @@ public class VoServerTest {
         Map<String, Integer> codes = new HashMap<String, Integer>();
 
         for (int i = 0; i < 10; i++) {
-            Lobby l = r.createLobby(1, 1);
-            String code = l.getLobbyCode();
+            LobbyCreated l = r.createLobby(1, 1);
+            String code = l.lobbyCode;
             codes.put(code, codes.getOrDefault(code, 0) + 1);
             assertTrue(codes.get(code) <= 1);
         }
