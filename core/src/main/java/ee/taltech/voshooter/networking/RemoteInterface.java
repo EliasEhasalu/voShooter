@@ -17,7 +17,9 @@ public interface RemoteInterface {
 
     /**
      * Create a lobby.
+     * @param numberOfPlayers Max number of players that can join the lobby.
+     * @param gameMode Gamemode of the match.
      * @return The created lobby.
      */
-    Lobby createLobby();
+    Lobby createLobby(int numberOfPlayers, int gameMode);
 }
