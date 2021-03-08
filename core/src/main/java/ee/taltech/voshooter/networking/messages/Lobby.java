@@ -6,9 +6,10 @@ import java.util.List;
 public class Lobby {
 
     private int maxUsers;
+    private int gameMode;
+    private String lobbyCode;
 
     private List<User> users = new ArrayList<>();
-    private String lobbyCode;
 
     /** Default constructor for serialization. */
     public Lobby() {
@@ -16,11 +17,13 @@ public class Lobby {
 
     /**
      * @param maxUsers The maximum amount of users that can be in this lobby.
+     * @param gameMode An integer representing the gamemode of this lobby.
      * @param lobbyCode The lobby code assigned to this lobby.
      */
-    public Lobby(int maxUsers, String lobbyCode) {
-        this.lobbyCode = lobbyCode;
+    public Lobby(int maxUsers, int gameMode, String lobbyCode) {
         this.maxUsers = maxUsers;
+        this.gameMode = gameMode;
+        this.lobbyCode = lobbyCode;
     }
 
     /**
@@ -55,6 +58,11 @@ public class Lobby {
     /** @return  The amount of users in this lobby.*/
     public int getUserCount() {
         return users.size();
+    }
+
+    /** @return This lobby's gamemode. */
+    public int getGameMode() {
+        return gameMode;
     }
 
     /**
