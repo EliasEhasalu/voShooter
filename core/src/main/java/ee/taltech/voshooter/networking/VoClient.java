@@ -13,8 +13,8 @@ public class VoClient {
 
     public RemoteInterface remote;
     public User clientUser = new User();
+    public Client client;
 
-    Client client;
     ServerEntry serverEntry;
 
     private static final String HOST_ADDRESS = "localhost";
@@ -43,8 +43,6 @@ public class VoClient {
                 try {
                     client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
                 } catch (IOException ex) {
-                    ex.printStackTrace();
-                    client = null;
                     displayNoConnectionMessage();
                 }
             }
