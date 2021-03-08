@@ -100,7 +100,7 @@ public class VoShooter extends Game {
      */
     public void createNetworkClient() {
         if (client == null || !client.isConnected()) {
-            client = new VoClient();
+            client = new VoClient(this);
         }
         try {
             TimeUnit.SECONDS.sleep(1);
