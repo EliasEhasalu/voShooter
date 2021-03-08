@@ -1,5 +1,7 @@
 package ee.taltech.voshooter.networking;
 
+import ee.taltech.voshooter.networking.messages.LobbyCreated;
+
 public interface RemoteInterface {
 
     /**
@@ -12,6 +14,7 @@ public interface RemoteInterface {
      * Create a lobby.
      * @param numberOfPlayers Max number of players that can join the lobby.
      * @param gameMode Gamemode of the match.
+     * @return A message object containing the lobby code string.
      */
-    void createLobby(int numberOfPlayers, int gameMode);
+    LobbyCreated createLobby(int numberOfPlayers, int gameMode);
 }

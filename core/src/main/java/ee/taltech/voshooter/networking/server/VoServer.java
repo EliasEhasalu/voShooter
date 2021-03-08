@@ -16,6 +16,7 @@ import com.esotericsoftware.minlog.Log;
 import ee.taltech.voshooter.networking.ClientInterface;
 import ee.taltech.voshooter.networking.Network;
 import ee.taltech.voshooter.networking.RemoteInterface;
+import ee.taltech.voshooter.networking.messages.LobbyCreated;
 import ee.taltech.voshooter.networking.messages.User;
 
 public class VoServer {
@@ -110,15 +111,22 @@ public class VoServer {
         }
 
         /**
-         * @param numberOfPlayers The desired max amount of players in the lobby.
+         * @param maxPlayers The desired max amount of players in the lobby.
          * @param gameMode The desired gamemode for the lobby.
+         * @return A response containing the lobby code and other parameters.
          */
-        public void createLobby(int numberOfPlayers, int gameMode) {
-            Lobby newLobby = new Lobby(numberOfPlayers, gameMode, generateLobbyCode());
+        public LobbyCreated createLobby(int maxPlayers, int gameMode) {
+            Lobby newLobby = new Lobby(maxPlayers, gameMode, generateLobbyCode());
             lobbies.add(newLobby);
             newLobby.addUser(this);
             newLobby.setHost(this);
             currentLobby = newLobby;
+
+            LobbyCreated response = new LobbyCreated();
+            response.maxPlayers = maxPlayers;
+            response.gameMode = gameMode;
+            response.lobbyCode = newLobby.getLobbyCode();
+            return response;
         }
 
         /** Have the user leave the lobby they are currently in. */
