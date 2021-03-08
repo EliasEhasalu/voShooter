@@ -110,7 +110,7 @@ public class JoinGameScreen implements Screen {
                     parent.createNetworkClient();
                     if (parent.client.isConnected()) {
                         parent.client.remote.setUserName(playerName.getText().trim());
-                        parent.client.clientUser.setName(playerName.getText().trim());
+                        parent.gameState.clientUser.setName(playerName.getText().trim());
                         LobbyJoined response = parent.client.remote.joinLobby(gameCode.getText());
                         if (response.wasSuccessful) {
                             parent.changeScreen(VoShooter.Screen.LOBBY);
