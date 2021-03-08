@@ -87,6 +87,6 @@ public class VoShooter extends Game {
      * with the server.
      */
     public void createNetworkClient() {
-        client = new VoClient();
+        if (client == null) client = new VoClient();
     }
 }
