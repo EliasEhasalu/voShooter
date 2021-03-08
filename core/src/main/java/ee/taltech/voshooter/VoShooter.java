@@ -1,6 +1,8 @@
 package ee.taltech.voshooter;
 
 
+import java.util.concurrent.TimeUnit;
+
 import com.badlogic.gdx.Game;
 
 import ee.taltech.voshooter.networking.VoClient;
@@ -95,5 +97,10 @@ public class VoShooter extends Game {
      */
     public void createNetworkClient() {
         if (client == null) client = new VoClient();
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

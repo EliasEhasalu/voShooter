@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ee.taltech.voshooter.VoShooter.Screen.MAIN;
-import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
 public class LobbyScreen implements Screen {
 
