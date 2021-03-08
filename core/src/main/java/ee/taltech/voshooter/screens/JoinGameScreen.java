@@ -14,15 +14,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 public class JoinGameScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
-    private List<HashMap<String, String>> gameList;
     private TextButton join;
     private Label nameLengthCheck;
     private boolean isNameGood = false;
@@ -35,7 +30,6 @@ public class JoinGameScreen implements Screen {
      */
     public JoinGameScreen(VoShooter parent) {
         this.parent = parent;
-        gameList = getGamesFromServer();
 
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
@@ -92,7 +86,6 @@ public class JoinGameScreen implements Screen {
         table.add(join).fill().maxWidth(234);
         table.row().pad(10, 0, 0, 0);
         bottomTable.add(back).left().pad(0, 0, 0, 10);
-        bottomTable.add(refresh).right();
         table.add(bottomTable).fill();
 
         // Add button functionality.
@@ -101,17 +94,9 @@ public class JoinGameScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (isNameGood && isCodeGood) {
                     parent.createNetworkClient();
-                    parent.client.remote.setName(playerName.getText().trim());
+                    parent.client.remote.setUserName(playerName.getText().trim());
                     parent.changeScreen(VoShooter.Screen.LOBBY);
                 }
-            }
-        });
-
-        refresh.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                gameList.clear();
-                gameList = getGamesFromServer();
             }
         });
 
