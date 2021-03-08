@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.Game;
 
+import ee.taltech.voshooter.gamestate.GameState;
 import ee.taltech.voshooter.networking.VoClient;
 import ee.taltech.voshooter.screens.CreateGameScreen;
 import ee.taltech.voshooter.screens.JoinGameScreen;
@@ -25,6 +26,7 @@ public class VoShooter extends Game {
     private JoinGameScreen joinGameScreen;
     private LobbyScreen lobbyScreen;
     public VoClient client;
+    public GameState gameState;
 
     public enum Screen {
         LOADING,
@@ -42,6 +44,7 @@ public class VoShooter extends Game {
     @Override
     public void create() {
         preferences = new AppPreferences();
+        gameState = new GameState();
         changeScreen(VoShooter.Screen.LOADING);
     }
 

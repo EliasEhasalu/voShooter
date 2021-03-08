@@ -10,6 +10,7 @@ import ee.taltech.voshooter.rendering.Drawable;
 public class GameState {
 
     private List<Entity> entities = new ArrayList<>();
+    public ClientLobby currentLobby = new ClientLobby();
 
     /**
      * @return The list of drawable entities.

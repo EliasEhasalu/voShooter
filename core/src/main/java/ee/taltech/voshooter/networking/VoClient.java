@@ -63,7 +63,6 @@ public class VoClient {
          */
         @Override
         public void updateLobbyUsers(LobbyUserUpdate update) {
-            // TODO placeholder
         }
     }
 }

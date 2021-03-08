@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ee.taltech.voshooter.VoShooter.Screen.MAIN;
+import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
 public class LobbyScreen implements Screen {
 
@@ -58,6 +59,16 @@ public class LobbyScreen implements Screen {
         TextButton startGame = new TextButton("Start", skin);
         if (!parent.client.clientUser.isHost()) startGame.setVisible(false);
 
+        for (int i = 0; i < 8; i++) {
+            Label playerName = new Label("", skin);
+            if (i < parent.gameState.currentLobby.getUsersCount()) {
+                playerName.setText(parent.gameState.currentLobby.getUsers().get(i).getName());
+            } else if (i < parent.gameState.currentLobby.getMaxUsers()) {
+                playerName.setText("EMPTY SLOT");
+            }
+            playerNameLabels.add(playerName);
+        }
+
         // Add the objects to the table.
         table.add(lobbyTitleLabel);
         table.row();
@@ -66,6 +77,16 @@ public class LobbyScreen implements Screen {
             table.row().pad(10, 0, 0, 0);
         }
         table.add(leaveButton);
+
+        // Add button functionality.
+        leaveButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                parent.gameState.currentLobby.clearLobby();
+                playerNameLabels.clear();
+                parent.changeScreen(MENU);
+            }
+        });
 
         startGame.addListener(new ChangeListener() {
             @Override
