@@ -38,7 +38,6 @@ public class VoShooter extends Game {
     public void create() {
         preferences = new AppPreferences();
         changeScreen(VoShooter.Screen.LOADING);
-        client = new VoClient();
     }
 
     /**
