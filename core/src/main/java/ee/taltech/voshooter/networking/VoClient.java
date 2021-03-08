@@ -15,8 +15,8 @@ public class VoClient {
     public RemoteInterface remote;
     public User clientUser = new User();
     public VoShooter parent;
+    public Client client;
 
-    Client client;
     ServerEntry serverEntry;
 
     private static final String HOST_ADDRESS = "localhost";
@@ -47,15 +47,18 @@ public class VoClient {
                 try {
                     client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
                 } catch (IOException ex) {
-                    ex.printStackTrace();
-                    System.exit(1);
+                    displayNoConnectionMessage();
                 }
             }
         }.start();
     }
 
-    private class ServerEntry implements ClientInterface {
+    /** Display a message when unable to connect to the server. */
+    private void displayNoConnectionMessage() {
+        // Todo.
+    }
 
+    private class ServerEntry implements ClientInterface {
         /**
          * Construct the server entry.
          */

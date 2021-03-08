@@ -125,11 +125,7 @@ public class VoServer {
             newLobby.setHost(this);
             currentLobby = newLobby;
 
-            LobbyCreated response = new LobbyCreated();
-            response.maxPlayers = maxPlayers;
-            response.gameMode = gameMode;
-            response.lobbyCode = newLobby.getLobbyCode();
-            return response;
+            return new LobbyCreated(maxPlayers, gameMode, newLobby.getLobbyCode());
         }
 
         /**
@@ -141,7 +137,7 @@ public class VoServer {
             boolean successful = false;
 
             for (Lobby lobby : lobbies.values()) {
-                if (lobby.getLobbyCode().equals(lobbyCode)) {
+                if (lobby.getLobbyCode().equalsIgnoreCase(lobbyCode)) {
                     lobby.addUser(this);
                     currentLobby = lobby;
                     successful = true;
@@ -157,7 +153,7 @@ public class VoServer {
 
         /** Have the user leave the lobby they are currently in. */
         public void leaveLobby() {
-            currentLobby.removeUser(this);
+            currentLobby.removeUser(this);  // Also notifies all users in lobby.
             currentLobby = null;
         }
 
@@ -176,7 +172,7 @@ public class VoServer {
          */
         public void purge() {
             if (currentLobby != null) {
-                currentLobby.removeUser(this);
+                currentLobby.removeUser(this);  // Also notifies all users in lobby.
             }
             connectedUsers.remove(this);
         }

@@ -33,6 +33,21 @@ public class Lobby {
     }
 
     /**
+     * Send messages about players leaving/joining the lobby
+     * to users in this lobby.
+     */
+    private void sendLobbyStatusUpdates() {
+        // Collect current User objects.
+        List<User> currentUsers = users.stream()
+            .map(Remote::getUser)
+            .collect(Collectors.toList());
+
+        // Send the update message to all users in this lobby.
+        users.stream()
+            .forEach(u -> u.client.updateLobbyUsers(new LobbyUserUpdate(currentUsers)));
+    }
+
+    /**
      * Add a user to this lobby.
      * @param user The user to add.
      * @return Whether the adding was successful.
@@ -40,6 +55,7 @@ public class Lobby {
     public boolean addUser(Remote user) {
         if (!users.contains(user) && users.size() < maxUsers) {
             users.add(user);
+            sendLobbyStatusUpdates();
             return true;
         }
         return false;
@@ -52,16 +68,7 @@ public class Lobby {
     public void removeUser(Remote user) {
         if (users.contains(user)) {
             users.remove(user);
-
-            // Construct the update message.
-            LobbyUserUpdate update = new LobbyUserUpdate();
-            for (Remote u : users) {
-                update.users.add(u.getUser());
-            }
-            // Send the update message to all users in this lobby.
-            for (Remote u : users) {
-                u.client.updateLobbyUsers(update);
-            }
+            sendLobbyStatusUpdates();
         }
     }
 
