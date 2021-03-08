@@ -15,7 +15,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.LobbyJoined;
 
-import java.util.Locale;
 
 public class JoinGameScreen implements Screen {
 

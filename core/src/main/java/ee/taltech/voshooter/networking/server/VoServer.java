@@ -151,7 +151,7 @@ public class VoServer {
 
             LobbyJoined response = new LobbyJoined();
             response.wasSuccessful = successful;
-            response.users = currentLobby.getUsers();
+            if (successful) response.users = currentLobby.getUsers();
             return response;
         }
 

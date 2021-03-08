@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
-import ee.taltech.voshooter.networking.messages.User;
 
 import static ee.taltech.voshooter.VoShooter.Screen.LOBBY;
 import static ee.taltech.voshooter.VoShooter.Screen.MENU;

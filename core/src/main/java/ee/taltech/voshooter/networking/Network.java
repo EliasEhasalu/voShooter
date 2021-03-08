@@ -1,12 +1,14 @@
 package ee.taltech.voshooter.networking;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
 import ee.taltech.voshooter.networking.messages.LobbyCreated;
+import ee.taltech.voshooter.networking.messages.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.LobbyUserUpdate;
 
@@ -32,13 +34,16 @@ public final class Network {
 
         // Register all classes transported over the connection.
         kryo.register(String[].class);
+        kryo.register(List.class);
         kryo.register(String.class);
         kryo.register(ArrayList.class);
+        kryo.register(boolean.class);
 
         kryo.register(RemoteInterface.class);
         kryo.register(ClientInterface.class);
         kryo.register(LobbyUserUpdate.class);
         kryo.register(LobbyCreated.class);
+        kryo.register(LobbyJoined.class);
         kryo.register(User.class);
     }
 }
