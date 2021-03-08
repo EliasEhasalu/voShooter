@@ -55,7 +55,6 @@ public class JoinGameScreen implements Screen {
 
         join = new TextButton("Join lobby", skin);
         TextButton back = new TextButton("Back", skin);
-        TextButton refresh = new TextButton("Refresh", skin);
 
         // Player name field and label.
         Table nameTable = new Table();
