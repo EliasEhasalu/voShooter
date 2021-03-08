@@ -58,7 +58,7 @@ public class Lobby {
             }
             // Send the update message to all users in this lobby.
             for (Remote u : users) {
-                u.client.updateLobby(update);
+                u.client.updateLobbyUsers(update);
             }
         }
     }

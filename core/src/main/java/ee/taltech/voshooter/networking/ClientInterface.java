@@ -14,5 +14,5 @@ public interface ClientInterface {
      * object, which contains a list of User objects that are now in the lobby.
      * @param update A list of user objects currently in the lobby.
      */
-    void lobbyUserUpdate(LobbyUserUpdate update);
+    void updateLobbyUsers(LobbyUserUpdate update);
 }
