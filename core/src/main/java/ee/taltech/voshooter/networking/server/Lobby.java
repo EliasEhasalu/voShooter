@@ -2,8 +2,10 @@ package ee.taltech.voshooter.networking.server;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ee.taltech.voshooter.networking.messages.LobbyUserUpdate;
+import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.server.VoServer.Remote;
 
 public class Lobby {
@@ -91,8 +93,10 @@ public class Lobby {
     /**
      * @return The list of users in this lobby.
      */
-    public List<Remote> getUsers() {
-        return users;
+    public List<User> getUsers() {
+        return users.stream()
+            .map(Remote::getUser)
+            .collect(Collectors.toList());
     }
 
     /** @return The code for this lobby. */
