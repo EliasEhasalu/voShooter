@@ -122,9 +122,7 @@ public class CreateGameScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (!playerNameField.getText().equals("")
                         && !playerNameField.getText().replace(" ", "").equals("")) {
-                    if (parent.client == null) {
-                        parent.client = new VoClient();
-                    }
+                    parent.createNetworkClient();
                     parent.client.remote.setUserName(playerNameField.getText());
                     parent.client.remote.createLobby(playerCount, gamemode);
                     parent.changeScreen(LOBBY);
