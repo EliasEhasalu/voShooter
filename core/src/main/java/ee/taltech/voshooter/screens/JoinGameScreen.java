@@ -13,6 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.networking.messages.LobbyJoined;
+
+import java.util.Locale;
 
 public class JoinGameScreen implements Screen {
 
@@ -94,7 +97,15 @@ public class JoinGameScreen implements Screen {
                 if (isNameGood && isCodeGood) {
                     parent.createNetworkClient();
                     parent.client.remote.setUserName(playerName.getText().trim());
-                    parent.changeScreen(VoShooter.Screen.LOBBY);
+                    parent.client.clientUser.setName(playerName.getText().trim());
+                    LobbyJoined response = parent.client.remote.joinLobby(gameCode.getText());
+                    if (response.wasSuccessful) {
+                        parent.changeScreen(VoShooter.Screen.LOBBY);
+                    } else {
+                        gameCodeCheck.setText("Bad code");
+                        gameCodeCheck.setColor(255, 0, 0, 255);
+                        isCodeGood = false;
+                    }
                 }
             }
         });

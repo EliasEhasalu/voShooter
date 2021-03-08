@@ -57,9 +57,12 @@ public class VoClient {
         ServerEntry() {
         }
 
+        /**
+         * Placeholder.
+         * @param update A list of user objects currently in the lobby.
+         */
         @Override
         public void updateLobbyUsers(LobbyUserUpdate update) {
-
         }
     }
 }

@@ -19,6 +19,7 @@ import ee.taltech.voshooter.networking.ClientInterface;
 import ee.taltech.voshooter.networking.Network;
 import ee.taltech.voshooter.networking.RemoteInterface;
 import ee.taltech.voshooter.networking.messages.LobbyCreated;
+import ee.taltech.voshooter.networking.messages.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.User;
 
 public class VoServer {
