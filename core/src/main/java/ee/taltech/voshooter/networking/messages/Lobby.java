@@ -5,21 +5,35 @@ import java.util.List;
 
 public class Lobby {
 
+    private int maxUsers;
+
     private List<User> users = new ArrayList<>();
-    private String lobbyCode = "";
+    private String lobbyCode;
+
+    /** Default constructor for serialization. */
+    public Lobby() {
+    }
 
     /**
-     * Default constructor for serialization.
+     * @param maxUsers The maximum amount of users that can be in this lobby.
+     * @param lobbyCode The lobby code assigned to this lobby.
      */
-    public Lobby() {
+    public Lobby(int maxUsers, String lobbyCode) {
+        this.lobbyCode = lobbyCode;
+        this.maxUsers = maxUsers;
     }
 
     /**
      * Add a user to this lobby.
      * @param user The user to add.
+     * @return Whether the adding was successful.
      */
-    public void addUser(User user) {
-        if (!users.contains(user)) users.add(user);
+    public boolean addUser(User user) {
+        if (!users.contains(user) && users.size() < maxUsers) {
+            users.add(user);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -53,10 +67,5 @@ public class Lobby {
     /** @return The code for this lobby. */
     public String getLobbyCode() {
         return lobbyCode;
-    }
-
-    /** @param code The code to set this lobby's code to. */
-    public void setLobbyCode(String code) {
-        lobbyCode = code;
     }
 }

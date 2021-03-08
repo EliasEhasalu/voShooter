@@ -68,8 +68,7 @@ public class VoServer {
 
         private ClientInterface client;
 
-        private int timesPinged = 0;
-        private User user;
+        private User user = new User();
         private Lobby currentLobby;
 
         /**
@@ -78,22 +77,14 @@ public class VoServer {
         public Remote() {
             new ObjectSpace(this).register(Network.REMOTE, this);
             client = ObjectSpace.getRemoteObject(this, Network.SERVER_ENTRY, ClientInterface.class);
-
-            user = new User();
         }
 
         /**
-         * @return The amount of times this user has pinged the server.
+         * Set the User's name.
+         * @param name The name to set the User's name to.
          */
-        public int ping() {
-            return timesPinged++;
-        }
-
-        /**
-         * @return A list of available lobbies.
-         */
-        public List<Lobby> getLobbies() {
-            return lobbies;
+        public void setUserName(String name) {
+            user.setName(name);
         }
 
         /**
@@ -101,16 +92,14 @@ public class VoServer {
          */
         public Lobby createLobby() {
             Lobby newLobby = new Lobby();
-            newLobby.setLobbyCode(generateLobbyCode());
             lobbies.add(newLobby);
             newLobby.addUser(user);
             currentLobby = newLobby;
             return newLobby;
         }
 
-        /**
-         * @return A unique lobby code for a newly created lobby.
-         */
+
+        /** @return A unique lobby code for a newly created lobby. */
         private String generateLobbyCode() {
             String abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             String attempt = "";
@@ -131,6 +120,10 @@ public class VoServer {
                 break;
             }
             return attempt;
+        }
+
+        /** Have the user leave the lobby they are currently in. */
+        public void leaveLobby() {
         }
 
         /**
