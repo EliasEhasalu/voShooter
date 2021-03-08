@@ -2,7 +2,9 @@ package ee.taltech.voshooter.networking.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,7 +29,7 @@ public class VoServer {
     private Random rand = new Random();
 
     private List<Remote> connectedUsers = new ArrayList<>();
-    private List<Lobby> lobbies = new ArrayList<>();
+    private Map<String, Lobby> lobbies = new HashMap<String, Lobby>();
 
     /**
      * Bootstrap the server upon instantiation.
@@ -90,7 +92,7 @@ public class VoServer {
                     attempt += abc.charAt(rand.ints(0, abc.length()).findFirst().getAsInt());
                 }
 
-                Set<String> codes = lobbies.stream()
+                Set<String> codes = lobbies.values().stream()
                     .map(Lobby::getLobbyCode)
                     .collect(Collectors.toSet());
 
@@ -118,7 +120,7 @@ public class VoServer {
          */
         public LobbyCreated createLobby(int maxPlayers, int gameMode) {
             Lobby newLobby = new Lobby(maxPlayers, gameMode, generateLobbyCode());
-            lobbies.add(newLobby);
+            lobbies.put(newLobby.getLobbyCode(), newLobby);
             newLobby.addUser(this);
             newLobby.setHost(this);
             currentLobby = newLobby;
@@ -127,6 +129,29 @@ public class VoServer {
             response.maxPlayers = maxPlayers;
             response.gameMode = gameMode;
             response.lobbyCode = newLobby.getLobbyCode();
+            return response;
+        }
+
+        /**
+         * Have the user join the specified lobby.
+         * @param lobbyCode The code of the lobby being joined.
+         * @return A LobbyJoined response object.
+         */
+        public LobbyJoined joinLobby(String lobbyCode) {
+            boolean successful = false;
+
+            for (Lobby lobby : lobbies.values()) {
+                if (lobby.getLobbyCode().equals(lobbyCode)) {
+                    lobby.addUser(this);
+                    currentLobby = lobby;
+                    successful = true;
+                    break;
+                }
+            }
+
+            LobbyJoined response = new LobbyJoined();
+            response.wasSuccessful = successful;
+            response.users = currentLobby.getUsers();
             return response;
         }
 
