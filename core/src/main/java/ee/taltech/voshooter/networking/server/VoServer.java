@@ -23,6 +23,8 @@ public class VoServer {
 
     Server server;
 
+    private Random rand = new Random();
+
     private List<Remote> connectedUsers = new ArrayList<>();
     private List<Lobby> lobbies = new ArrayList<>();
 
@@ -69,7 +71,6 @@ public class VoServer {
         private int timesPinged = 0;
         private User user;
         private Lobby currentLobby;
-        private Random rand = new Random();
 
         /**
          * Construct this user object.
