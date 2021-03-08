@@ -31,6 +31,7 @@ public final class Network {
 
         // Register all classes transported over the connection.
         kryo.register(String[].class);
+        kryo.register(String.class);
         kryo.register(ArrayList.class);
 
         kryo.register(RemoteInterface.class);
