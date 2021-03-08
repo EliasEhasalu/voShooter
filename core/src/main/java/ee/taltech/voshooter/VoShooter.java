@@ -99,11 +99,12 @@ public class VoShooter extends Game {
      * with the server.
      */
     public void createNetworkClient() {
-        if (client == null) client = new VoClient(this);
+        if (client == null || !client.isConnected()) {
+            client = new VoClient();
+        }
         try {
             TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ignored) {
         }
     }
 }
