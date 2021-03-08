@@ -41,7 +41,6 @@ public class VoShooter extends Game {
     public void create() {
         preferences = new AppPreferences();
         changeScreen(VoShooter.Screen.LOADING);
-        client = new VoClient();
     }
 
     /**
@@ -88,5 +87,13 @@ public class VoShooter extends Game {
     */
     public AppPreferences getPreferences() {
         return preferences;
+    }
+
+    /**
+     * Used to instantiate a new VoClient object for communication
+     * with the server.
+     */
+    public void createNetworkClient() {
+        if (client == null) client = new VoClient();
     }
 }

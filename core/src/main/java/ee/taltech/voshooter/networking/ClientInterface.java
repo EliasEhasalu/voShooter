@@ -9,8 +9,16 @@ import ee.taltech.voshooter.networking.messages.User;
 public interface ClientInterface {
 
     /**
-     * Signal that a user left.
-     * @param user The user that left.
+     * A new user has joined the lobby you're currently in.
+     * Update the lobby screen accordingly using the provided User object.
+     * @param user The user that joined the lobby.
      */
-   void userLeft(User user);
+    void userJoinedLobby(User user);
+
+    /**
+     * A user has left the lobby you're currently in.
+     * Update the lobby screen accordingly using the provided User object.
+     * @param user The user that left the lobby.
+     */
+    void userLeftLobby(User user);
 }
