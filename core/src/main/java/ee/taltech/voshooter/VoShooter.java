@@ -81,4 +81,12 @@ public class VoShooter extends Game {
     public AppPreferences getPreferences() {
         return preferences;
     }
+
+    /**
+     * Used to instantiate a new VoClient object for communication
+     * with the server.
+     */
+    public void createNetworkClient() {
+        client = new VoClient();
+    }
 }
