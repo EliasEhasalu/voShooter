@@ -6,8 +6,8 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
-import ee.taltech.voshooter.networking.messages.Lobby;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.LobbyUserUpdate;
 
 public final class Network {
 
@@ -35,7 +35,7 @@ public final class Network {
 
         kryo.register(RemoteInterface.class);
         kryo.register(ClientInterface.class);
+        kryo.register(LobbyUserUpdate.class);
         kryo.register(User.class);
-        kryo.register(Lobby.class);
     }
 }

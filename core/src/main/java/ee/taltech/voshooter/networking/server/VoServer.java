@@ -16,7 +16,6 @@ import com.esotericsoftware.minlog.Log;
 import ee.taltech.voshooter.networking.ClientInterface;
 import ee.taltech.voshooter.networking.Network;
 import ee.taltech.voshooter.networking.RemoteInterface;
-import ee.taltech.voshooter.networking.messages.Lobby;
 import ee.taltech.voshooter.networking.messages.User;
 
 public class VoServer {
@@ -66,9 +65,9 @@ public class VoServer {
 
     public class Remote extends Connection implements RemoteInterface {
 
-        private ClientInterface client;
+        protected ClientInterface client;
 
-        private User user = new User();
+        private String name;
         private Lobby currentLobby;
 
         /**
@@ -78,28 +77,6 @@ public class VoServer {
             new ObjectSpace(this).register(Network.REMOTE, this);
             client = ObjectSpace.getRemoteObject(this, Network.SERVER_ENTRY, ClientInterface.class);
         }
-
-        /**
-         * Set the User's name.
-         * @param name The name to set the User's name to.
-         */
-        public void setUserName(String name) {
-            user.setName(name);
-        }
-
-        /**
-         * @return The created lobby.
-         * @param numberOfPlayers The desired max amount of players in the lobby.
-         * @param gameMode The desired gamemode for the lobby.
-         */
-        public Lobby createLobby(int numberOfPlayers, int gameMode) {
-            Lobby newLobby = new Lobby(numberOfPlayers, gameMode, generateLobbyCode());
-            lobbies.add(newLobby);
-            newLobby.addUser(user);
-            currentLobby = newLobby;
-            return newLobby;
-        }
-
 
         /** @return A unique lobby code for a newly created lobby. */
         private String generateLobbyCode() {
@@ -124,8 +101,40 @@ public class VoServer {
             return attempt;
         }
 
+        /**
+         * Set the User's name.
+         * @param name The name to set the User's name to.
+         */
+        public void setUserName(String name) {
+            this.name = name;
+        }
+
+        /**
+         * @param numberOfPlayers The desired max amount of players in the lobby.
+         * @param gameMode The desired gamemode for the lobby.
+         */
+        public void createLobby(int numberOfPlayers, int gameMode) {
+            Lobby newLobby = new Lobby(numberOfPlayers, gameMode, generateLobbyCode());
+            lobbies.add(newLobby);
+            newLobby.addUser(this);
+            newLobby.setHost(this);
+            currentLobby = newLobby;
+        }
+
         /** Have the user leave the lobby they are currently in. */
         public void leaveLobby() {
+            currentLobby.removeUser(this);
+            currentLobby = null;
+        }
+
+        /**
+         * @return A User object representation of this Remote object.
+         */
+        public User getUser() {
+            User u = new User();
+            u.setName(name);
+            u.setIsHost(currentLobby.getHost() == this);
+            return u;
         }
 
         /**
@@ -133,7 +142,7 @@ public class VoServer {
          */
         public void purge() {
             if (currentLobby != null) {
-                currentLobby.removeUser(user);
+                currentLobby.removeUser(this);
             }
             connectedUsers.remove(this);
         }

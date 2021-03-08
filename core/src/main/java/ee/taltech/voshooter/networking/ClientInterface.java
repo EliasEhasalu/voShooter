@@ -1,6 +1,6 @@
 package ee.taltech.voshooter.networking;
 
-import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.LobbyUserUpdate;
 
 /**
  * This interface will need to be implemented by VoClient.
@@ -9,16 +9,10 @@ import ee.taltech.voshooter.networking.messages.User;
 public interface ClientInterface {
 
     /**
-     * A new user has joined the lobby you're currently in.
-     * Update the lobby screen accordingly using the provided User object.
-     * @param user The user that joined the lobby.
+     * A user has either joined or left the lobby you're currently in.
+     * Update the lobby screen accordingly using the provided LobbyUserUpdate
+     * object, which contains a list of User objects that are now in the lobby.
+     * @param update A list of user objects currently in the lobby.
      */
-    void userJoinedLobby(User user);
-
-    /**
-     * A user has left the lobby you're currently in.
-     * Update the lobby screen accordingly using the provided User object.
-     * @param user The user that left the lobby.
-     */
-    void userLeftLobby(User user);
+    void lobbyUserUpdate(LobbyUserUpdate update);
 }

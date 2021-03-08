@@ -5,13 +5,13 @@ import java.io.IOException;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
-import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.UpdateLobbyPlayers;
 
 
 public class VoClient {
 
     public RemoteInterface remote;
-    public User clientUser;
+    public UpdateLobbyPlayers clientUser;
 
     Client client;
     ServerEntry serverEntry;
@@ -50,7 +50,6 @@ public class VoClient {
     }
 
     private static class ServerEntry implements ClientInterface {
-
         /**
          * Construct the server entry.
          */
