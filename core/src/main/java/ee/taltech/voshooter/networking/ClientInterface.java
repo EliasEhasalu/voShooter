@@ -8,9 +8,4 @@ import ee.taltech.voshooter.networking.messages.User;
  */
 public interface ClientInterface {
 
-    /**
-     * Signal that a user left.
-     * @param user The user that left.
-     */
-   void userLeft(User user);
 }

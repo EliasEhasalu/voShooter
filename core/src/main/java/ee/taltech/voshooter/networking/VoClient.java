@@ -55,12 +55,5 @@ public class VoClient {
          */
         ServerEntry() {
         }
-
-        /**
-         * @param user The user that left.
-         */
-        public void userLeft(User user) {
-            System.out.println(String.format("User %s left.", user.getName()));
-        }
     }
 }

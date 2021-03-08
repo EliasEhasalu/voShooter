@@ -100,9 +100,6 @@ public class VoServer {
             if (currentLobby != null) {
                 currentLobby.removeUser(user);
             }
-            for (Remote con : connectedUsers) {
-                con.client.userLeft(this.user);
-            }
             connectedUsers.remove(this);
         }
     }
