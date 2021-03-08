@@ -89,9 +89,11 @@ public class VoServer {
 
         /**
          * @return The created lobby.
+         * @param numberOfPlayers The desired max amount of players in the lobby.
+         * @param gameMode The desired gamemode for the lobby.
          */
-        public Lobby createLobby() {
-            Lobby newLobby = new Lobby();
+        public Lobby createLobby(int numberOfPlayers, int gameMode) {
+            Lobby newLobby = new Lobby(numberOfPlayers, gameMode, generateLobbyCode());
             lobbies.add(newLobby);
             newLobby.addUser(user);
             currentLobby = newLobby;

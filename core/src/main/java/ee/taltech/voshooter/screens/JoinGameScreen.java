@@ -102,7 +102,7 @@ public class JoinGameScreen implements Screen {
                 if (isNameGood && isCodeGood) {
                     parent.createNetworkClient();
                     parent.client.remote.setName(playerName.getText().trim());
-                    parent.changeScreen(VoShooter.Screen.LOBBIES);
+                    parent.changeScreen(VoShooter.Screen.LOBBY);
                 }
             }
         });
@@ -159,19 +159,6 @@ public class JoinGameScreen implements Screen {
                 }
             }
         });
-    }
-
-    /**
-     * Ask for a list of games from the server.
-     * @return List of current games.
-     */
-    private List<HashMap<String, String>> getGamesFromServer() {
-        List<HashMap<String, String>> gameList = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            HashMap<String, String> map = new HashMap<>();
-            gameList.add(map);
-        }
-        return gameList;
     }
 
     /**

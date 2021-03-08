@@ -22,7 +22,9 @@ public class User {
      */
     public void setIsHost(boolean isHost) {
         this.isHost = isHost;
+    }
 
+     /**
      * Set the name for this user.
      * @param name The name to set this user's name to.
      * @return Whether the set was successful.
