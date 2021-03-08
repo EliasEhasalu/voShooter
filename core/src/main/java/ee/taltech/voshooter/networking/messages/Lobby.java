@@ -66,6 +66,13 @@ public class Lobby {
     }
 
     /**
+     * @return This lobby's max users.
+     */
+    public int getMaxUsers() {
+        return maxUsers;
+    }
+
+    /**
      * @return The list of users in this lobby.
      */
     public List<User> getUsers() {
