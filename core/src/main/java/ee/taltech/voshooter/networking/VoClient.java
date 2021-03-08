@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
+import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.User;
 
@@ -13,6 +14,7 @@ public class VoClient {
 
     public RemoteInterface remote;
     public User clientUser = new User();
+    public VoShooter parent;
     public Client client;
 
     ServerEntry serverEntry;
@@ -22,8 +24,10 @@ public class VoClient {
 
     /**
      * Construct the client.
+     * @param parent A reference to the orchestrator object.
      */
-    public VoClient() {
+    public VoClient(VoShooter parent) {
+        this.parent = parent;
         client = new Client();
         client.start();
 
@@ -54,7 +58,7 @@ public class VoClient {
         // Todo.
     }
 
-    private static class ServerEntry implements ClientInterface {
+    private class ServerEntry implements ClientInterface {
         /**
          * Construct the server entry.
          */
@@ -67,6 +71,7 @@ public class VoClient {
          */
         @Override
         public void updateLobbyUsers(LobbyUserUpdate update) {
+            parent.gameState.currentLobby.setUsers(update.users);
         }
     }
 }
