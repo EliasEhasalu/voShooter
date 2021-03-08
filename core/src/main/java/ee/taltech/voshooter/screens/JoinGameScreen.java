@@ -5,12 +5,11 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
@@ -24,6 +23,11 @@ public class JoinGameScreen implements Screen {
     private VoShooter parent;
     private Stage stage;
     private List<HashMap<String, String>> gameList;
+    private TextButton join;
+    private Label nameLengthCheck;
+    private boolean isNameGood = false;
+    private Label gameCodeCheck;
+    private boolean isCodeGood = false;
 
     /**
      * Construct the menu screen.
@@ -51,39 +55,58 @@ public class JoinGameScreen implements Screen {
 
         // Add a table which will contain game creation settings.
         Table table = new Table();
-        Table gameTable = new Table();
         Table bottomTable = new Table();
-        ScrollPane scrollPane = new ScrollPane(gameTable);
         table.setFillParent(true);
         stage.addActor(table);
 
-        // Create the menu objects for our stage.
-        List<TextButton> joinButtons = new ArrayList<>();
-        List<Label> joinLabels = new ArrayList<>();
-        for (HashMap<String, String> map : gameList) {
-            TextButton button = new TextButton("Join", skin);
-            Label label = new Label("gameName - Players: 0/8", skin);
-            joinLabels.add(label);
-            joinButtons.add(button);
-        }
+        join = new TextButton("Join lobby", skin);
         TextButton back = new TextButton("Back", skin);
         TextButton refresh = new TextButton("Refresh", skin);
 
-        // Add the objects to the table.
-        for (int i = 0; i < joinButtons.size(); i++) {
-            gameTable.row().pad(10, 0, 0, 30);
-            Button button = joinButtons.get(i);
-            Label label = joinLabels.get(i);
-            gameTable.add(label).left();
-            gameTable.add(button).right();
-        }
-        table.add(scrollPane).width(600f).height(300f);
+        // Player name field and label.
+        Table nameTable = new Table();
+        Label enterName = new Label("Enter your username: ", skin);
+        TextField playerName = new TextField("", skin);
+        nameLengthCheck = new Label("Too short", skin);
+        nameLengthCheck.setColor(255, 0, 0, 255);
+
+        // Lobby code field and label.
+        Table codeTable = new Table();
+        Label enterCode = new Label("Enter lobby code: ", skin);
+        TextField gameCode = new TextField("", skin);
+        gameCodeCheck = new Label("Too short", skin);
+        gameCodeCheck.setColor(255, 0, 0, 255);
+
+        nameTable.add(enterName).left().pad(0, 0, 0, 10);
+        nameTable.add(playerName).right();
+        table.add(nameTable).fill();
         table.row().pad(10, 0, 0, 0);
-        bottomTable.add(back).left();
+        table.add(nameLengthCheck).fill();
+        table.row().pad(10, 0, 0, 0);
+        codeTable.add(enterCode).left().pad(0, 0, 0, 10);
+        codeTable.add(gameCode).right();
+        table.add(codeTable).fill();
+        table.row().pad(10, 0, 0, 0);
+        table.add(gameCodeCheck).fill();
+        table.row().pad(10, 0, 0, 0);
+        table.add(join).fill().maxWidth(234);
+        table.row().pad(10, 0, 0, 0);
+        bottomTable.add(back).left().pad(0, 0, 0, 10);
         bottomTable.add(refresh).right();
         table.add(bottomTable).fill();
 
         // Add button functionality.
+        join.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (isNameGood && isCodeGood) {
+                    parent.createNetworkClient();
+                    parent.client.remote.setName(playerName.getText().trim());
+                    parent.changeScreen(VoShooter.Screen.LOBBIES);
+                }
+            }
+        });
+
         refresh.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -98,14 +121,44 @@ public class JoinGameScreen implements Screen {
                 parent.changeScreen(VoShooter.Screen.MENU);
             }
         });
-        for (TextButton button : joinButtons) {
-            button.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    System.out.println("JOIN GAME");
+
+        playerName.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (playerName.getText().trim().length() >= 4) {
+                    nameLengthCheck.setText("Good name");
+                    nameLengthCheck.setColor(0, 255, 0, 255);
+                    isNameGood = true;
+                } else {
+                    nameLengthCheck.setText("Too short");
+                    nameLengthCheck.setColor(255, 0, 0, 255);
+                    isNameGood = false;
                 }
-            });
-        }
+            }
+        });
+
+        gameCode.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (gameCode.getText().length() < 6) {
+                    gameCodeCheck.setText("Too short");
+                    gameCodeCheck.setColor(255, 0, 0, 255);
+                    isCodeGood = false;
+                } else if (gameCode.getText().length() > 6) {
+                    gameCodeCheck.setText("Too long");
+                    gameCodeCheck.setColor(255, 0, 0, 255);
+                    isCodeGood = false;
+                } else if (!gameCode.getText().matches("^[a-zA-Z]*$")) {
+                    gameCodeCheck.setText("Only letters A-Z");
+                    gameCodeCheck.setColor(255, 0, 0, 255);
+                    isCodeGood = false;
+                } else {
+                    gameCodeCheck.setText("Good code");
+                    gameCodeCheck.setColor(0, 255, 0, 255);
+                    isCodeGood = true;
+                }
+            }
+        });
     }
 
     /**
@@ -113,7 +166,7 @@ public class JoinGameScreen implements Screen {
      * @return List of current games.
      */
     private List<HashMap<String, String>> getGamesFromServer() {
-        List<HashMap<String, String>> gameList = new ArrayList();
+        List<HashMap<String, String>> gameList = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             HashMap<String, String> map = new HashMap<>();
             gameList.add(map);

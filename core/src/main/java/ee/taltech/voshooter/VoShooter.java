@@ -28,7 +28,8 @@ public class VoShooter extends Game {
         PREFERENCES,
         MAIN,
         CREATE_GAME,
-        JOIN_GAME
+        JOIN_GAME,
+        LOBBIES
     }
 
     /**

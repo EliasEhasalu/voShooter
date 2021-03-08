@@ -11,6 +11,10 @@ public class AppPreferences {
     private static final String PREF_PLAYER_COUNT = "4";
     private static final String PREF_GAME_MODE = "gamemode";
 
+    /**
+     * Get preferences.
+     * @return preferences
+     */
     protected Preferences getPrefs() {
         return Gdx.app.getPreferences(PREFS_NAME);
     }
@@ -73,7 +77,7 @@ public class AppPreferences {
     }
 
     /**
-     * @return the gamemode
+     * @return the game mode
      */
     public float getGameMode() {
         return getPrefs().getFloat(PREF_GAME_MODE, 1);
