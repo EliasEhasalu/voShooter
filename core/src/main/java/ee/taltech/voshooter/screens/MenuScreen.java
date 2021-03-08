@@ -74,7 +74,7 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 parent.changeScreen(CREATE_GAME);
-                parent.client.remote.createLobby();
+                parent.client.remote.createLobby(1, 1);
             }
         });
 

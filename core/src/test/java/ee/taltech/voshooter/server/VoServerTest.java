@@ -45,13 +45,13 @@ public class VoServerTest {
 
     @Test
     void shouldCreateLobby() {
-        Lobby l = r.createLobby();
+        Lobby l = r.createLobby(1, 1);
         assertTrue(l instanceof Lobby);
     }
 
     @Test
     void createdLobbyShouldHaveCode() {
-        Lobby l = r.createLobby();
+        Lobby l = r.createLobby(1, 1);
 
         String code = l.getLobbyCode();
         assertEquals(LOBBY_CODE_LENGTH, code.length());
@@ -62,7 +62,7 @@ public class VoServerTest {
         Map<String, Integer> codes = new HashMap<String, Integer>();
 
         for (int i = 0; i < 10; i++) {
-            Lobby l = r.createLobby();
+            Lobby l = r.createLobby(1, 1);
             String code = l.getLobbyCode();
             codes.put(code, codes.getOrDefault(code, 0) + 1);
             assertTrue(codes.get(code) <= 1);
