@@ -74,7 +74,7 @@ public class AppPreferences {
     }
 
     /**
-     * @return the gamemode
+     * @return the game mode
      */
     public float getGameMode() {
         return getPrefs().getFloat(PREF_GAME_MODE, 1);
