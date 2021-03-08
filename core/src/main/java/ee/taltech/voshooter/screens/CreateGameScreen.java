@@ -2,26 +2,29 @@ package ee.taltech.voshooter.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.networking.VoClient;
 
+import static ee.taltech.voshooter.VoShooter.Screen.LOBBY;
 import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
 public class CreateGameScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
-    private Label playerCountIndicator;
-    private Label playerGameModeIndicator;
+    private int playerCount = 4;
+    private int gamemode = 1;
 
     /**
      * Construct the menu screen.
@@ -43,37 +46,49 @@ public class CreateGameScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         stage.clear();
 
+        // A Skin object defines the theme for menu objects.
+        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+
         // Add a table which will contain game creation settings.
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
-        // A Skin object defines the theme for menu objects.
-        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
-
         // Create the menu objects for our stage.
-        Label playerCount = new Label("Players: ", skin);
-        Label gameMode = new Label("Gamemode: ", skin);
+        Label createLobbyTitle = new Label("Create lobby", skin);
+        Label chooseNameLabel = new Label("Choose name:", skin);
+        Label incorrectPlayerName = new Label("Enter valid name", skin);
+        incorrectPlayerName.setVisible(false);
+        incorrectPlayerName.setColor(Color.RED);
+        Label playersLabel = new Label("Players:", skin);
+        Label playerCountLabel = new Label(String.valueOf(playerCount), skin);
+        Label gamemodeLabel = new Label("Gamemode: FFA", skin);
+        TextField playerNameField = new TextField("", skin);
+        playerNameField.setMaxLength(14);
+        stage.setKeyboardFocus(playerNameField);
+        TextButton playerCountDecrease = new TextButton("<", skin);
+        TextButton playerCountIncrease = new TextButton(">", skin);
         TextButton back = new TextButton("Back", skin);
-        TextButton createGame = new TextButton("Create game", skin);
-        Slider playerCountSlider = new Slider(0, 16, 1, false, skin);
-        Slider playerGameModeSlider = new Slider(1, 4, 1, false, skin);
-        playerCountIndicator = new Label(String.valueOf(playerCountSlider.getValue()), skin);
-        playerGameModeIndicator = new Label(String.valueOf(playerGameModeSlider.getValue()), skin);
+        TextButton createGame = new TextButton("Create", skin);
+        Table playerCountTable = new Table();
 
-        // Add the buttons to the table.
-        table.pad(100, 0, 0, 0);
-        table.add(playerCount).fillX().uniformX();
-        table.add(playerCountSlider).fillX().uniformX();
-        table.add(playerCountIndicator).fillX().uniformX().pad(0, 10, 0, 0);
-        table.row().pad(10, 0, 10, 0);
-        table.add(gameMode).fillX().uniformX();
-        table.add(playerGameModeSlider).fillX().uniformX();
-        table.add(playerGameModeIndicator).fillX().uniformX().pad(0, 10, 0, 0);
-        table.row().pad(10, 0, 10, 0);
-        table.add(createGame).fillX().uniformX().colspan(2);
-        table.row().pad(200, 0, 0, 0);
-        table.add(back).fillX().uniformX().colspan(2);
+        // Add the objects to the table.
+        table.add(createLobbyTitle).left();
+        table.row().pad(60, 0, 0, 0);
+        table.add(chooseNameLabel).left();
+        table.add(playerNameField).right();
+        table.add(incorrectPlayerName).padLeft(20);
+        table.row().pad(10, 0, 0, 0);
+        table.add(playersLabel).left();
+        table.add(playerCountTable).fillX();
+        playerCountTable.add(playerCountDecrease).left();
+        playerCountTable.add(playerCountLabel).center().fillX();
+        playerCountTable.add(playerCountIncrease).right();
+        table.row().pad(10, 0, 0, 0);
+        table.add(gamemodeLabel).left();
+        table.row().pad(100, 0, 0, 0);
+        table.add(back).left();
+        table.add(createGame).right();
 
         back.addListener(new ChangeListener() {
             @Override
@@ -82,25 +97,39 @@ public class CreateGameScreen implements Screen {
             }
         });
 
-        createGame.addListener(new ChangeListener() {
+        playerCountDecrease.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                parent.changeScreen(MENU);
+                if (playerCount > 2) {
+                    playerCount--;
+                    playerCountLabel.setText(String.valueOf(playerCount));
+                }
             }
         });
 
-        playerCountSlider.setValue(parent.getPreferences().getSoundVolume());
-        playerCountSlider.addListener(event ->  {
-            parent.getPreferences().setPlayerCount(playerCountSlider.getValue());
-            playerCountIndicator.setText(String.valueOf(playerCountSlider.getValue()));
-            return false;
+        playerCountIncrease.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (playerCount < 8) {
+                    playerCount++;
+                    playerCountLabel.setText(String.valueOf(playerCount));
+                }
+            }
         });
 
-        playerGameModeSlider.setValue(parent.getPreferences().getSoundVolume());
-        playerGameModeSlider.addListener(event ->  {
-            parent.getPreferences().setGameMode(playerGameModeSlider.getValue());
-            playerGameModeIndicator.setText(String.valueOf(playerGameModeSlider.getValue()));
-            return false;
+        createGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (!playerNameField.getText().equals("")
+                        && !playerNameField.getText().replace(" ", "").equals("")) {
+                    parent.createNetworkClient();
+                    parent.client.remote.setUserName(playerNameField.getText());
+                    parent.client.remote.createLobby(playerCount, gamemode);
+                    parent.changeScreen(LOBBY);
+                } else {
+                    incorrectPlayerName.setVisible(true);
+                }
+            }
         });
     }
 

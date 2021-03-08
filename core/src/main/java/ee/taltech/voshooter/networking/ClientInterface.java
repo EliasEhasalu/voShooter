@@ -8,4 +8,17 @@ import ee.taltech.voshooter.networking.messages.User;
  */
 public interface ClientInterface {
 
+    /**
+     * A new user has joined the lobby you're currently in.
+     * Update the lobby screen accordingly using the provided User object.
+     * @param user The user that joined the lobby.
+     */
+    void userJoinedLobby(User user);
+
+    /**
+     * A user has left the lobby you're currently in.
+     * Update the lobby screen accordingly using the provided User object.
+     * @param user The user that left the lobby.
+     */
+    void userLeftLobby(User user);
 }

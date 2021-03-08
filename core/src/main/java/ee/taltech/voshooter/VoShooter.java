@@ -7,6 +7,7 @@ import ee.taltech.voshooter.networking.VoClient;
 import ee.taltech.voshooter.screens.CreateGameScreen;
 import ee.taltech.voshooter.screens.JoinGameScreen;
 import ee.taltech.voshooter.screens.LoadingScreen;
+import ee.taltech.voshooter.screens.LobbyScreen;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.screens.MenuScreen;
 import ee.taltech.voshooter.screens.PreferencesScreen;
@@ -20,6 +21,7 @@ public class VoShooter extends Game {
     private AppPreferences preferences;
     private CreateGameScreen createGameScreen;
     private JoinGameScreen joinGameScreen;
+    private LobbyScreen lobbyScreen;
     public VoClient client;
 
     public enum Screen {
@@ -29,7 +31,7 @@ public class VoShooter extends Game {
         MAIN,
         CREATE_GAME,
         JOIN_GAME,
-        LOBBIES
+        LOBBY
     }
 
     /**
@@ -39,7 +41,6 @@ public class VoShooter extends Game {
     public void create() {
         preferences = new AppPreferences();
         changeScreen(VoShooter.Screen.LOADING);
-        client = new VoClient();
     }
 
     /**
@@ -72,6 +73,10 @@ public class VoShooter extends Game {
                 if (joinGameScreen == null) joinGameScreen = new JoinGameScreen(this);
                 setScreen(joinGameScreen);
                 break;
+            case LOBBY:
+                if (lobbyScreen == null) lobbyScreen = new LobbyScreen(this);
+                setScreen(lobbyScreen);
+                break;
             default:
                 // Noop.
         }
@@ -82,5 +87,13 @@ public class VoShooter extends Game {
     */
     public AppPreferences getPreferences() {
         return preferences;
+    }
+
+    /**
+     * Used to instantiate a new VoClient object for communication
+     * with the server.
+     */
+    public void createNetworkClient() {
+        if (client == null) client = new VoClient();
     }
 }

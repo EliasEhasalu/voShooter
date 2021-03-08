@@ -5,20 +5,38 @@ import java.util.List;
 
 public class Lobby {
 
+    private int maxUsers;
+    private int gameMode;
+    private String lobbyCode;
+
     private List<User> users = new ArrayList<>();
 
-    /**
-     * Default constructor for serialization.
-     */
+    /** Default constructor for serialization. */
     public Lobby() {
+    }
+
+    /**
+     * @param maxUsers The maximum amount of users that can be in this lobby.
+     * @param gameMode An integer representing the gamemode of this lobby.
+     * @param lobbyCode The lobby code assigned to this lobby.
+     */
+    public Lobby(int maxUsers, int gameMode, String lobbyCode) {
+        this.maxUsers = maxUsers;
+        this.gameMode = gameMode;
+        this.lobbyCode = lobbyCode;
     }
 
     /**
      * Add a user to this lobby.
      * @param user The user to add.
+     * @return Whether the adding was successful.
      */
-    public void addUser(User user) {
-        if (!users.contains(user)) users.add(user);
+    public boolean addUser(User user) {
+        if (!users.contains(user) && users.size() < maxUsers) {
+            users.add(user);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -42,10 +60,20 @@ public class Lobby {
         return users.size();
     }
 
+    /** @return This lobby's gamemode. */
+    public int getGameMode() {
+        return gameMode;
+    }
+
     /**
      * @return The list of users in this lobby.
      */
     public List<User> getUsers() {
         return users;
+    }
+
+    /** @return The code for this lobby. */
+    public String getLobbyCode() {
+        return lobbyCode;
     }
 }

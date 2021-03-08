@@ -5,12 +5,11 @@ import java.io.IOException;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
-import ee.taltech.voshooter.networking.messages.User;
-
 
 public class VoClient {
 
     public RemoteInterface remote;
+    public User clientUser;
 
     Client client;
     ServerEntry serverEntry;
