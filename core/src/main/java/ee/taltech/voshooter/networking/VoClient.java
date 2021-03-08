@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 public class VoClient {
 
     public RemoteInterface remote;
+    public User clientUser;
 
     Client client;
     ServerEntry serverEntry;

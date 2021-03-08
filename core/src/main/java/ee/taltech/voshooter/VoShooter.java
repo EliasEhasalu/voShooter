@@ -7,6 +7,7 @@ import ee.taltech.voshooter.networking.VoClient;
 import ee.taltech.voshooter.screens.CreateGameScreen;
 import ee.taltech.voshooter.screens.JoinGameScreen;
 import ee.taltech.voshooter.screens.LoadingScreen;
+import ee.taltech.voshooter.screens.LobbyScreen;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.screens.MenuScreen;
 import ee.taltech.voshooter.screens.PreferencesScreen;
@@ -20,6 +21,7 @@ public class VoShooter extends Game {
     private AppPreferences preferences;
     private CreateGameScreen createGameScreen;
     private JoinGameScreen joinGameScreen;
+    private LobbyScreen lobbyScreen;
     public VoClient client;
 
     public enum Screen {
@@ -28,7 +30,8 @@ public class VoShooter extends Game {
         PREFERENCES,
         MAIN,
         CREATE_GAME,
-        JOIN_GAME
+        JOIN_GAME,
+        LOBBY
     }
 
     /**
@@ -69,6 +72,10 @@ public class VoShooter extends Game {
             case JOIN_GAME:
                 if (joinGameScreen == null) joinGameScreen = new JoinGameScreen(this);
                 setScreen(joinGameScreen);
+                break;
+            case LOBBY:
+                if (lobbyScreen == null) lobbyScreen = new LobbyScreen(this);
+                setScreen(lobbyScreen);
                 break;
             default:
                 // Noop.
