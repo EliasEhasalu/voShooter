@@ -125,7 +125,11 @@ public class VoServer {
             newLobby.setHost(this);
             currentLobby = newLobby;
 
-            return new LobbyCreated(maxPlayers, gameMode, newLobby.getLobbyCode());
+            LobbyCreated response = new LobbyCreated();
+            response.maxPlayers = maxPlayers;
+            response.gameMode = gameMode;
+            response.lobbyCode = newLobby.getLobbyCode();
+            return response;
         }
 
         /**
