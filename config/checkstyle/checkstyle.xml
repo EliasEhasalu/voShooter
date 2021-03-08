@@ -51,7 +51,8 @@
 
   <!-- https://checkstyle.org/config_filters.html#SuppressionFilter -->
   <module name="SuppressionFilter">
-    <property name="file" value="${config_loc}/suppressions.xml"/>
+    <property name="file" value="${org.checkstyle.sun.suppressionfilter.config}"
+              default="checkstyle-suppressions.xml" />
     <property name="optional" value="true"/>
   </module>
 
@@ -146,6 +147,7 @@
     <module name="TypecastParenPad"/>
     <module name="WhitespaceAfter"/>
     <module name="WhitespaceAround"/>
+    <module name="SuppressionCommentFilter"/>
 
     <!-- Modifier Checks                                    -->
     <!-- See https://checkstyle.org/config_modifiers.html -->

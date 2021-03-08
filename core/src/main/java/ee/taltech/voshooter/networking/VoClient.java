@@ -3,18 +3,20 @@ package ee.taltech.voshooter.networking;
 import java.io.IOException;
 
 import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
-import ee.taltech.voshooter.networking.Network.Hello;
+import ee.taltech.voshooter.networking.messages.User;
 
-public class VoClient implements ClientInterface {
 
-    private static final String HOST_ADDRESS = "localhost";
+public class VoClient {
+
+    public RemoteInterface remote;
 
     Client client;
-    String name;
+    ServerEntry serverEntry;
 
+    private static final String HOST_ADDRESS = "localhost";
+    private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
 
     /**
      * Construct the client.
@@ -26,34 +28,39 @@ public class VoClient implements ClientInterface {
         // Agree on what messages should be passed.
         Network.register(client);
 
-        client.addListener(new Listener() {
-            @Override
-            public void connected(Connection connection) {
-            }
+        // Get the remote object on the server that we can call methods on.
+        remote = ObjectSpace.getRemoteObject(client, Network.REMOTE, RemoteInterface.class);
 
-            @Override
-            public void received(Connection c, Object object) {
+        // Create a ClientInterface object, so the server can call methods on it.
+        serverEntry = new ServerEntry();
+        new ObjectSpace(client).register(Network.SERVER_ENTRY, serverEntry);
 
-                if (object instanceof Hello) {
-                    System.out.println(((Hello) object).greeting);
+        new Thread("Connect") {
+            @Override
+            public void run() {
+                try {
+                    client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    System.exit(1);
                 }
             }
-        });
-
-        try {
-            client.connect(5000, HOST_ADDRESS, Network.PORT);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        }.start();
     }
 
-    /**
-     * Send a greeting.
-     * @param content The content of the greeting.
-     */
-    public void sendGreeting(String content) {
-        Hello hello = new Hello();
-        hello.greeting = content;
-        client.sendTCP(hello);
+    private static class ServerEntry implements ClientInterface {
+
+        /**
+         * Construct the server entry.
+         */
+        ServerEntry() {
+        }
+
+        /**
+         * @param user The user that left.
+         */
+        public void userLeft(User user) {
+            System.out.println(String.format("User %s left.", user.getName()));
+        }
     }
 }
