@@ -80,7 +80,7 @@ public class Lobby {
         return (users.contains(user));
     }
 
-    /** @return  The amount of users in this lobby.*/
+    /** @return  The amount of users in this lobby. */
     public int getUserCount() {
         return users.size();
     }
@@ -90,16 +90,12 @@ public class Lobby {
         return gameMode;
     }
 
-    /**
-     * @return This lobby's max users.
-     */
+    /** @return This lobby's max users. */
     public int getMaxUsers() {
         return maxUsers;
     }
 
-    /**
-     * @return The list of users in this lobby.
-     */
+    /** @return The list of users in this lobby. */
     public List<User> getUsers() {
         return users.stream()
             .map(Remote::getUser)
