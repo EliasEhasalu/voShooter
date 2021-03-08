@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.networking.messages.LobbyCreated;
 
 import static ee.taltech.voshooter.VoShooter.Screen.LOBBY;
 import static ee.taltech.voshooter.VoShooter.Screen.MENU;
@@ -124,12 +125,15 @@ public class CreateGameScreen implements Screen {
 
                     parent.createNetworkClient();
                     parent.client.remote.setUserName(playerNameField.getText());
-                    parent.client.remote.createLobby(playerCount, gamemode);
+                    LobbyCreated newLobby = parent.client.remote.createLobby(playerCount, gamemode);
 
-                    parent.client.clientUser.setHost(true);
-                    parent.client.clientUser.setName(playerNameField.getName());
+                    parent.gameState.clientUser.setHost(true);
+                    parent.gameState.clientUser.setName(playerNameField.getText());
+
                     parent.gameState.currentLobby.setGamemode(gamemode);
                     parent.gameState.currentLobby.setMaxUsers(playerCount);
+                    parent.gameState.currentLobby.addUser(parent.gameState.clientUser);
+                    parent.gameState.currentLobby.setLobbyCode(newLobby.lobbyCode);
 
                     parent.changeScreen(LOBBY);
                 } else {

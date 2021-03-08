@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import ee.taltech.voshooter.entity.Entity;
+import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.rendering.Drawable;
 
 public class GameState {
 
     private List<Entity> entities = new ArrayList<>();
     public ClientLobby currentLobby = new ClientLobby();
+    public User clientUser = new User();
 
     /**
      * @return The list of drawable entities.

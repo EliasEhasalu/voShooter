@@ -55,9 +55,10 @@ public class LobbyScreen implements Screen {
 
         // Create the menu objects for our stage.
         Label lobbyTitleLabel = new Label("Lobby", skin);
+        Label lobbyCodeLabel = new Label(parent.gameState.currentLobby.getLobbyCode(), skin);
         TextButton leaveButton = new TextButton("Leave", skin);
         TextButton startGame = new TextButton("Start", skin);
-        if (!parent.client.clientUser.isHost()) startGame.setVisible(false);
+        if (!parent.gameState.clientUser.isHost()) startGame.setVisible(false);
 
         for (int i = 0; i < 8; i++) {
             Label playerName = new Label("", skin);
@@ -71,6 +72,7 @@ public class LobbyScreen implements Screen {
 
         // Add the objects to the table.
         table.add(lobbyTitleLabel);
+        table.add(lobbyCodeLabel);
         table.row();
         for (Label playerName : playerNameLabels) {
             table.add(playerName).left();
@@ -91,7 +93,7 @@ public class LobbyScreen implements Screen {
         startGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (parent.client.clientUser.isHost()) {
+                if (parent.gameState.clientUser.isHost()) {
                     playerNameLabels.clear();
                     parent.changeScreen(MAIN);
                 }
@@ -104,6 +106,14 @@ public class LobbyScreen implements Screen {
      */
     @Override
     public void render(float delta) {
+        // Update lobby.
+        for (int i = 0; i < 8; i++) {
+            if (parent.gameState.currentLobby.getUsersCount() > i) {
+                playerNameLabels.get(i).setText(parent.gameState.currentLobby.getUsers().get(i).getName());
+            }
+        }
+        System.out.println(parent.gameState.currentLobby.getUsersCount());
+
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
