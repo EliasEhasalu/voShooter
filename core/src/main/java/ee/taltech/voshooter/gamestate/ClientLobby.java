@@ -1,15 +1,27 @@
 package ee.taltech.voshooter.gamestate;
 
+import ee.taltech.voshooter.networking.messages.LobbyEntry;
 import ee.taltech.voshooter.networking.messages.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClientLobby {
-    private static int maxUsers = 4;
-    private static int gamemode = 0;
-    private static List<User> users = new ArrayList<>();
-    private static String lobbyCode;
+
+    private int maxUsers = 4;
+    private int gamemode = 0;
+    private List<User> users = new ArrayList<>();
+    private String lobbyCode;
+
+    private GameState parent;
+
+    /**
+     * Instantiate client lobby object.
+     * @param parent The game state parent of this object.
+     */
+    public ClientLobby(GameState parent) {
+        this.parent = parent;
+    }
 
     /**
      * @return Amount of users in the lobby.
@@ -94,27 +106,39 @@ public class ClientLobby {
      * @param users Set the list of users.
      */
     public void setUsers(List<User> users) {
-        ClientLobby.users = users;
+        this.users = users;
     }
 
     /**
      * @param gamemode Set the lobby gamemode.
      */
     public void setGamemode(int gamemode) {
-        ClientLobby.gamemode = gamemode;
+        this.gamemode = gamemode;
     }
 
     /**
      * @param lobbyCode Set the code for the lobby.
      */
     public void setLobbyCode(String lobbyCode) {
-        ClientLobby.lobbyCode = lobbyCode;
+        this.lobbyCode = lobbyCode;
     }
 
     /**
      * @param maxUsers Set the max amount of users for the lobby.
      */
     public void setMaxUsers(int maxUsers) {
-        ClientLobby.maxUsers = maxUsers;
+        this.maxUsers = maxUsers;
+    }
+
+    /**
+     * Set initial parameters upon joining lobby.
+     * @param message The message with lobby info received from the server.
+     */
+    public void handleJoining(LobbyEntry message) {
+        setGamemode(message.gameMode);
+        setMaxUsers(message.maxPlayers);
+        addUser(parent.clientUser);
+        setLobbyCode(message.lobbyCode);
+        setUsers(message.users);
     }
 }

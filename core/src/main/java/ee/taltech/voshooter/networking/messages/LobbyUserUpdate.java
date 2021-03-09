@@ -1,18 +1,17 @@
 package ee.taltech.voshooter.networking.messages;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LobbyUserUpdate {
 
-    public List<User> users = new ArrayList<>();
+    public List<User> users;
 
-    /** Default constructor for serialization. */
+    /** Serialize. */
     public LobbyUserUpdate() {
     }
 
     /**
-     * @param users The list of users in this lobby.
+     * @param users The list of users now in this lobby.
      */
     public LobbyUserUpdate(List<User> users) {
         this.users = users;

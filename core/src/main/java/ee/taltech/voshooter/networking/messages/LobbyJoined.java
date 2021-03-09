@@ -1,10 +1,17 @@
 package ee.taltech.voshooter.networking.messages;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class LobbyJoined {
 
-    public boolean wasSuccessful;
-    public List<User> users = new ArrayList<>();
+    public LobbyEntry entry;
+
+    /** */
+    public LobbyJoined() {
+    }
+
+    /**
+     * @param entry An object specifying the state of the lobby at the time of joining.
+     */
+    public LobbyJoined(LobbyEntry entry) {
+        this.entry = entry;
+    }
 }

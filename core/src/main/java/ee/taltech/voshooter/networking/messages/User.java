@@ -2,35 +2,38 @@ package ee.taltech.voshooter.networking.messages;
 
 public class User {
 
-    private String name;
-    private boolean host = false;
-
-    /** @return The name of this user. */
-    public String getName() {
-        return (name == null) ? "Anonymous" : name;
-    }
+    public String name;
+    public String currentLobby;
+    public boolean host;
+    public int id;
 
     /**
-     * @return If the user is the host for a lobby.
-     */
-    public boolean isHost() {
-        return host;
-    }
-
-    /**
-     * @param isHost Set if the user is a host for a lobby.
+     * Set whether this user object is a host or not.
+     * @param isHost Whether the user is a host or not.
      */
     public void setHost(boolean isHost) {
         this.host = isHost;
     }
 
-     /**
-     * Set the name for this user.
-     * @param name The name to set this user's name to.
-     * @return Whether the set was successful.
+    /** @return Whether the user is a host or not. */
+    public boolean isHost() {
+        return host;
+    }
+
+    /** @return This user's name. */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name The name to set this player to.
      */
-    public boolean setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return true;
+    }
+
+    /** @return String repr of this user. */
+    public String toString() {
+        return name;
     }
 }

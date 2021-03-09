@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.networking.messages.LeaveLobby;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +22,12 @@ import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
 public class LobbyScreen implements Screen {
 
+    private static final String EMPTY_SLOT = "|            |";
+
     private VoShooter parent;
     private Stage stage;
     private List<Label> playerNameLabels = new ArrayList<>();
+    private Label lobbyCodeLabel;
 
     /**
      * Construct the menu screen.
@@ -55,18 +59,13 @@ public class LobbyScreen implements Screen {
 
         // Create the menu objects for our stage.
         Label lobbyTitleLabel = new Label("Lobby", skin);
-        Label lobbyCodeLabel = new Label(parent.gameState.currentLobby.getLobbyCode(), skin);
+        lobbyCodeLabel = new Label(parent.gameState.currentLobby.getLobbyCode(), skin);
         TextButton leaveButton = new TextButton("Leave", skin);
         TextButton startGame = new TextButton("Start", skin);
         if (!parent.gameState.clientUser.isHost()) startGame.setVisible(false);
 
-        for (int i = 0; i < 8; i++) {
-            Label playerName = new Label("", skin);
-            if (i < parent.gameState.currentLobby.getUsersCount()) {
-                playerName.setText(parent.gameState.currentLobby.getUsers().get(i).getName());
-            } else if (i < parent.gameState.currentLobby.getMaxUsers()) {
-                playerName.setText("EMPTY SLOT");
-            }
+        for (int i = 0; i < parent.gameState.currentLobby.getMaxUsers(); i++) {
+            Label playerName = new Label("---", skin);
             playerNameLabels.add(playerName);
         }
 
@@ -86,6 +85,7 @@ public class LobbyScreen implements Screen {
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 parent.gameState.currentLobby.clearLobby();
                 playerNameLabels.clear();
+                parent.getClient().sendTCP(new LeaveLobby());
                 parent.changeScreen(MENU);
             }
         });
@@ -107,12 +107,18 @@ public class LobbyScreen implements Screen {
     @Override
     public void render(float delta) {
         // Update lobby.
-        for (int i = 0; i < 8; i++) {
-            if (parent.gameState.currentLobby.getUsersCount() > i) {
+        int maxPlayers = parent.gameState.currentLobby.getMaxUsers();
+        int joinedPlayers = parent.gameState.currentLobby.getUsersCount();
+
+        // Clear all slots from last frame.
+        for (int i = 0; i < maxPlayers; i++) {
+            playerNameLabels.get(i).setText(LobbyScreen.EMPTY_SLOT);
+        }
+        for (int i = 0; i < maxPlayers; i++) {
+            if (i < joinedPlayers) {
                 playerNameLabels.get(i).setText(parent.gameState.currentLobby.getUsers().get(i).getName());
             }
         }
-        System.out.println(parent.gameState.currentLobby.getUsersCount());
 
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
