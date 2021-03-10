@@ -35,6 +35,18 @@ public class GameController {
         if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
             pressedKeys.add(Input.Buttons.RIGHT);
         }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            pressedKeys.add(Input.Keys.LEFT);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            pressedKeys.add(Input.Keys.RIGHT);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            pressedKeys.add(Input.Keys.UP);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            pressedKeys.add(Input.Keys.DOWN);
+        }
         return pressedKeys;
     }
 }
