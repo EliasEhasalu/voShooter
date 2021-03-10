@@ -60,14 +60,13 @@ public class CreateGameScreen implements Screen {
         // Create the menu objects for our stage.
         Label createLobbyTitle = new Label("Create lobby", skin);
         Label chooseNameLabel = new Label("Choose name:", skin);
-        Label incorrectPlayerName = new Label("Enter valid name", skin);
-        incorrectPlayerName.setVisible(false);
-        incorrectPlayerName.setColor(Color.RED);
+        Label playerNameHintLabel = new Label("Too short", skin);
+        playerNameHintLabel.setColor(Color.RED);
         Label playersLabel = new Label("Players:", skin);
         Label playerCountLabel = new Label(String.valueOf(playerCount), skin);
         Label gamemodeLabel = new Label("Gamemode: FFA", skin);
         TextField playerNameField = new TextField("", skin);
-        playerNameField.setMaxLength(14);
+        playerNameField.setMaxLength(12);
         stage.setKeyboardFocus(playerNameField);
         TextButton playerCountDecrease = new TextButton("<", skin);
         TextButton playerCountIncrease = new TextButton(">", skin);
@@ -79,8 +78,8 @@ public class CreateGameScreen implements Screen {
         table.add(createLobbyTitle).left();
         table.row().pad(60, 0, 0, 0);
         table.add(chooseNameLabel).left();
-        table.add(playerNameField).right();
-        table.add(incorrectPlayerName).padLeft(20);
+        table.add(playerNameField).right().width(210);
+        table.add(playerNameHintLabel).padLeft(20);
         table.row().pad(10, 0, 0, 0);
         table.add(playersLabel).left();
         table.add(playerCountTable).fillX();
@@ -91,7 +90,7 @@ public class CreateGameScreen implements Screen {
         table.add(gamemodeLabel).left();
         table.row().pad(100, 0, 0, 0);
         table.add(back).left();
-        table.add(createGame).right();
+        table.add(createGame);
 
         back.addListener(new ChangeListener() {
             @Override
@@ -120,11 +119,29 @@ public class CreateGameScreen implements Screen {
             }
         });
 
+        playerNameField.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (playerNameField.getText().length() < 4) {
+                    playerNameHintLabel.setText("Too short");
+                    playerNameHintLabel.setColor(Color.RED);
+                } else if (playerNameField.getText().equals("")
+                        || playerNameField.getText().replace(" ", "").equals("")) {
+                    playerNameHintLabel.setText("Empty    ");
+                    playerNameHintLabel.setColor(Color.RED);
+                } else {
+                    playerNameHintLabel.setText("Good name");
+                    playerNameHintLabel.setColor(Color.GREEN);
+                }
+            }
+        });
+
         createGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (!playerNameField.getText().equals("")
-                        && !playerNameField.getText().replace(" ", "").equals("")) {
+                        && !playerNameField.getText().replace(" ", "").equals("")
+                        && playerNameField.getText().length() >= 4) {
 
                     try {
                         parent.createNetworkClient();
