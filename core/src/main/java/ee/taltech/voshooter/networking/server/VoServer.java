@@ -23,6 +23,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 
@@ -96,6 +97,14 @@ public class VoServer {
             }
         });
 
+        server.addListener(
+        new RunMethodListener<MovePlayer>(MovePlayer.class) {
+            @Override
+            public void run(VoConnection c, MovePlayer msg) {
+                handleMovePlayer(c, msg);
+            }
+        });
+
         server.bind(Network.PORT);
         server.start();
     }
@@ -109,12 +118,10 @@ public class VoServer {
         String code = generateLobbyCode();
         User user = connection.user;
         Lobby newLobby = new Lobby(msg.gameMode, msg.maxPlayers, code);
-        newLobby.setHost(connection);
         lobbies.put(code, newLobby);
 
-        if (newLobby.addConnection(connection)) {
-           user.currentLobby = code;
-        }
+        newLobby.addConnection(connection);
+        newLobby.setHost(connection);
 
         LobbyJoined res = new LobbyJoined(msg.gameMode, msg.maxPlayers, code, newLobby.getUsers(), user);
         connection.sendTCP(res);
@@ -125,19 +132,18 @@ public class VoServer {
      * @param msg The JoinLobby message {@link JoinLobby}
      */
     private void handleJoinLobby(VoConnection connection, JoinLobby msg) {
-        String code = msg.lobbyCode.trim().toUpperCase();
-        User user = connection.user;
+        String code = sanitizeLobbyCode(msg.lobbyCode);
 
-        if (code != null && code != "" && lobbies.containsKey(code)) {
+        if (lobbyExists(code)) {
             Lobby lobby = lobbies.get(code);
-            if (!lobby.addConnection(connection)) {
+
+            if (lobby.isFull()) {
                 connection.sendTCP(new LobbyFull());
             } else {
                 int gameMode = lobby.getGameMode();
                 int maxPlayers = lobby.getMaxPlayers();
                 List<User> users = lobby.getUsers();
                 User host = lobby.getHost().user;
-                user.currentLobby = code;
 
                 connection.sendTCP(new LobbyJoined(gameMode, maxPlayers, code, users, host));
                 lobby.addConnection(connection);
@@ -154,6 +160,7 @@ public class VoServer {
         Lobby lobby = lobbies.get(connection.user.currentLobby);
         lobby.removeConnection(connection);
 
+        // Delete unused lobbies.
         if (lobby.getPlayerCount() == 0) {
             lobbies.remove(lobby.getLobbyCode());
         }
@@ -172,6 +179,23 @@ public class VoServer {
 
             if (lobby.getHost() == connection && lobby.getPlayerCount() >= Lobby.MINIMUM_PLAYERS) {
                 lobby.sendGameStart();
+            }
+        }
+    }
+
+    /**
+     * Handle MovePlayer messages.
+     * @param c The connection.
+     * @param msg The MovePlayer message.
+     */
+    private void handleMovePlayer(VoConnection c, MovePlayer msg) {
+        Optional<Lobby> optLobby = getUserLobby(c.user);
+
+        if (optLobby.isPresent()) {
+            Lobby lobby = optLobby.get();
+
+            if (lobby.getGame() != null) {
+                lobby.getGame().addUpdate(msg.keyPresses);
             }
         }
     }
@@ -207,6 +231,10 @@ public class VoServer {
            if (connection.user != null && connection.user.currentLobby != null) {
                Lobby lobby = lobbies.get(connection.user.currentLobby);
                lobby.removeConnection(connection);
+               if (lobby.getPlayerCount() == 0) {
+                   if (lobby.getGame() != null) lobby.getGame().shutDown();
+                   if (lobbyExists(lobby.getLobbyCode())) lobbies.remove(lobby.getLobbyCode());
+               }
            }
        }
     }
@@ -222,6 +250,15 @@ public class VoServer {
             && username.length() >= 4
             && username.length() <= 12
         );
+    }
+
+    /**
+     * @param code The code to check.
+     * @return Whether the given code points to a lobby or not.
+     */
+    private String sanitizeLobbyCode(String code) {
+        if (code == null) return "";
+        return code.trim().toUpperCase();
     }
 
     /**
@@ -276,17 +313,13 @@ public class VoServer {
         }
     }
 
-    static class VoConnection extends Connection {
-        public User user;
-    }
-
     /**
      * Main entry point for server.
      * @param args CLI args.
      */
     public static void main(String[] args) throws IOException {
         // Server is launched upon object instantiation.
-        Log.set(Log.LEVEL_DEBUG);
+        Log.set(Log.LEVEL_INFO);
         new VoServer();
     }
 }

@@ -3,8 +3,6 @@ package ee.taltech.voshooter.networking.server;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import ee.taltech.voshooter.networking.server.VoServer.VoConnection;
-
 /**
  * Code snippet courtesy of VaTTeRGeR
  * On thread https://jvm-gaming.org/t/kryonet-best-way-to-send-read-simple-tcp-messages/56626

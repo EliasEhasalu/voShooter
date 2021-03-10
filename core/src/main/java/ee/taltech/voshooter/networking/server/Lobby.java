@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
-import ee.taltech.voshooter.networking.server.VoServer.VoConnection;
+import ee.taltech.voshooter.networking.server.gamestate.Game;
+import ee.taltech.voshooter.geometry.Pos;
 
 public class Lobby {
 
@@ -18,6 +20,7 @@ public class Lobby {
     private String lobbyCode;
     private VoConnection host;
 
+    private Game game;
     private List<VoConnection> connections = new ArrayList<>();
 
     /**
@@ -41,6 +44,15 @@ public class Lobby {
 
     /** Send all users in this lobby a message that the game has started. */
     protected void sendGameStart() {
+        game = new Game();
+
+        for (VoConnection con : connections) {
+            con.player = new Player(new Pos(300, 300));
+            game.addConnection(con);
+        }
+
+        game.start();
+
         for (VoConnection con : connections) {
             con.sendTCP(new GameStarted());
         }
@@ -55,8 +67,11 @@ public class Lobby {
         if (connections.contains(connection) || connections.size() == maxUsers) {
             return false;
         }
+
         connections.add(connection);
-        System.out.println(String.format("added %s to lobby %s", connection.user.name, lobbyCode));
+        connection.user.currentLobby = getLobbyCode();
+
+        System.out.println(String.format("added ID %d to lobby %s", connection.user.id, lobbyCode));
         sendLobbyUpdates();
         return true;
     }
@@ -70,11 +85,23 @@ public class Lobby {
         if (connections.contains(connection)) {
             connections.remove(connection);
             connection.user.currentLobby = null;
+            connection.user.host = false;
+
+            // If host left, assign someone else as host.
+            if (getHost().user == connection.user && !connections.isEmpty()) {
+                setHost(connections.get(0));
+            }
+
             System.out.println(String.format("removed %s from lobby %s", connection.user.name, lobbyCode));
             sendLobbyUpdates();
             return true;
         }
         return false;
+    }
+
+    /** @return Whether the lobby is full or not. */
+    protected boolean isFull() {
+        return (connections.size() == maxUsers);
     }
 
     /** @return Amount of players in this lobby. */
@@ -123,5 +150,10 @@ public class Lobby {
     /** @return A list of this lobby's users. */
     protected List<VoConnection> getConnections() {
         return connections;
+    }
+
+    /** @return The game object in this lobby. */
+    protected Game getGame() {
+        return game;
     }
 }

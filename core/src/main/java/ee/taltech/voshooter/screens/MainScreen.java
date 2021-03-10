@@ -1,5 +1,7 @@
 package ee.taltech.voshooter.screens;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -13,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.GameController;
+import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.entity.player.Player;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.rendering.Drawable;
@@ -68,10 +71,10 @@ public class MainScreen implements Screen {
      */
     @Override
     public void render(float delta) {
-        if (shouldChangeScreen != null) {
-            parent.changeScreen(shouldChangeScreen);
-            shouldChangeScreen = null;
-        }
+        // Send player inputs to server every render loop.
+        List<Integer> inputs = GameController.getInputs();
+        if (!inputs.isEmpty()) parent.getClient().sendTCP(new MovePlayer(inputs));
+
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(0.25882354f, 0.25882354f, 0.90588236f, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -82,7 +85,7 @@ public class MainScreen implements Screen {
         tiledMapRenderer.render();
 
         // And draw over it again.
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));  // Cap menu FPS to 30.
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap menu FPS to 64.
         stage.draw();
 
         // Draw drawable entities to the stage.
