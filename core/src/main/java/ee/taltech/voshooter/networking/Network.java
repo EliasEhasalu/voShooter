@@ -7,10 +7,17 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
+import ee.taltech.voshooter.networking.messages.CreateLobby;
+import ee.taltech.voshooter.networking.messages.JoinLobby;
+import ee.taltech.voshooter.networking.messages.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.LobbyCreated;
+import ee.taltech.voshooter.networking.messages.LobbyEntry;
+import ee.taltech.voshooter.networking.messages.LobbyFull;
 import ee.taltech.voshooter.networking.messages.LobbyJoined;
-import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.LobbyUserUpdate;
+import ee.taltech.voshooter.networking.messages.NoSuchLobby;
+import ee.taltech.voshooter.networking.messages.SetUsername;
+import ee.taltech.voshooter.networking.messages.User;
 
 public final class Network {
 
@@ -39,11 +46,16 @@ public final class Network {
         kryo.register(ArrayList.class);
         kryo.register(boolean.class);
 
-        kryo.register(RemoteInterface.class);
-        kryo.register(ClientInterface.class);
-        kryo.register(LobbyUserUpdate.class);
+        kryo.register(User.class);
+        kryo.register(SetUsername.class);
+        kryo.register(CreateLobby.class);
         kryo.register(LobbyCreated.class);
         kryo.register(LobbyJoined.class);
-        kryo.register(User.class);
+        kryo.register(JoinLobby.class);
+        kryo.register(LeaveLobby.class);
+        kryo.register(LobbyFull.class);
+        kryo.register(NoSuchLobby.class);
+        kryo.register(LobbyUserUpdate.class);
+        kryo.register(LobbyEntry.class);
     }
 }

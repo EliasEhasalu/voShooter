@@ -1,8 +1,8 @@
 package ee.taltech.voshooter.networking.server;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -12,51 +12,131 @@ import java.util.stream.Collectors;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 import com.esotericsoftware.minlog.Log;
 
-import ee.taltech.voshooter.networking.ClientInterface;
 import ee.taltech.voshooter.networking.Network;
-import ee.taltech.voshooter.networking.RemoteInterface;
-import ee.taltech.voshooter.networking.messages.LobbyCreated;
+import ee.taltech.voshooter.networking.messages.CreateLobby;
+import ee.taltech.voshooter.networking.messages.JoinLobby;
+import ee.taltech.voshooter.networking.messages.LeaveLobby;
+import ee.taltech.voshooter.networking.messages.LobbyFull;
 import ee.taltech.voshooter.networking.messages.LobbyJoined;
+import ee.taltech.voshooter.networking.messages.NoSuchLobby;
+import ee.taltech.voshooter.networking.messages.SetUsername;
 import ee.taltech.voshooter.networking.messages.User;
 
 public class VoServer {
 
     Server server;
 
+    private int playerId = 0;
     private Random rand = new Random();
 
-    private List<Remote> connectedUsers = new ArrayList<>();
-    private Map<String, Lobby> lobbies = new HashMap<String, Lobby>();
+    private Set<VoConnection> connections = new HashSet<>();
+    private Map<String, Lobby> lobbies = new HashMap<>();
 
     /**
-     * Bootstrap the server upon instantiation.
+     * Construct the server.
      */
     public VoServer() throws IOException {
         server = new Server() {
             @Override
-            protected Connection newConnection() {
-                Remote remoteObject = new Remote();
-                connectedUsers.add(remoteObject);
-                return remoteObject;
+            protected VoConnection newConnection() {
+                return new VoConnection();
             }
         };
 
         Network.register(server);
 
         server.addListener(new Listener() {
+
             @Override
-            public void disconnected(Connection connection) {
-                Remote remoteObject = (Remote) connection;
-                remoteObject.purge();
+            public void received(Connection c, Object message) {
+                VoConnection connection = (VoConnection) c;
+                if (connection.user == null) {
+                    connection.user = new User();
+                    connection.user.id = playerId++;
+                }
+                connections.add(connection);
+                User user = connection.user;
+
+
+                if (message instanceof SetUsername) {
+                    user.name = ((SetUsername) message).desiredName;
+                    return;
+                }
+
+                if (message instanceof CreateLobby) {
+                    CreateLobby req = (CreateLobby) message;
+                    String code = generateLobbyCode();
+                    Lobby newLobby = new Lobby(req.gameMode, req.maxPlayers, code);
+                    newLobby.setHost(connection);
+                    lobbies.put(code, newLobby);
+
+                    if (newLobby.addConnection(connection)) {
+                       user.currentLobby = code;
+                    }
+
+                    LobbyJoined res = new LobbyJoined(req.gameMode, req.maxPlayers, code, newLobby.getUsers(), user);
+                    c.sendTCP(res);
+                    return;
+                }
+
+                if (message instanceof JoinLobby) {
+                    String code = ((JoinLobby) message).lobbyCode.trim().toUpperCase();
+                    if (code != null && code != "" && lobbies.containsKey(code)) {
+                        Lobby lobby = lobbies.get(code);
+                        if (!lobby.addConnection(connection)) {
+                            connection.sendTCP(new LobbyFull());
+                        } else {
+                            int gameMode = lobby.getGameMode();
+                            int maxPlayers = lobby.getMaxPlayers();
+                            List<User> users = lobby.getUsers();
+                            User host = lobby.getHost().user;
+                            user.currentLobby = code;
+
+                            connection.sendTCP(new LobbyJoined(gameMode, maxPlayers, code, users, host));
+                            lobby.addConnection(connection);
+                        }
+                    } else {
+                        connection.sendTCP(new NoSuchLobby());
+                    }
+                    return;
+                }
+
+                if (message instanceof LeaveLobby) {
+                    Lobby lobby = lobbies.get(user.currentLobby);
+                    lobby.removeConnection(connection);
+
+                    if (lobby.getPlayerCount() == 0) {
+                        lobbies.remove(lobby.getLobbyCode());
+                    }
+                }
+            }
+
+            @Override
+            public void disconnected(Connection c) {
+               VoConnection connection = (VoConnection) c;
+               if (connection != null) {
+                   if (connections.contains(connection)) connections.remove(connection);
+                   if (connection.user != null && connection.user.currentLobby != null) {
+                       Lobby lobby = lobbies.get(connection.user.currentLobby);
+                       lobby.removeConnection(connection);
+                   }
+               }
             }
         });
+
+        // server.addListener(
+        // new RunMethodListener<LeaveLobby>(LeaveLobby.class) {
+        //     @Override
+        //     public void run(Connection c, LeaveLobby msg) {
+        //     }
+        // });
 
         server.bind(Network.PORT);
         server.start();
     }
+
 
     /** Close the server upon request. */
     public void close() {
@@ -67,115 +147,31 @@ public class VoServer {
         }
     }
 
-    public class Remote extends Connection implements RemoteInterface {
+    /** @return A unique lobby code for a newly created lobby. */
+    private String generateLobbyCode() {
+        String abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String attempt = "";
 
-        protected ClientInterface client;
-
-        private String name;
-        private Lobby currentLobby;
-
-        /**
-         * Construct this user object.
-         */
-        public Remote() {
-            new ObjectSpace(this).register(Network.REMOTE, this);
-            client = ObjectSpace.getRemoteObject(this, Network.SERVER_ENTRY, ClientInterface.class);
-        }
-
-        /** @return A unique lobby code for a newly created lobby. */
-        private String generateLobbyCode() {
-            String abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            String attempt = "";
-
-            while (true) {
-                for (int i = 0; i < 6; i++) {
-                    attempt += abc.charAt(rand.ints(0, abc.length()).findFirst().getAsInt());
-                }
-
-                Set<String> codes = lobbies.values().stream()
-                    .map(Lobby::getLobbyCode)
-                    .collect(Collectors.toSet());
-
-                if (codes.contains(attempt)) {
-                    attempt = "";
-                    continue;
-                }
-                break;
-            }
-            return attempt;
-        }
-
-        /**
-         * Set the User's name.
-         * @param name The name to set the User's name to.
-         */
-        public void setUserName(String name) {
-            this.name = name;
-        }
-
-        /**
-         * @param maxPlayers The desired max amount of players in the lobby.
-         * @param gameMode The desired gamemode for the lobby.
-         * @return A response containing the lobby code and other parameters.
-         */
-        public LobbyCreated createLobby(int maxPlayers, int gameMode) {
-            Lobby newLobby = new Lobby(maxPlayers, gameMode, generateLobbyCode());
-            lobbies.put(newLobby.getLobbyCode(), newLobby);
-            newLobby.addUser(this);
-            newLobby.setHost(this);
-            currentLobby = newLobby;
-
-            return new LobbyCreated(maxPlayers, gameMode, newLobby.getLobbyCode());
-        }
-
-        /**
-         * Have the user join the specified lobby.
-         * @param lobbyCode The code of the lobby being joined.
-         * @return A LobbyJoined response object.
-         */
-        public LobbyJoined joinLobby(String lobbyCode) {
-            boolean successful = false;
-
-            for (Lobby lobby : lobbies.values()) {
-                if (lobby.getLobbyCode().equalsIgnoreCase(lobbyCode)) {
-                    lobby.addUser(this);
-                    currentLobby = lobby;
-                    successful = true;
-                    break;
-                }
+        while (true) {
+            for (int i = 0; i < 6; i++) {
+                attempt += abc.charAt(rand.ints(0, abc.length()).findFirst().getAsInt());
             }
 
-            LobbyJoined response = new LobbyJoined();
-            response.wasSuccessful = successful;
-            if (successful) response.users = currentLobby.getUsers();
-            return response;
-        }
+            Set<String> codes = lobbies.values().stream()
+                .map(Lobby::getLobbyCode)
+                .collect(Collectors.toSet());
 
-        /** Have the user leave the lobby they are currently in. */
-        public void leaveLobby() {
-            currentLobby.removeUser(this);  // Also notifies all users in lobby.
-            currentLobby = null;
-        }
-
-        /**
-         * @return A User object representation of this Remote object.
-         */
-        public User getUser() {
-            User u = new User();
-            u.setName(name);
-            u.setHost(currentLobby.getHost() == this);
-            return u;
-        }
-
-        /**
-         * Remove all state associated with this connection.
-         */
-        public void purge() {
-            if (currentLobby != null) {
-                currentLobby.removeUser(this);  // Also notifies all users in lobby.
+            if (codes.contains(attempt)) {
+                attempt = "";
+                continue;
             }
-            connectedUsers.remove(this);
+            break;
         }
+        return attempt;
+    }
+
+    static class VoConnection extends Connection {
+        public User user;
     }
 
     /**

@@ -6,116 +6,114 @@ import java.util.stream.Collectors;
 
 import ee.taltech.voshooter.networking.messages.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.User;
-import ee.taltech.voshooter.networking.server.VoServer.Remote;
+import ee.taltech.voshooter.networking.server.VoServer.VoConnection;
 
 public class Lobby {
 
     private int maxUsers;
     private int gameMode;
     private String lobbyCode;
-    private Remote host;
+    private VoConnection host;
 
-    private List<Remote> users = new ArrayList<>();
-
-    /** Default constructor for serialization. */
-    public Lobby() {
-    }
+    private List<VoConnection> connections = new ArrayList<>();
 
     /**
      * @param maxUsers The maximum amount of users that can be in this lobby.
      * @param gameMode An integer representing the gamemode of this lobby.
      * @param lobbyCode The lobby code assigned to this lobby.
      */
-    public Lobby(int maxUsers, int gameMode, String lobbyCode) {
+    protected Lobby(int gameMode, int maxUsers, String lobbyCode) {
         this.maxUsers = maxUsers;
         this.gameMode = gameMode;
         this.lobbyCode = lobbyCode;
     }
 
-    /**
-     * Send messages about players leaving/joining the lobby
-     * to users in this lobby.
-     */
-    private void sendLobbyStatusUpdates() {
-        // Collect current User objects.
-        List<User> currentUsers = users.stream()
-            .map(Remote::getUser)
-            .collect(Collectors.toList());
+    /** @return This lobby's code. */
+    protected String getLobbyCode() {
+        return lobbyCode;
+    }
 
-        // Send the update message to all users in this lobby.
-        users.stream()
-            .forEach(u -> u.client.updateLobbyUsers(new LobbyUserUpdate(currentUsers)));
+    /** @return A list of this lobby's users. */
+    protected List<VoConnection> getConnections() {
+        return connections;
+    }
+
+    /**
+     * Send updates of people joining / leaving to this lobby's members.
+     */
+    private void sendLobbyUpdates() {
+        List<User> users = getUsers();
+        for (VoConnection con : connections) {
+            con.sendTCP(new LobbyUserUpdate(users));
+        }
     }
 
     /**
      * Add a user to this lobby.
-     * @param user The user to add.
-     * @return Whether the adding was successful.
+     * @return Whether adding the user was successful.
+     * @param connection The user to add to this lobby.
      */
-    public boolean addUser(Remote user) {
-        if (!users.contains(user) && users.size() < maxUsers) {
-            users.add(user);
-            sendLobbyStatusUpdates();
+    protected boolean addConnection(VoConnection connection) {
+        if (connections.contains(connection) || connections.size() == maxUsers) {
+            return false;
+        }
+        connections.add(connection);
+        System.out.println(String.format("added %s to lobby %s", connection.user.name, lobbyCode));
+        sendLobbyUpdates();
+        return true;
+    }
+
+    /**
+     * Remove the given user from this lobby.
+     * @param connection The user to remove.
+     * @return If the user was removed.
+     */
+    protected boolean removeConnection(VoConnection connection) {
+        if (connections.contains(connection)) {
+            connections.remove(connection);
+            connection.user.currentLobby = null;
+            System.out.println(String.format("removed %s from lobby %s", connection.user.name, lobbyCode));
+            sendLobbyUpdates();
             return true;
         }
         return false;
     }
 
-    /**
-     * Remove a user from this lobby.
-     * @param user The user to remove.
-     */
-    public void removeUser(Remote user) {
-        if (users.contains(user)) {
-            users.remove(user);
-            sendLobbyStatusUpdates();
-        }
+
+    /** @return Amount of players in this lobby. */
+    protected int getPlayerCount() {
+        return connections.size();
     }
 
     /**
-     * @return Whether this lobby contains the given user.
-     * @param user The given user.
+     * @return A list of user objects in this lobby.
      */
-    public boolean containsUser(Remote user) {
-        return (users.contains(user));
-    }
-
-    /** @return  The amount of users in this lobby. */
-    public int getUserCount() {
-        return users.size();
-    }
-
-    /** @return This lobby's gamemode. */
-    public int getGameMode() {
-        return gameMode;
-    }
-
-    /** @return This lobby's max users. */
-    public int getMaxUsers() {
-        return maxUsers;
-    }
-
-    /** @return The list of users in this lobby. */
-    public List<User> getUsers() {
-        return users.stream()
-            .map(Remote::getUser)
+    protected List<User> getUsers() {
+        return connections.stream()
+            .map(con -> con.user)
             .collect(Collectors.toList());
     }
 
-    /** @return The code for this lobby. */
-    public String getLobbyCode() {
-        return lobbyCode;
-    }
-
     /**
-     * @param user The user to set as the host of this lobby.
+     * Set the host for this lobby.
+     * @param connection The connection to set the host as.
      */
-    public void setHost(Remote user) {
-        this.host = user;
+    protected void setHost(VoConnection connection) {
+        this.host = connection;
     }
 
-    /** @return This lobby's host. */
-    public Remote getHost() {
+    /** @return The game mode. */
+    protected int getGameMode() {
+        return gameMode;
+    }
+
+    /** @return The host. */
+    protected VoConnection getHost() {
         return host;
+    }
+
+    /** @return Max amount of players in this lobby. */
+    protected int getMaxPlayers() {
+        return maxUsers;
     }
 }
