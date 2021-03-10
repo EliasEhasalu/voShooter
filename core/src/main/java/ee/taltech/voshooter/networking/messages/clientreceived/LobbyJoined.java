@@ -1,6 +1,8 @@
-package ee.taltech.voshooter.networking.messages;
+package ee.taltech.voshooter.networking.messages.clientreceived;
 
 import java.util.List;
+
+import ee.taltech.voshooter.networking.messages.User;
 
 /**
  * This class specifies the state of the lobby at the time of entering it.

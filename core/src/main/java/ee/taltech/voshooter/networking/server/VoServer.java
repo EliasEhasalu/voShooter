@@ -16,6 +16,13 @@ import com.esotericsoftware.minlog.Log;
 
 import ee.taltech.voshooter.networking.Network;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
+import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 
 public class VoServer {
 

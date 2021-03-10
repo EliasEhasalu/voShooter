@@ -11,9 +11,9 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 
 import ee.taltech.voshooter.VoShooter;
-import ee.taltech.voshooter.networking.messages.LobbyJoined;
-import ee.taltech.voshooter.networking.messages.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 
 
 public class VoClient {

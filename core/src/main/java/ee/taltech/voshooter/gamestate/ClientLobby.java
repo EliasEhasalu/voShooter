@@ -1,10 +1,10 @@
 package ee.taltech.voshooter.gamestate;
 
-import ee.taltech.voshooter.networking.messages.LobbyJoined;
-import ee.taltech.voshooter.networking.messages.User;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 
 public class ClientLobby {
 
