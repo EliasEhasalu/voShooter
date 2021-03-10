@@ -107,12 +107,13 @@ public class VoShooter extends Game {
      * Used to instantiate a new VoClient object for communication
      * with the server.
      */
-    public void createNetworkClient() throws IOException {
-        if (client == null) client = new VoClient(this);
+    public void createNetworkClient() {
+        if (client == null || !client.isConnected()) {
+            client = new VoClient(this);
+        }
         try {
             TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ignored) {
         }
     }
 }

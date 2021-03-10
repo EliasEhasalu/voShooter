@@ -18,8 +18,6 @@ import ee.taltech.voshooter.networking.Network;
 import ee.taltech.voshooter.networking.messages.CreateLobby;
 import ee.taltech.voshooter.networking.messages.JoinLobby;
 import ee.taltech.voshooter.networking.messages.LeaveLobby;
-import ee.taltech.voshooter.networking.messages.LobbyCreated;
-import ee.taltech.voshooter.networking.messages.LobbyEntry;
 import ee.taltech.voshooter.networking.messages.LobbyFull;
 import ee.taltech.voshooter.networking.messages.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.NoSuchLobby;
@@ -78,16 +76,15 @@ public class VoServer {
                        user.currentLobby = code;
                     }
 
-                    LobbyEntry entry = new LobbyEntry(req.gameMode, req.maxPlayers, code, newLobby.getUsers(), user);
-                    LobbyCreated res = new LobbyCreated(entry);
+                    LobbyJoined res = new LobbyJoined(req.gameMode, req.maxPlayers, code, newLobby.getUsers(), user);
                     c.sendTCP(res);
                     return;
                 }
 
                 if (message instanceof JoinLobby) {
-                    String code = ((JoinLobby) message).lobbyCode;
-                    if (lobbies.containsKey(code.toUpperCase())) {
-                        Lobby lobby = lobbies.get(code.toUpperCase());
+                    String code = ((JoinLobby) message).lobbyCode.trim().toUpperCase();
+                    if (code != null && code != "" && lobbies.containsKey(code)) {
+                        Lobby lobby = lobbies.get(code);
                         if (!lobby.addConnection(connection)) {
                             connection.sendTCP(new LobbyFull());
                         } else {
@@ -97,8 +94,7 @@ public class VoServer {
                             User host = lobby.getHost().user;
                             user.currentLobby = code;
 
-                            LobbyEntry entry = new LobbyEntry(gameMode, maxPlayers, code, users, host);
-                            connection.sendTCP(new LobbyJoined(entry));
+                            connection.sendTCP(new LobbyJoined(gameMode, maxPlayers, code, users, host));
                             lobby.addConnection(connection);
                         }
                     } else {
@@ -129,6 +125,13 @@ public class VoServer {
                }
             }
         });
+
+        // server.addListener(
+        // new RunMethodListener<LeaveLobby>(LeaveLobby.class) {
+        //     @Override
+        //     public void run(Connection c, LeaveLobby msg) {
+        //     }
+        // });
 
         server.bind(Network.PORT);
         server.start();

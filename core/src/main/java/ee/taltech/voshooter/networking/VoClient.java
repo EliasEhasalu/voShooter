@@ -4,14 +4,13 @@ package ee.taltech.voshooter.networking;
 import java.io.IOException;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 
 import ee.taltech.voshooter.VoShooter;
-import ee.taltech.voshooter.networking.messages.LobbyCreated;
-import ee.taltech.voshooter.networking.messages.LobbyEntry;
 import ee.taltech.voshooter.networking.messages.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.User;
@@ -21,7 +20,8 @@ public class VoClient {
 
     public User clientUser = new User();
     public VoShooter parent;
-    public Client client;
+    private Client client;
+    ServerEntry serverEntry;
 
     private static final String HOST_ADDRESS = "localhost";
     private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
@@ -39,53 +39,39 @@ public class VoClient {
         Network.register(client);
 
         client.addListener(new ThreadedListener(new Listener() {
+            private VoShooter.Screen screenToChangeTo;
+
             @Override
             public void connected(Connection connection) {
             }
 
             @Override
-            public void received(Connection connection, Object message) {
-
-                if (message instanceof LobbyCreated) {
-                    LobbyCreated mes = (LobbyCreated) message;
-                    joinCreatedLobby(mes.entry);
-                    return;
+            public void run() {
+                try {
+                    client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
+                } catch (IOException ex) {
+                    client.close();
                 }
 
-                if (message instanceof LobbyJoined) {
-                    LobbyJoined mes = (LobbyJoined) message;
-                    joinLobby(mes.entry);
-                    return;
-                }
-
-                if (message instanceof LobbyUserUpdate) {
-                    LobbyUserUpdate update = (LobbyUserUpdate) message;
-                    updateLobby(update);
-                    return;
-                }
+                // Define actions to be taken on the next cycle
+                // of the OpenGL rendering thread.
+                Gdx.app.postRunnable(new Runnable() {
+                    public void run() {
+                        if (screenToChangeTo != null) {
+                            parent.changeScreen(screenToChangeTo);
+                            screenToChangeTo = null;
+                        }
+                    }
+                });
             }
         }));
 
         client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
     }
 
-    /**
-     * Handle joining a created lobby after receiving a response from server.
-     * @param mes The message from the server.
-     */
-    private void joinCreatedLobby(LobbyEntry mes) {
-            parent.gameState.clientUser.setHost(true);
-            parent.gameState.currentLobby.handleJoining(mes);
-            parent.createGameScreen.shouldChangeScreen = VoShooter.Screen.LOBBY;
-    }
-
-    /**
-     * Join a lobby.
-     * @param mes The message describing the information about the lobby.
-     */
-    private void joinLobby(LobbyEntry mes) {
-            parent.gameState.currentLobby.handleJoining(mes);
-            parent.joinGameScreen.shouldChangeScreen = VoShooter.Screen.LOBBY;
+    /** @return Whether or not client is connected. */
+    public boolean isConnected() {
+        return client.isConnected();
     }
 
     /**
@@ -95,6 +81,5 @@ public class VoClient {
     private void updateLobby(LobbyUserUpdate update) {
         List<User> users = update.users;
         parent.gameState.currentLobby.setUsers(users);
-        System.out.println(users);
     }
 }
