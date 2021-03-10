@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,12 +24,13 @@ import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
+import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 
 public class VoServer {
 
     Server server;
 
-    private int playerId = 0;
+    private long playerId = 0;
     private Random rand = new Random();
 
     private Set<VoConnection> connections = new HashSet<>();
@@ -86,6 +88,14 @@ public class VoServer {
             }
         });
 
+        server.addListener(
+        new RunMethodListener<StartGame>(StartGame.class) {
+            @Override
+            public void run(VoConnection c, StartGame msg) {
+                handleStartGame(c);
+            }
+        });
+
         server.bind(Network.PORT);
         server.start();
     }
@@ -115,7 +125,7 @@ public class VoServer {
      * @param msg The JoinLobby message {@link JoinLobby}
      */
     private void handleJoinLobby(VoConnection connection, JoinLobby msg) {
-        String code = ((JoinLobby) msg).lobbyCode.trim().toUpperCase();
+        String code = msg.lobbyCode.trim().toUpperCase();
         User user = connection.user;
 
         if (code != null && code != "" && lobbies.containsKey(code)) {
@@ -146,6 +156,23 @@ public class VoServer {
 
         if (lobby.getPlayerCount() == 0) {
             lobbies.remove(lobby.getLobbyCode());
+        }
+    }
+
+    /**
+     * Start a game upon valid request.
+     * @param connection The connection that sent the start game request.
+     */
+    private void handleStartGame(VoConnection connection) {
+        User user = connection.user;
+        Optional<Lobby> optLobby = getUserLobby(user);
+
+        if (optLobby.isPresent()) {
+            Lobby lobby = optLobby.get();
+
+            if (lobby.getHost() == connection) {
+                lobby.sendGameStart();
+            }
         }
     }
 
@@ -195,6 +222,28 @@ public class VoServer {
             && username.length() >= 4
             && username.length() <= 12
         );
+    }
+
+    /**
+     * Return the lobby object the specified user is in.
+     * @return The lobby object the user is in.
+     * @param user The examined user.
+     */
+    private Optional<Lobby> getUserLobby(User user) {
+        String lobbyCode = user.currentLobby;
+
+        if (!lobbyExists(lobbyCode)) return Optional.empty();
+        return Optional.of(lobbies.get(lobbyCode));
+    }
+
+    /**
+     * @param lobbyCode The lobby code queried.
+     * @return Whether a specified lobby exists.
+     */
+    private boolean lobbyExists(String lobbyCode) {
+        if (lobbyCode == null) return false;
+        if (!lobbies.containsKey(lobbyCode)) return false;
+        return true;
     }
 
     /** @return A unique lobby code for a newly created lobby. */

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.server.VoServer.VoConnection;
 
@@ -28,23 +29,18 @@ public class Lobby {
         this.lobbyCode = lobbyCode;
     }
 
-    /** @return This lobby's code. */
-    protected String getLobbyCode() {
-        return lobbyCode;
-    }
-
-    /** @return A list of this lobby's users. */
-    protected List<VoConnection> getConnections() {
-        return connections;
-    }
-
-    /**
-     * Send updates of people joining / leaving to this lobby's members.
-     */
+    /** Send updates of people joining / leaving to this lobby's members. */
     private void sendLobbyUpdates() {
         List<User> users = getUsers();
         for (VoConnection con : connections) {
             con.sendTCP(new LobbyUserUpdate(users));
+        }
+    }
+
+    /** Send all users in this lobby a message that the game has started. */
+    protected void sendGameStart() {
+        for (VoConnection con : connections) {
+            con.sendTCP(new GameStarted());
         }
     }
 
@@ -79,7 +75,6 @@ public class Lobby {
         return false;
     }
 
-
     /** @return Amount of players in this lobby. */
     protected int getPlayerCount() {
         return connections.size();
@@ -94,17 +89,18 @@ public class Lobby {
             .collect(Collectors.toList());
     }
 
+    /** @return The game mode. */
+    protected int getGameMode() {
+        return gameMode;
+    }
+
     /**
      * Set the host for this lobby.
      * @param connection The connection to set the host as.
      */
     protected void setHost(VoConnection connection) {
+        connection.user.setHost(true);
         this.host = connection;
-    }
-
-    /** @return The game mode. */
-    protected int getGameMode() {
-        return gameMode;
     }
 
     /** @return The host. */
@@ -115,5 +111,15 @@ public class Lobby {
     /** @return Max amount of players in this lobby. */
     protected int getMaxPlayers() {
         return maxUsers;
+    }
+
+    /** @return This lobby's code. */
+    protected String getLobbyCode() {
+        return lobbyCode;
+    }
+
+    /** @return A list of this lobby's users. */
+    protected List<VoConnection> getConnections() {
+        return connections;
     }
 }
