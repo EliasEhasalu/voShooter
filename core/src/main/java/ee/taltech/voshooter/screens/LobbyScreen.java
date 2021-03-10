@@ -99,6 +99,7 @@ public class LobbyScreen implements Screen {
                 if (parent.gameState.clientUser.isHost()) {
                     playerNameLabels.clear();
                     parent.changeScreen(MAIN);
+                    System.out.println("Go To Main.");
                 }
             }
         });

@@ -1,37 +1,87 @@
 package ee.taltech.voshooter.screens;
 
-import com.badlogic.gdx.Screen;
+import java.io.IOException;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.controller.GameController;
+import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
+
 
 public class MainScreen implements Screen {
 
     private VoShooter parent;
+    private Stage stage;
+    private TextButton join;
+    private Table popUpTable;
+    private Label nameLengthCheck;
+    private boolean isNameGood = false;
+    private Label gameCodeCheck;
+    private boolean isCodeGood = false;
+    public VoShooter.Screen shouldChangeScreen;
 
     /**
-     * Construct the main screen.
-     * @param parent A reference to the main orchestrator object.
+     * Construct the menu screen.
+     * @param parent A reference to the orchestrator object.
      */
     public MainScreen(VoShooter parent) {
         this.parent = parent;
+
+        // Create stage which will contain this screen's objects
+        stage = new Stage(new ScreenViewport());
     }
 
+    /**
+     * Define the assets to be shown in the render loop.
+     */
     @Override
     public void show() {
-        // TODO Auto-generated method stub
+        // Have it handle player's input.
+        Gdx.input.setInputProcessor(stage);
+        stage.clear();
 
+        // A Skin object defines the theme for menu objects.
+        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     }
 
+    /**
+     * Render the elements defined in the show() method.
+     */
     @Override
     public void render(float delta) {
-        // TODO Auto-generated method stub
+        if (shouldChangeScreen != null) {
+            parent.changeScreen(shouldChangeScreen);
+            shouldChangeScreen = null;
+        }
+        GameController.getInputs();
+        // Refresh the graphics renderer every cycle.
+        Gdx.gl.glClearColor(1f, 0f, 0f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        // And draw over it again.
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));  // Cap menu FPS to 30.
+        stage.draw();
     }
 
+    /**
+     * Make sure the window doesn't break.
+     */
     @Override
     public void resize(int width, int height) {
-        // TODO Auto-generated method stub
-
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -52,10 +102,11 @@ public class MainScreen implements Screen {
 
     }
 
+    /**
+     * Dispose of the screen.
+     */
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
-
+        stage.dispose();
     }
-
 }
