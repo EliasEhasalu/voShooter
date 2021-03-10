@@ -87,7 +87,7 @@ public class VoServer {
                 if (message instanceof JoinLobby) {
                     String code = ((JoinLobby) message).lobbyCode;
                     if (lobbies.containsKey(code.toUpperCase())) {
-                        Lobby lobby = lobbies.get(code);
+                        Lobby lobby = lobbies.get(code.toUpperCase());
                         if (!lobby.addConnection(connection)) {
                             connection.sendTCP(new LobbyFull());
                         } else {
