@@ -78,17 +78,6 @@ public class JoinGameScreen implements Screen {
         join = new TextButton("Join lobby", skin);
         TextButton back = new TextButton("Back", skin);
 
-        // Table for no connection pop-up.
-        popUpTable = new Table();
-        stage.addActor(popUpTable);
-        popUpTable.setVisible(false);
-        popUpTable.setPosition((float) Gdx.graphics.getWidth() / 2, (float) Gdx.graphics.getHeight() / 2);
-        Label noConnection = new Label("Connection failed, try again.", skin);
-        TextButton closePopUp = new TextButton("Okay", skin);
-        popUpTable.add(noConnection);
-        popUpTable.row().pad(10, 0, 0, 0);
-        popUpTable.add(closePopUp);
-
         // Player name field and label.
         Table nameTable = new Table();
         Label enterName = new Label("Enter your username: ", skin);

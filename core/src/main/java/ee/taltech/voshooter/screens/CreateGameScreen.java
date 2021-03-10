@@ -142,7 +142,6 @@ public class CreateGameScreen implements Screen {
                 if (!playerNameField.getText().equals("")
                         && !playerNameField.getText().replace(" ", "").equals("")
                         && playerNameField.getText().length() >= 4) {
-
                     try {
                         parent.createNetworkClient();
                         parent.getClient().sendTCP(new SetUsername(playerNameField.getText()));
@@ -150,8 +149,6 @@ public class CreateGameScreen implements Screen {
                     } catch (IOException e) {
                         //.
                     }
-                } else {
-                    incorrectPlayerName.setVisible(true);
                 }
             }
         });
