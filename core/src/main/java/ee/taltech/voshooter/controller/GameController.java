@@ -49,4 +49,12 @@ public class GameController {
         }
         return pressedKeys;
     }
+
+    /**
+     * @param input Key to check.
+     * @return If the key is pressed down.
+     */
+    public boolean isPressed(Integer input) {
+        return getInputs().contains(input);
+    }
 }
