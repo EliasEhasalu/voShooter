@@ -26,7 +26,6 @@ public class CreateGameScreen implements Screen {
     private VoShooter parent;
     private Stage stage;
     private int playerCount = 4;
-    private int gamemode = 1;
     public VoShooter.Screen shouldChangeScreen;
     private Table popUpTable;
 
