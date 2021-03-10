@@ -78,6 +78,7 @@ public class LobbyScreen implements Screen {
             table.row().pad(10, 0, 0, 0);
         }
         table.add(leaveButton);
+        table.add(startGame);
 
         // Add button functionality.
         leaveButton.addListener(new ChangeListener() {
