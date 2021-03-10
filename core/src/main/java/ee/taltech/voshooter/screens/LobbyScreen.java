@@ -1,5 +1,11 @@
 package ee.taltech.voshooter.screens;
 
+import static ee.taltech.voshooter.VoShooter.Screen.MAIN;
+import static ee.taltech.voshooter.VoShooter.Screen.MENU;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,14 +17,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
 import ee.taltech.voshooter.VoShooter;
-import ee.taltech.voshooter.networking.messages.LeaveLobby;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static ee.taltech.voshooter.VoShooter.Screen.MAIN;
-import static ee.taltech.voshooter.VoShooter.Screen.MENU;
+import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 
 public class LobbyScreen implements Screen {
 

@@ -15,14 +15,14 @@ import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 
 import ee.taltech.voshooter.networking.Network;
-import ee.taltech.voshooter.networking.messages.CreateLobby;
-import ee.taltech.voshooter.networking.messages.JoinLobby;
-import ee.taltech.voshooter.networking.messages.LeaveLobby;
-import ee.taltech.voshooter.networking.messages.LobbyFull;
-import ee.taltech.voshooter.networking.messages.LobbyJoined;
-import ee.taltech.voshooter.networking.messages.NoSuchLobby;
-import ee.taltech.voshooter.networking.messages.SetUsername;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
+import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 
 public class VoServer {
 
