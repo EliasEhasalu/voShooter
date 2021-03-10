@@ -5,7 +5,7 @@ public class User {
     public String name;
     public String currentLobby;
     public boolean host = false;
-    public int id;
+    public long id;
 
     /**
      * Set whether this user object is a host or not.

@@ -29,7 +29,7 @@ public class VoServer {
 
     Server server;
 
-    private int playerId = 0;
+    private long playerId = 0;
     private Random rand = new Random();
 
     private Set<VoConnection> connections = new HashSet<>();
