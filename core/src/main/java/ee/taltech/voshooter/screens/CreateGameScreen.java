@@ -28,6 +28,7 @@ public class CreateGameScreen implements Screen {
     private int playerCount = 4;
     private int gamemode = 1;
     public VoShooter.Screen shouldChangeScreen;
+    private Table popUpTable;
 
     /**
      * Construct the menu screen.
@@ -57,6 +58,17 @@ public class CreateGameScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
+        // Table for no connection pop-up.
+        popUpTable = new Table();
+        stage.addActor(popUpTable);
+        popUpTable.setVisible(false);
+        popUpTable.setPosition((float) Gdx.graphics.getWidth() / 2, (float) Gdx.graphics.getHeight() / 2);
+        Label noConnection = new Label("Connection failed, try again.", skin);
+        TextButton closePopUp = new TextButton("Okay", skin);
+        popUpTable.add(noConnection);
+        popUpTable.row().pad(10, 0, 0, 0);
+        popUpTable.add(closePopUp);
+
         // Create the menu objects for our stage.
         Label createLobbyTitle = new Label("Create lobby", skin);
         Label chooseNameLabel = new Label("Choose name:", skin);
@@ -64,7 +76,8 @@ public class CreateGameScreen implements Screen {
         playerNameHintLabel.setColor(Color.RED);
         Label playersLabel = new Label("Players:", skin);
         Label playerCountLabel = new Label(String.valueOf(playerCount), skin);
-        Label gamemodeLabel = new Label("Gamemode: FFA", skin);
+        Label gameModeLabel = new Label("Gamemode:", skin);
+        Label gameModeLabel2 = new Label("FFA", skin);
         TextField playerNameField = new TextField("", skin);
         playerNameField.setMaxLength(12);
         stage.setKeyboardFocus(playerNameField);
@@ -87,7 +100,8 @@ public class CreateGameScreen implements Screen {
         playerCountTable.add(playerCountLabel).center().fillX();
         playerCountTable.add(playerCountIncrease).right();
         table.row().pad(10, 0, 0, 0);
-        table.add(gamemodeLabel).left();
+        table.add(gameModeLabel).left();
+        table.add(gameModeLabel2).center();
         table.row().pad(100, 0, 0, 0);
         table.add(back).left();
         table.add(createGame);
@@ -96,6 +110,14 @@ public class CreateGameScreen implements Screen {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 parent.changeScreen(MENU);
+            }
+        });
+
+        closePopUp.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                popUpTable.setVisible(false);
+                table.setVisible(true);
             }
         });
 
@@ -151,7 +173,8 @@ public class CreateGameScreen implements Screen {
                         parent.getClient().sendTCP(new SetUsername(playerNameField.getText()));
                         parent.getClient().sendTCP(new CreateLobby(1, playerCount));
                     } catch (IOException e) {
-                        //.
+                        popUpTable.setVisible(true);
+                        table.setVisible(false);
                     }
                 }
             }
