@@ -1,5 +1,7 @@
 package ee.taltech.voshooter.screens;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -8,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.GameController;
+import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 
 
 public class MainScreen implements Screen {
@@ -45,17 +48,16 @@ public class MainScreen implements Screen {
      */
     @Override
     public void render(float delta) {
-        if (shouldChangeScreen != null) {
-            parent.changeScreen(shouldChangeScreen);
-            shouldChangeScreen = null;
-        }
-        System.out.println(GameController.getInputs());
+        // Send player inputs to server every render loop.
+        List<Integer> inputs = GameController.getInputs();
+        if (!inputs.isEmpty()) parent.getClient().sendTCP(new MovePlayer(inputs));
+
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(1f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // And draw over it again.
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));  // Cap menu FPS to 30.
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap menu FPS to 64.
         stage.draw();
     }
 
