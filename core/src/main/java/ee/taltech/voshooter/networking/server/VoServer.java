@@ -170,7 +170,7 @@ public class VoServer {
         if (optLobby.isPresent()) {
             Lobby lobby = optLobby.get();
 
-            if (lobby.getHost() == connection) {
+            if (lobby.getHost() == connection && lobby.getPlayerCount() >= Lobby.MINIMUM_PLAYERS) {
                 lobby.sendGameStart();
             }
         }
