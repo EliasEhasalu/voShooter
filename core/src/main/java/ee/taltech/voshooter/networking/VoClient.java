@@ -12,6 +12,7 @@ import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 
@@ -54,6 +55,9 @@ public class VoClient {
                 } else if (message instanceof LobbyUserUpdate) {
                     LobbyUserUpdate update = (LobbyUserUpdate) message;
                     updateLobby(update);
+                } else if (message instanceof GameStarted) {
+                    System.out.println("HTHTSNGDSLGKJDSGKSDG");
+                    screenToChangeTo = VoShooter.Screen.MAIN;
                 }
 
                 // Define actions to be taken on the next cycle
