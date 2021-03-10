@@ -23,6 +23,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
+import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 
 public class VoServer {
 
@@ -86,6 +87,14 @@ public class VoServer {
             }
         });
 
+        server.addListener(
+        new RunMethodListener<StartGame>(StartGame.class) {
+            @Override
+            public void run(VoConnection c, StartGame msg) {
+                handleStartGame(c);
+            }
+        });
+
         server.bind(Network.PORT);
         server.start();
     }
@@ -115,7 +124,7 @@ public class VoServer {
      * @param msg The JoinLobby message {@link JoinLobby}
      */
     private void handleJoinLobby(VoConnection connection, JoinLobby msg) {
-        String code = ((JoinLobby) msg).lobbyCode.trim().toUpperCase();
+        String code = msg.lobbyCode.trim().toUpperCase();
         User user = connection.user;
 
         if (code != null && code != "" && lobbies.containsKey(code)) {
@@ -147,6 +156,14 @@ public class VoServer {
         if (lobby.getPlayerCount() == 0) {
             lobbies.remove(lobby.getLobbyCode());
         }
+    }
+
+    /**
+     * Start a game upon valid request.
+     * @param connection The connection that sent the start game request.
+     */
+    private void handleStartGame(VoConnection connection) {
+        // TODO
     }
 
     /**
