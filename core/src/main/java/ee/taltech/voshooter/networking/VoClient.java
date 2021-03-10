@@ -1,18 +1,23 @@
 package ee.taltech.voshooter.networking;
 
-import java.io.IOException;
 
+import java.io.IOException;
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.rmi.ObjectSpace;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.networking.messages.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.User;
 
 
 public class VoClient {
 
-    public RemoteInterface remote;
     public User clientUser = new User();
     public VoShooter parent;
     private Client client;
@@ -25,7 +30,7 @@ public class VoClient {
      * Construct the client.
      * @param parent A reference to the orchestrator object.
      */
-    public VoClient(VoShooter parent) {
+    public VoClient(VoShooter parent) throws IOException {
         this.parent = parent;
         client = new Client();
         client.start();
@@ -33,14 +38,13 @@ public class VoClient {
         // Agree on what messages should be passed.
         Network.register(client);
 
-        // Get the remote object on the server that we can call methods on.
-        remote = ObjectSpace.getRemoteObject(client, Network.REMOTE, RemoteInterface.class);
+        client.addListener(new ThreadedListener(new Listener() {
+            private VoShooter.Screen screenToChangeTo;
 
-        // Create a ClientInterface object, so the server can call methods on it.
-        serverEntry = new ServerEntry();
-        new ObjectSpace(client).register(Network.SERVER_ENTRY, serverEntry);
+            @Override
+            public void connected(Connection connection) {
+            }
 
-        new Thread("Connect") {
             @Override
             public void run() {
                 try {
@@ -48,8 +52,21 @@ public class VoClient {
                 } catch (IOException ex) {
                     client.close();
                 }
+
+                // Define actions to be taken on the next cycle
+                // of the OpenGL rendering thread.
+                Gdx.app.postRunnable(new Runnable() {
+                    public void run() {
+                        if (screenToChangeTo != null) {
+                            parent.changeScreen(screenToChangeTo);
+                            screenToChangeTo = null;
+                        }
+                    }
+                });
             }
-        }.start();
+        }));
+
+        client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
     }
 
     /** @return Whether or not client is connected. */
@@ -57,20 +74,12 @@ public class VoClient {
         return client.isConnected();
     }
 
-    private class ServerEntry implements ClientInterface {
-        /**
-         * Construct the server entry.
-         */
-        ServerEntry() {
-        }
-
-        /**
-         * Placeholder.
-         * @param update A list of user objects currently in the lobby.
-         */
-        @Override
-        public void updateLobbyUsers(LobbyUserUpdate update) {
-            parent.gameState.currentLobby.setUsers(update.users);
-        }
+    /**
+     * Update users currently in lobby.
+     * @param update Update containing users currently in the lobby.
+     */
+    private void updateLobby(LobbyUserUpdate update) {
+        List<User> users = update.users;
+        parent.gameState.currentLobby.setUsers(users);
     }
 }

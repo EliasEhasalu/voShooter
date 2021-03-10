@@ -1,9 +1,11 @@
 package ee.taltech.voshooter;
 
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.Game;
+import com.esotericsoftware.kryonet.Client;
 
 import ee.taltech.voshooter.gamestate.GameState;
 import ee.taltech.voshooter.networking.VoClient;
@@ -22,8 +24,8 @@ public class VoShooter extends Game {
     private MenuScreen menuScreen;
     private MainScreen mainScreen;
     private AppPreferences preferences;
-    private CreateGameScreen createGameScreen;
-    private JoinGameScreen joinGameScreen;
+    public CreateGameScreen createGameScreen;
+    public JoinGameScreen joinGameScreen;
     private LobbyScreen lobbyScreen;
     public VoClient client;
     public GameState gameState;
@@ -92,6 +94,13 @@ public class VoShooter extends Game {
     */
     public AppPreferences getPreferences() {
         return preferences;
+    }
+
+    /**
+     * @return The client where you can send outbound requests.
+     */
+    public Client getClient() {
+        return client.client;
     }
 
     /**

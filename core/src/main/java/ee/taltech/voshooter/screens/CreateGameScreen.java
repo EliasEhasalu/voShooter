@@ -14,10 +14,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
-import ee.taltech.voshooter.networking.messages.LobbyCreated;
+import ee.taltech.voshooter.networking.messages.CreateLobby;
+import ee.taltech.voshooter.networking.messages.SetUsername;
 
-import static ee.taltech.voshooter.VoShooter.Screen.LOBBY;
 import static ee.taltech.voshooter.VoShooter.Screen.MENU;
+
+import java.io.IOException;
 
 public class CreateGameScreen implements Screen {
 
@@ -25,6 +27,7 @@ public class CreateGameScreen implements Screen {
     private Stage stage;
     private int playerCount = 4;
     private int gamemode = 1;
+    public VoShooter.Screen shouldChangeScreen;
 
     /**
      * Construct the menu screen.
@@ -123,19 +126,13 @@ public class CreateGameScreen implements Screen {
                 if (!playerNameField.getText().equals("")
                         && !playerNameField.getText().replace(" ", "").equals("")) {
 
-                    parent.createNetworkClient();
-                    parent.client.remote.setUserName(playerNameField.getText());
-                    LobbyCreated newLobby = parent.client.remote.createLobby(playerCount, gamemode);
-
-                    parent.gameState.clientUser.setHost(true);
-                    parent.gameState.clientUser.setName(playerNameField.getText());
-
-                    parent.gameState.currentLobby.setGamemode(gamemode);
-                    parent.gameState.currentLobby.setMaxUsers(playerCount);
-                    parent.gameState.currentLobby.addUser(parent.gameState.clientUser);
-                    parent.gameState.currentLobby.setLobbyCode(newLobby.lobbyCode);
-
-                    parent.changeScreen(LOBBY);
+                    try {
+                        parent.createNetworkClient();
+                        parent.getClient().sendTCP(new SetUsername(playerNameField.getText()));
+                        parent.getClient().sendTCP(new CreateLobby(1, playerCount));
+                    } catch (IOException e) {
+                        //.
+                    }
                 } else {
                     incorrectPlayerName.setVisible(true);
                 }
@@ -149,6 +146,10 @@ public class CreateGameScreen implements Screen {
     @Override
     public void render(float delta) {
         // Refresh the graphics renderer every cycle.
+        if (shouldChangeScreen != null) {
+            parent.changeScreen(shouldChangeScreen);
+            shouldChangeScreen = null;
+        }
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
