@@ -126,6 +126,7 @@ public class JoinGameScreen implements Screen {
                     try {
                         String name = playerName.getText().trim();
                         parent.gameState.clientUser.setName(name);
+                        parent.gameState.clientUser.setHost(false);
                         parent.createNetworkClient();
                         parent.getClient().sendTCP(new SetUsername(name));
                         parent.getClient().sendTCP(new JoinLobby(gameCode.getText().trim()));
