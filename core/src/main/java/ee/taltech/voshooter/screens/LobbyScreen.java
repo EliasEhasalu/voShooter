@@ -1,6 +1,5 @@
 package ee.taltech.voshooter.screens;
 
-import static ee.taltech.voshooter.VoShooter.Screen.MAIN;
 import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 
 public class LobbyScreen implements Screen {
 
@@ -99,8 +99,7 @@ public class LobbyScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (parent.gameState.clientUser.isHost()) {
                     playerNameLabels.clear();
-                    parent.changeScreen(MAIN);
-                    System.out.println("Go To Main.");
+                    parent.getClient().sendTCP(new StartGame());
                 }
             }
         });
@@ -117,10 +116,12 @@ public class LobbyScreen implements Screen {
 
         // Clear all slots from last frame.
         for (int i = 0; i < maxPlayers; i++) {
-            playerNameLabels.get(i).setText(LobbyScreen.EMPTY_SLOT);
+            if (playerNameLabels.size() > i) {
+                playerNameLabels.get(i).setText(LobbyScreen.EMPTY_SLOT);
+            }
         }
         for (int i = 0; i < maxPlayers; i++) {
-            if (i < joinedPlayers) {
+            if (i < joinedPlayers && playerNameLabels.size() > i) {
                 User user = parent.gameState.currentLobby.getUsers().get(i);
                 if (user.isHost()) {
                     playerNameLabels.get(i).setText(user.getName() + "   < Host");

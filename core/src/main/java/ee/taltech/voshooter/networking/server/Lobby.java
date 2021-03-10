@@ -11,6 +11,8 @@ import ee.taltech.voshooter.networking.server.VoServer.VoConnection;
 
 public class Lobby {
 
+    public static final int MINIMUM_PLAYERS = 2;
+
     private int maxUsers;
     private int gameMode;
     private String lobbyCode;

@@ -170,7 +170,7 @@ public class VoServer {
         if (optLobby.isPresent()) {
             Lobby lobby = optLobby.get();
 
-            if (lobby.getHost() == connection) {
+            if (lobby.getHost() == connection && lobby.getPlayerCount() >= Lobby.MINIMUM_PLAYERS) {
                 lobby.sendGameStart();
             }
         }
@@ -241,9 +241,7 @@ public class VoServer {
      * @return Whether a specified lobby exists.
      */
     private boolean lobbyExists(String lobbyCode) {
-        if (lobbyCode == null) return false;
-        if (!lobbies.containsKey(lobbyCode)) return false;
-        return true;
+        return (lobbyCode != null && lobbies.containsKey(lobbyCode));
     }
 
     /** @return A unique lobby code for a newly created lobby. */
