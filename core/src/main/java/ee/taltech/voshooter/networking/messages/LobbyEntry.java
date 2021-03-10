@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * This class specifies the state of the lobby at the time of entering it.
  */
-public class LobbyJoined {
+public class LobbyEntry {
 
     public int gameMode;
     public int maxPlayers;
@@ -14,7 +14,7 @@ public class LobbyJoined {
     public User host;
 
     /** For serialization. */
-    public LobbyJoined() {
+    public LobbyEntry() {
     }
 
     /**
@@ -24,7 +24,7 @@ public class LobbyJoined {
      * @param users List of users in this lobby.
      * @param host The host of the lobby.
      */
-    public LobbyJoined(int gameMode, int maxPlayers, String lobbyCode, List<User> users, User host) {
+    public LobbyEntry(int gameMode, int maxPlayers, String lobbyCode, List<User> users, User host) {
         this.gameMode = gameMode;
         this.maxPlayers = maxPlayers;
         this.lobbyCode = lobbyCode;
