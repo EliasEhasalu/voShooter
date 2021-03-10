@@ -1,6 +1,6 @@
 package ee.taltech.voshooter.gamestate;
 
-import ee.taltech.voshooter.networking.messages.LobbyEntry;
+import ee.taltech.voshooter.networking.messages.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.User;
 
 import java.util.ArrayList;
@@ -134,7 +134,10 @@ public class ClientLobby {
      * Set initial parameters upon joining lobby.
      * @param message The message with lobby info received from the server.
      */
-    public void handleJoining(LobbyEntry message) {
+    public void handleJoining(LobbyJoined message) {
+        if (message.host.id == parent.clientUser.id) {
+            parent.clientUser.setHost(true);
+        }
         setGamemode(message.gameMode);
         setMaxUsers(message.maxPlayers);
         addUser(parent.clientUser);
