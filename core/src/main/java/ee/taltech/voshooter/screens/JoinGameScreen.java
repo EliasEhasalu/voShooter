@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.JoinLobby;
@@ -61,6 +62,19 @@ public class JoinGameScreen implements Screen {
         table.setVisible(true);
         stage.addActor(table);
 
+
+        // Table for no connection pop-up.
+        popUpTable = new Table();
+        stage.addActor(popUpTable);
+        popUpTable.setVisible(false);
+        popUpTable.setPosition((float) Gdx.graphics.getWidth() / 2, (float) Gdx.graphics.getHeight() / 2);
+        Label noConnection = new Label("Connection failed, try again.", skin);
+        TextButton closePopUp = new TextButton("Okay", skin);
+        popUpTable.add(noConnection);
+        popUpTable.row().pad(10, 0, 0, 0);
+        popUpTable.add(closePopUp);
+
+
         join = new TextButton("Join lobby", skin);
         TextButton back = new TextButton("Back", skin);
 
@@ -79,6 +93,7 @@ public class JoinGameScreen implements Screen {
         Table nameTable = new Table();
         Label enterName = new Label("Enter your username: ", skin);
         TextField playerName = new TextField("", skin);
+        playerName.setMaxLength(12);
         nameLengthCheck = new Label("Too short", skin);
         nameLengthCheck.setColor(255, 0, 0, 255);
 
@@ -86,25 +101,33 @@ public class JoinGameScreen implements Screen {
         Table codeTable = new Table();
         Label enterCode = new Label("Enter lobby code: ", skin);
         TextField gameCode = new TextField("", skin);
+        gameCode.setMaxLength(6);
         gameCodeCheck = new Label("Too short", skin);
         gameCodeCheck.setColor(255, 0, 0, 255);
 
+        // Add name label and field to table.
         nameTable.add(enterName).left().pad(0, 0, 0, 10);
-        nameTable.add(playerName).right();
+        nameTable.add(playerName).right().width(210);
         table.add(nameTable).fill();
         table.row().pad(10, 0, 0, 0);
         table.add(nameLengthCheck).fill();
+        nameLengthCheck.setAlignment(Align.center);
         table.row().pad(10, 0, 0, 0);
+
+        // Add code label and field to table.
         codeTable.add(enterCode).left().pad(0, 0, 0, 10);
-        codeTable.add(gameCode).right();
+        codeTable.add(gameCode).right().width(115);
         table.add(codeTable).fill();
         table.row().pad(10, 0, 0, 0);
         table.add(gameCodeCheck).fill();
+        gameCodeCheck.setAlignment(Align.center);
         table.row().pad(10, 0, 0, 0);
-        table.add(join).fill().maxWidth(234);
+
+        //
+        table.add(join).fill().maxWidth(200);
         table.row().pad(10, 0, 0, 0);
-        bottomTable.add(back).left().pad(0, 0, 0, 10);
-        table.add(bottomTable).fill();
+        bottomTable.add(back).left().pad(0, 0, 0, 10).maxWidth(200);
+        table.add(bottomTable).fill().maxWidth(200);
 
         // Add button functionality.
         join.addListener(new ChangeListener() {
@@ -118,7 +141,8 @@ public class JoinGameScreen implements Screen {
                         parent.getClient().sendTCP(new SetUsername(name));
                         parent.getClient().sendTCP(new JoinLobby(gameCode.getText().trim()));
                     } catch (IOException e) {
-                       //.
+                        popUpTable.setVisible(true);
+                        table.setVisible(false);
                     }
                 }
             }
@@ -174,6 +198,14 @@ public class JoinGameScreen implements Screen {
                     gameCodeCheck.setColor(0, 255, 0, 255);
                     isCodeGood = true;
                 }
+            }
+        });
+
+        closePopUp.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                popUpTable.setVisible(false);
+                table.setVisible(true);
             }
         });
     }
