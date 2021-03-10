@@ -5,16 +5,17 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.GameController;
+import ee.taltech.voshooter.entity.player.Player;
+import ee.taltech.voshooter.geometry.Pos;
+import ee.taltech.voshooter.rendering.Drawable;
 
 import java.util.ArrayList;
 
@@ -25,7 +26,6 @@ public class MainScreen implements Screen {
     private Stage stage;
     public VoShooter.Screen shouldChangeScreen;
     OrthographicCamera camera;
-    Texture img;
     TiledMap tiledMap;
     TiledMapRenderer tiledMapRenderer;
 
@@ -38,6 +38,12 @@ public class MainScreen implements Screen {
 
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
+
+        // Create the player controller and the player.
+        parent.gameState.createController();
+        Player newPlayer = new Player(new Pos(0, 0));
+        parent.gameState.playerCharacter = newPlayer;
+        parent.gameState.addEntity(newPlayer);
     }
 
     /**
@@ -55,9 +61,6 @@ public class MainScreen implements Screen {
         // Have it handle player's input.
         Gdx.input.setInputProcessor(stage);
         stage.clear();
-
-        // A Skin object defines the theme for menu objects.
-        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     }
 
     /**
@@ -70,7 +73,7 @@ public class MainScreen implements Screen {
             shouldChangeScreen = null;
         }
         // Refresh the graphics renderer every cycle.
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0.25882354f, 0.25882354f, 0.90588236f, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         handleInputs();
@@ -81,6 +84,14 @@ public class MainScreen implements Screen {
         // And draw over it again.
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));  // Cap menu FPS to 30.
         stage.draw();
+
+        // Draw drawable entities to the stage.
+        stage.getBatch().setProjectionMatrix(camera.combined);
+        stage.getBatch().begin();
+        for (Drawable drawable : parent.gameState.getDrawables()) {
+            drawable.getSprite().draw(stage.getBatch());
+        }
+        stage.getBatch().end();
     }
 
     /**
