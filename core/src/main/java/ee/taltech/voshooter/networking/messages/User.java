@@ -4,7 +4,7 @@ public class User {
 
     public String name;
     public String currentLobby;
-    public boolean host;
+    public boolean host = false;
     public int id;
 
     /**

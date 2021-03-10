@@ -85,6 +85,7 @@ public class LobbyScreen implements Screen {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 parent.gameState.currentLobby.clearLobby();
+                parent.gameState.clientUser.setHost(false);
                 playerNameLabels.clear();
                 parent.getClient().sendTCP(new LeaveLobby());
                 parent.changeScreen(MENU);
