@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -163,7 +164,16 @@ public class VoServer {
      * @param connection The connection that sent the start game request.
      */
     private void handleStartGame(VoConnection connection) {
-        // TODO
+        User user = connection.user;
+        Optional<Lobby> optLobby = getUserLobby(user);
+
+        if (optLobby.isPresent()) {
+            Lobby lobby = optLobby.get();
+
+            if (lobby.getHost() == connection) {
+                lobby.sendGameStart();
+            }
+        }
     }
 
     /**
@@ -212,6 +222,28 @@ public class VoServer {
             && username.length() >= 4
             && username.length() <= 12
         );
+    }
+
+    /**
+     * Return the lobby object the specified user is in.
+     * @return The lobby object the user is in.
+     * @param user The examined user.
+     */
+    private Optional<Lobby> getUserLobby(User user) {
+        String lobbyCode = user.currentLobby;
+
+        if (!lobbyExists(lobbyCode)) return Optional.empty();
+        return Optional.of(lobbies.get(lobbyCode));
+    }
+
+    /**
+     * @param lobbyCode The lobby code queried.
+     * @return Whether a specified lobby exists.
+     */
+    private boolean lobbyExists(String lobbyCode) {
+        if (lobbyCode == null) return false;
+        if (!lobbies.containsKey(lobbyCode)) return false;
+        return true;
     }
 
     /** @return A unique lobby code for a newly created lobby. */
