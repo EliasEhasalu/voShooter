@@ -241,9 +241,7 @@ public class VoServer {
      * @return Whether a specified lobby exists.
      */
     private boolean lobbyExists(String lobbyCode) {
-        if (lobbyCode == null) return false;
-        if (!lobbies.containsKey(lobbyCode)) return false;
-        return true;
+        return (lobbyCode != null && lobbies.containsKey(lobbyCode));
     }
 
     /** @return A unique lobby code for a newly created lobby. */
