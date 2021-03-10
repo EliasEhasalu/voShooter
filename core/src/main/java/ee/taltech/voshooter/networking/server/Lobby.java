@@ -99,6 +99,7 @@ public class Lobby {
      * @param connection The connection to set the host as.
      */
     protected void setHost(VoConnection connection) {
+        connection.user.setHost(true);
         this.host = connection;
     }
 
