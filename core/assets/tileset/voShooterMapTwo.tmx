@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="29" height="29" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="1">
+ <tileset firstgid="1" source="voShooterTileSet.tsx"/>
+ <layer id="1" name="Background" width="29" height="29">
+  <data encoding="base64" compression="zlib">
+   eJztwwEJAAAMBKGD7995sBwKrpqqqqr/AOWACdw=
+  </data>
+ </layer>
+ <layer id="4" name="WhiteBackGround" width="29" height="29">
+  <data encoding="base64" compression="zlib">
+   eJztw8EJAAAMA6F7ZP+ZC51DwVVTVVX1H4L+DSU=
+  </data>
+ </layer>
+ <layer id="2" name="Walls" width="29" height="29">
+  <data encoding="base64" compression="zlib">
+   eJydVFsOwCAIw/tfer+k6YuZLCoWqFj2ZuaJb9a8xz7DczxzsV3cbUM72hxXhXcxFZeGk+PY+DgujNs1Z8Kp0eRsfRiurT3GS7r9M1806/ip/ZD9NZbThIulfFQNWT73T1Br90ZDMGjDNYvNOLW6TbkVJp01vaFwrq8xZ+rpSw3Te7uasjs0veU0kXI7n1Zjip8aqX9dDhUr6Z5pJuma5XC8ko6cH8M0+RDr3lzxSOfpTdteu3B1Or8MpWFcsz1yYbZ0n/ZfgHOjS+XT1D3VPvFhdse1qVnTt2zt7qNiXe6pMMofR6N9hkX+F+wf3V40pvbo8wHGOgGm
+  </data>
+ </layer>
+ <layer id="3" name="Test" width="29" height="29">
+  <data encoding="base64" compression="zlib">
+   eJydVFsOwCAII97/0PslTV/MZFGxQMWyNzNPfLPmPfYZnuOZi+3ibhva0ea4KryLqbg0nBzHxsdxYdyuORNOjSZn68Nwbe0xXtLtn/miWcdP7Yfsr7GcJlws5aNqyPK5f4JauzcagkEbrllsxqnVbcqtMOms6Q2Fc32NOVNPX2qY3tvVlN2h6S2niZTb+bQaU/zUSP3rcqhYSfdMM0nXLIfjlXTk/BimyYdY9+aKRzpPb9r22oWr0/llKA3jmu2RC7Ol+7T/ApwbXSqfpu6p9okPszuuTc2avmVrdx8V63JPhVH+OBrtMyzyv2D/6PaiMbVHnw9/XwNL
+  </data>
+ </layer>
+</map>
