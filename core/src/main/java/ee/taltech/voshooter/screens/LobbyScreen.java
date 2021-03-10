@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 
 public class LobbyScreen implements Screen {
@@ -119,7 +120,10 @@ public class LobbyScreen implements Screen {
         }
         for (int i = 0; i < maxPlayers; i++) {
             if (i < joinedPlayers) {
-                playerNameLabels.get(i).setText(parent.gameState.currentLobby.getUsers().get(i).getName());
+                User user = parent.gameState.currentLobby.getUsers().get(i);
+                if (user.isHost()) {
+                    playerNameLabels.get(i).setText(user.getName() + "   < Host");
+                } else playerNameLabels.get(i).setText(user.getName());
             }
         }
 
