@@ -144,6 +144,10 @@ public class CreateGameScreen implements Screen {
                         && playerNameField.getText().length() >= 4) {
                     try {
                         parent.createNetworkClient();
+
+                        parent.gameState.clientUser.setName(playerNameField.getText());
+                        parent.gameState.clientUser.setHost(true);
+
                         parent.getClient().sendTCP(new SetUsername(playerNameField.getText()));
                         parent.getClient().sendTCP(new CreateLobby(1, playerCount));
                     } catch (IOException e) {
