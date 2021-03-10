@@ -16,8 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
-import ee.taltech.voshooter.networking.messages.JoinLobby;
-import ee.taltech.voshooter.networking.messages.SetUsername;
+import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 
 
 public class JoinGameScreen implements Screen {
