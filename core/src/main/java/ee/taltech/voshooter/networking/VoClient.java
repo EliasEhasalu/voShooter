@@ -56,7 +56,6 @@ public class VoClient {
                     LobbyUserUpdate update = (LobbyUserUpdate) message;
                     updateLobby(update);
                 } else if (message instanceof GameStarted) {
-                    System.out.println("HTHTSNGDSLGKJDSGKSDG");
                     screenToChangeTo = VoShooter.Screen.MAIN;
                 }
 
