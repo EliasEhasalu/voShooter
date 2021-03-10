@@ -1,9 +1,18 @@
 package ee.taltech.voshooter;
 
 
-import com.badlogic.gdx.Game;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
+import com.badlogic.gdx.Game;
+import com.esotericsoftware.kryonet.Client;
+
+import ee.taltech.voshooter.gamestate.GameState;
+import ee.taltech.voshooter.networking.VoClient;
+import ee.taltech.voshooter.screens.CreateGameScreen;
+import ee.taltech.voshooter.screens.JoinGameScreen;
 import ee.taltech.voshooter.screens.LoadingScreen;
+import ee.taltech.voshooter.screens.LobbyScreen;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.screens.MenuScreen;
 import ee.taltech.voshooter.screens.PreferencesScreen;
@@ -14,12 +23,21 @@ public class VoShooter extends Game {
     private PreferencesScreen preferencesScreen;
     private MenuScreen menuScreen;
     private MainScreen mainScreen;
+    private AppPreferences preferences;
+    public CreateGameScreen createGameScreen;
+    public JoinGameScreen joinGameScreen;
+    private LobbyScreen lobbyScreen;
+    public VoClient client;
+    public GameState gameState;
 
     public enum Screen {
         LOADING,
         MENU,
         PREFERENCES,
-        MAIN
+        MAIN,
+        CREATE_GAME,
+        JOIN_GAME,
+        LOBBY
     }
 
     /**
@@ -27,6 +45,8 @@ public class VoShooter extends Game {
      */
     @Override
     public void create() {
+        preferences = new AppPreferences();
+        gameState = new GameState();
         changeScreen(VoShooter.Screen.LOADING);
     }
 
@@ -52,9 +72,45 @@ public class VoShooter extends Game {
                 if (loadingScreen == null) loadingScreen = new LoadingScreen(this);
                 setScreen(loadingScreen);
                 break;
+            case CREATE_GAME:
+                if (createGameScreen == null) createGameScreen = new CreateGameScreen(this);
+                setScreen(createGameScreen);
+                break;
+            case JOIN_GAME:
+                if (joinGameScreen == null) joinGameScreen = new JoinGameScreen(this);
+                setScreen(joinGameScreen);
+                break;
+            case LOBBY:
+                if (lobbyScreen == null) lobbyScreen = new LobbyScreen(this);
+                setScreen(lobbyScreen);
+                break;
             default:
                 // Noop.
         }
     }
-}
 
+    /**
+    * @return The object defining the user's app preferences.
+    */
+    public AppPreferences getPreferences() {
+        return preferences;
+    }
+
+    /**
+     * @return The client where you can send outbound requests.
+     */
+    public Client getClient() {
+        return client.client;
+    }
+
+    /**
+     * Used to instantiate a new VoClient object for communication
+     * with the server.
+     */
+    public void createNetworkClient() throws IOException {
+        if (client == null) client = new VoClient(this);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ignored) { }
+    }
+}

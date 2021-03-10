@@ -13,6 +13,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import ee.taltech.voshooter.VoShooter;
 
+import static ee.taltech.voshooter.VoShooter.Screen.CREATE_GAME;
+import static ee.taltech.voshooter.VoShooter.Screen.JOIN_GAME;
+
 public class MenuScreen implements Screen {
 
     private VoShooter parent;
@@ -27,8 +30,6 @@ public class MenuScreen implements Screen {
 
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
-        // Have it handle player's input.
-        Gdx.input.setInputProcessor(stage);
     }
 
     /**
@@ -36,6 +37,9 @@ public class MenuScreen implements Screen {
      */
     @Override
     public void show() {
+        // Have it handle player's input.
+        Gdx.input.setInputProcessor(stage);
+
         // Add a table which will contain menu items to the stage.
         Table table = new Table();
         table.setFillParent(true);
@@ -58,6 +62,28 @@ public class MenuScreen implements Screen {
         table.add(preferences).fillX().uniformX();
         table.row();
         table.add(exit).fillX().uniformX();
+
+
+        joinGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.changeScreen(JOIN_GAME);
+            }
+        });
+
+        createGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                parent.changeScreen(CREATE_GAME);
+            }
+        });
+
+        preferences.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.changeScreen(VoShooter.Screen.PREFERENCES);
+            }
+        });
 
         exit.addListener(new ChangeListener() {
             @Override
@@ -91,25 +117,21 @@ public class MenuScreen implements Screen {
 
     @Override
     public void pause() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void resume() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void hide() {
-        // TODO Auto-generated method stub
-
     }
 
+    /**
+     * Free memory of assets when done.
+     */
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
-
+        stage.dispose();
     }
 }
