@@ -20,7 +20,8 @@ public class VoClient {
 
     public User clientUser = new User();
     public VoShooter parent;
-    public Client client;
+    private Client client;
+    ServerEntry serverEntry;
 
     private static final String HOST_ADDRESS = "localhost";
     private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
@@ -45,15 +46,11 @@ public class VoClient {
             }
 
             @Override
-            public void received(Connection connection, Object message) {
-
-                if (message instanceof LobbyJoined) {
-                    LobbyJoined mes = (LobbyJoined) message;
-                    screenToChangeTo = VoShooter.Screen.LOBBY;
-                    joinLobby(mes);
-                } else if (message instanceof LobbyUserUpdate) {
-                    LobbyUserUpdate update = (LobbyUserUpdate) message;
-                    updateLobby(update);
+            public void run() {
+                try {
+                    client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
+                } catch (IOException ex) {
+                    client.close();
                 }
 
                 // Define actions to be taken on the next cycle
@@ -72,12 +69,9 @@ public class VoClient {
         client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
     }
 
-    /**
-     * Join a lobby.
-     * @param msg The message describing the information about the lobby.
-     */
-    private void joinLobby(LobbyJoined msg) {
-            parent.gameState.currentLobby.handleJoining(msg);
+    /** @return Whether or not client is connected. */
+    public boolean isConnected() {
+        return client.isConnected();
     }
 
     /**
