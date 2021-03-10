@@ -111,8 +111,7 @@ public class VoShooter extends Game {
         if (client == null) client = new VoClient(this);
         try {
             TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ignored) {
         }
     }
 }

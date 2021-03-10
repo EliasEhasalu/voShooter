@@ -24,6 +24,7 @@ public class JoinGameScreen implements Screen {
     private VoShooter parent;
     private Stage stage;
     private TextButton join;
+    private Table popUpTable;
     private Label nameLengthCheck;
     private boolean isNameGood = false;
     private Label gameCodeCheck;
@@ -56,11 +57,23 @@ public class JoinGameScreen implements Screen {
         // Add a table which will contain game creation settings.
         Table table = new Table();
         Table bottomTable = new Table();
-        table.setFillParent(true);
+        table.setPosition((float) Gdx.graphics.getWidth() / 2, (float) Gdx.graphics.getHeight() / 2);
+        table.setVisible(true);
         stage.addActor(table);
 
         join = new TextButton("Join lobby", skin);
         TextButton back = new TextButton("Back", skin);
+
+        // Table for no connection pop-up.
+        popUpTable = new Table();
+        stage.addActor(popUpTable);
+        popUpTable.setVisible(false);
+        popUpTable.setPosition((float) Gdx.graphics.getWidth() / 2, (float) Gdx.graphics.getHeight() / 2);
+        Label noConnection = new Label("Connection failed, try again.", skin);
+        TextButton closePopUp = new TextButton("Okay", skin);
+        popUpTable.add(noConnection);
+        popUpTable.row().pad(10, 0, 0, 0);
+        popUpTable.add(closePopUp);
 
         // Player name field and label.
         Table nameTable = new Table();
@@ -115,6 +128,14 @@ public class JoinGameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 parent.changeScreen(VoShooter.Screen.MENU);
+            }
+        });
+
+        closePopUp.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                popUpTable.setVisible(false);
+                table.setVisible(true);
             }
         });
 
