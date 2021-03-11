@@ -195,7 +195,7 @@ public class VoServer {
             Lobby lobby = optLobby.get();
 
             if (lobby.getGame() != null) {
-                lobby.getGame().addUpdate(msg.keyPresses);
+                lobby.getGame().addUpdate(c, msg);
             }
         }
     }
