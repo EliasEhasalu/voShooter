@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GameController {
 
@@ -11,8 +12,8 @@ public class GameController {
      * Get inputs of object and handle them.
      * @return ArrayList of keys and buttons currently pressed
      */
-    public static ArrayList<PlayerAction> getInputs() {
-        ArrayList<PlayerAction> pressedKeys = new ArrayList<>();
+    public static List<PlayerAction> getInputs() {
+        List<PlayerAction> pressedKeys = new ArrayList<>();
 
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             pressedKeys.add(PlayerAction.MOVE_LEFT);

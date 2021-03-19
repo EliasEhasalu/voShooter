@@ -11,6 +11,8 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
@@ -41,6 +43,7 @@ public class VoClient {
 
         client.addListener(new ThreadedListener(new Listener() {
             private VoShooter.Screen screenToChangeTo;
+            private GameStarted gameStart;
 
             @Override
             public void connected(Connection connection) {
@@ -57,6 +60,7 @@ public class VoClient {
                     LobbyUserUpdate update = (LobbyUserUpdate) message;
                     updateLobby(update);
                 } else if (message instanceof GameStarted) {
+                    gameStart = (GameStarted) message;
                     screenToChangeTo = VoShooter.Screen.MAIN;
                 } else if (message instanceof PlayerPositionUpdate) {
                     updatePlayerPositions((PlayerPositionUpdate) message);
@@ -69,6 +73,10 @@ public class VoClient {
                         if (screenToChangeTo != null) {
                             parent.changeScreen(screenToChangeTo);
                             screenToChangeTo = null;
+                        }
+                        if (gameStart != null) {
+                            createPlayerObjects(gameStart);
+                            gameStart = null;
                         }
                     }
                 });
@@ -95,7 +103,19 @@ public class VoClient {
         parent.gameState.currentLobby.setUsers(users);
     }
 
+    private void createPlayerObjects(GameStarted msg) {
+        for (Player p : msg.players) {
+            ClientPlayer newP = new ClientPlayer(p.pos, p.id, p.name);
+            parent.gameState.addEntity(newP);
+        }
+    }
+
     private void updatePlayerPositions(PlayerPositionUpdate msg) {
-        System.out.println(msg.players);
+        System.out.printf("(%f, %f) - %d %n", msg.pos.getX(), msg.pos.getY(), msg.id);
+        for (ClientPlayer p : parent.gameState.players) {
+            if (p.getId() == msg.id) {
+                p.setPos(msg.pos);
+            }
+        }
     }
 }

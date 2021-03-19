@@ -15,8 +15,8 @@ public class Game extends Thread {
     private static final double TICK_RATE_IN_HZ = 64.0;
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
-    private static final float DRAG_CONSTANT = 0.9f;
-    private static final float BASE_MOVEMENT_SPEED = (float) (20.0f / TICK_RATE_IN_HZ);
+    private static final float DRAG_CONSTANT = 0.85f;
+    private static final float BASE_MOVEMENT_SPEED = (float) (120.0f / TICK_RATE_IN_HZ);
 
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new HashMap<>();
     private boolean running = false;
@@ -56,13 +56,13 @@ public class Game extends Thread {
     private void handleInputs(VoConnection c, Set<PlayerAction> actions) {
         actions.forEach(a -> {
             if (a == PlayerAction.MOVE_LEFT) {
-                move(-1, 0, c);
+                applyForce(-1, 0, c);
             } else if (a == PlayerAction.MOVE_RIGHT) {
-                move(1, 0, c);
+                applyForce(1, 0, c);
             } else if (a == PlayerAction.MOVE_UP) {
-                move(0, -1, c);
+                applyForce(0, 1, c);
             } else if (a == PlayerAction.MOVE_DOWN) {
-                move(0, 1, c);
+                applyForce(0, -1, c);
             }
         });
     }
@@ -73,7 +73,7 @@ public class Game extends Thread {
      * @param yDir The direction to move on the y axis.
      * @param c    The connection requesting the action.
      */
-    private void move(int xDir, int yDir, VoConnection c) {
+    private void applyForce(int xDir, int yDir, VoConnection c) {
         Vector2 shift = new Vector2(BASE_MOVEMENT_SPEED * xDir, BASE_MOVEMENT_SPEED * yDir);
 
         c.player.vel.add(shift);
@@ -111,7 +111,9 @@ public class Game extends Thread {
                 .collect(Collectors.toList());
 
         for (VoConnection c : connectionInputs.keySet()) {
-            c.sendTCP(new PlayerPositionUpdate(players));
+            for (Player p : players) {
+                c.sendTCP(new PlayerPositionUpdate(p.pos, p.id));
+            }
         }
     }
 
@@ -140,6 +142,15 @@ public class Game extends Thread {
                 delta--;
             }
         }
+    }
+
+    /**
+     * @return A list of player objects in this game.
+     */
+    public List<Player> getPlayers() {
+       return connectionInputs.keySet().stream()
+               .map(c -> c.player)
+               .collect(Collectors.toList());
     }
 
     /** Close the game simulation. */

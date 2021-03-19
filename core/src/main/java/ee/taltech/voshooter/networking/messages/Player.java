@@ -4,10 +4,13 @@ import com.badlogic.gdx.math.Vector2;
 import ee.taltech.voshooter.geometry.Movable;
 import ee.taltech.voshooter.geometry.Pos;
 
-public class Player implements Movable {
+public class Player {
 
     public Pos pos;
+    public Pos prevPos;
     public Vector2 vel;
+    public long id;
+    public String name;
 
     public Player() {
     }
@@ -15,21 +18,11 @@ public class Player implements Movable {
     /**
      * @param initialPos The starting position of the player.
      */
-    public Player(Pos initialPos) {
+    public Player(Pos initialPos, long id, String name) {
         this.pos = initialPos;
         this.vel = new Vector2(0f, 0f);
-    }
-
-    /**
-     * Move the player.
-     * @param newPos The position to move the player to.
-     */
-    public void setPos(Pos newPos) {
-        this.pos = newPos;
-    }
-
-    public void setVel(Vector2 newVel) {
-        this.vel = newVel;
+        this.id = id;
+        this.name = name;
     }
 
     public String toString() {
