@@ -13,7 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
 public class PreferencesScreen implements Screen {
 
@@ -49,7 +51,7 @@ public class PreferencesScreen implements Screen {
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         // Create the settings objects for our stage.
-        final Slider volumeMusicSlider = new Slider(0, 100, 5, false, skin);
+        final Slider volumeMusicSlider = new Slider(0.0f, 1.0f, 0.05f, false, skin);
         final Slider volumeSoundSlider = new Slider(0, 100, 5, false, skin);
         final TextButton returnToMenuScreen = new TextButton("Main menu", skin);
 
@@ -57,8 +59,11 @@ public class PreferencesScreen implements Screen {
         final Label volumeMusicLabel = new Label("Music volume", skin);
         final Label volumeSoundLabel = new Label("Sound volume", skin);
 
-        volumeMusicIndicator = new Label(String.valueOf(volumeMusicSlider.getValue()), skin);
+        volumeMusicIndicator = new Label(String.valueOf(Math.round(volumeMusicSlider.getValue() * 100)), skin);
         volumeSoundIndicator = new Label(String.valueOf(volumeSoundSlider.getValue()), skin);
+
+        // Music.
+        MusicPlayer.setMusic("soundfx/bensound-evolution.mp3");
 
         // Add the sliders and labels to the table.
         table.add(titleLabel).fillX().uniformX().pad(0, 0, 20, 0).bottom().right();
@@ -79,16 +84,16 @@ public class PreferencesScreen implements Screen {
         table.pack();
 
         // Slider and button functionality.
-        volumeMusicSlider.setValue(parent.getPreferences().getMusicVolume());
+        volumeMusicSlider.setValue(AppPreferences.getMusicVolume());
         volumeMusicSlider.addListener(event -> {
-            parent.getPreferences().setMusicVolume(volumeMusicSlider.getValue());
-            volumeMusicIndicator.setText(String.valueOf(volumeMusicSlider.getValue()));
+            AppPreferences.setMusicVolume(volumeMusicSlider.getValue());
+            volumeMusicIndicator.setText(String.valueOf(Math.round(volumeMusicSlider.getValue() * 100)));
             return false;
         });
 
-        volumeSoundSlider.setValue(parent.getPreferences().getSoundVolume());
+        volumeSoundSlider.setValue(AppPreferences.getSoundVolume());
         volumeSoundSlider.addListener(event -> {
-            parent.getPreferences().setSoundVolume(volumeSoundSlider.getValue());
+            AppPreferences.setSoundVolume(volumeSoundSlider.getValue());
             volumeSoundIndicator.setText(String.valueOf(volumeSoundSlider.getValue()));
             return false;
         });
@@ -113,6 +118,7 @@ public class PreferencesScreen implements Screen {
 
         // And draw over it again.
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));  // Cap menu FPS to 30.
+        MusicPlayer.setVolume(AppPreferences.getMusicVolume());
         stage.draw();
     }
 

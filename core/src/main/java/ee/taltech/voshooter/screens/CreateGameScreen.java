@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
+import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
 import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
@@ -104,6 +105,9 @@ public class CreateGameScreen implements Screen {
         table.row().pad(100, 0, 0, 0);
         table.add(back).left();
         table.add(createGame);
+
+        // Music.
+        MusicPlayer.setMusic("soundfx/bensound-evolution.mp3");
 
         back.addListener(new ChangeListener() {
             @Override

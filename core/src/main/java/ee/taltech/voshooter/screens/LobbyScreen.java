@@ -21,6 +21,7 @@ import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
+import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
 public class LobbyScreen implements Screen {
 
@@ -81,6 +82,9 @@ public class LobbyScreen implements Screen {
         }
         table.add(leaveButton);
         table.add(startGame);
+
+        // Music.
+        MusicPlayer.setMusic("soundfx/bensound-theelevatorbossanova.mp3");
 
         // Add button functionality.
         leaveButton.addListener(new ChangeListener() {
