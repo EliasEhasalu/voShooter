@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.server.VoConnection;
 
 public class Game extends Thread {
 
     private static final double TICK_RATE = 1000000000.0 / 64.0;
 
-    private Map<VoConnection, Optional<MovePlayer>> connectionInputs = new HashMap<>();
+    private Map<VoConnection, Optional<PlayerInput>> connectionInputs = new HashMap<>();
     private boolean running = false;
 
     /**
@@ -27,18 +27,18 @@ public class Game extends Thread {
      * @param connection The connection the update came from.
      * @param update The update to add.
      */
-    public void addUpdate(VoConnection connection, MovePlayer update) {
+    public void addUpdate(VoConnection connection, PlayerInput update) {
         connectionInputs.computeIfPresent(connection, (k, v) -> Optional.of(update));
     }
 
     /** Main game logic. */
     private void tick() {
-        for (Map.Entry<VoConnection, Optional<MovePlayer>> pair : connectionInputs.entrySet()) {
+        for (Map.Entry<VoConnection, Optional<PlayerInput>> pair : connectionInputs.entrySet()) {
             String out = "";
             if (pair.getValue().isPresent()) {
                 out += String.format("Lobby: %s", pair.getKey().user.currentLobby);
                 out += String.format("- %s sent ", pair.getKey().user.name);
-                out += String.format("%s", pair.getValue().get().keyPresses.toString());
+                out += String.format("%s", pair.getValue().get().inputs.toString());
                 System.out.println(out);
             }
         }

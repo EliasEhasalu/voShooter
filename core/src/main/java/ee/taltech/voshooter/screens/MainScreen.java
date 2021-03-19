@@ -15,7 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.GameController;
-import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
+import ee.taltech.voshooter.controller.PlayerInputType;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.entity.player.Player;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.rendering.Drawable;
@@ -72,8 +73,8 @@ public class MainScreen implements Screen {
     @Override
     public void render(float delta) {
         // Send player inputs to server every render loop.
-        List<Integer> inputs = GameController.getInputs();
-        if (!inputs.isEmpty()) parent.getClient().sendTCP(new MovePlayer(inputs));
+        List<PlayerInputType> inputs = GameController.getInputs();
+        if (!inputs.isEmpty()) parent.getClient().sendTCP(new PlayerInput(inputs));
 
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(0.25882354f, 0.25882354f, 0.90588236f, 1);
@@ -101,15 +102,15 @@ public class MainScreen implements Screen {
      * Move camera when needed.
      */
     public void handleInputs() {
-        ArrayList<Integer> inputs = GameController.getInputs();
-        for (Integer keycode : inputs) {
-            if (keycode == Input.Keys.LEFT)
+        ArrayList<PlayerInputType> inputs = GameController.getInputs();
+        for (PlayerInputType input : inputs) {
+            if (input == PlayerInputType.MOVE_LEFT)
                 camera.translate(-32, 0);
-            if (keycode == Input.Keys.RIGHT)
+            if (input == PlayerInputType.MOVE_RIGHT)
                 camera.translate(32, 0);
-            if (keycode == Input.Keys.UP)
+            if (input == PlayerInputType.MOVE_UP)
                 camera.translate(0, 32);
-            if (keycode == Input.Keys.DOWN)
+            if (input == PlayerInputType.MOVE_DOWN)
                 camera.translate(0, -32);
         }
     }
