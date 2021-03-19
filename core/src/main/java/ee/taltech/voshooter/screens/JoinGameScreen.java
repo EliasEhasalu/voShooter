@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
+import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
 
 public class JoinGameScreen implements Screen {
@@ -112,11 +113,14 @@ public class JoinGameScreen implements Screen {
         gameCodeCheck.setAlignment(Align.center);
         table.row().pad(10, 0, 0, 0);
 
-        //
+        // Join game button
         table.add(join).fill().maxWidth(200);
         table.row().pad(10, 0, 0, 0);
         bottomTable.add(back).left().pad(0, 0, 0, 10).maxWidth(200);
         table.add(bottomTable).fill().maxWidth(200);
+
+        // Music.
+        MusicPlayer.setMusic("soundfx/bensound-evolution.mp3");
 
         // Add button functionality.
         join.addListener(new ChangeListener() {
