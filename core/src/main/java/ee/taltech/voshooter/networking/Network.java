@@ -7,6 +7,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
+import ee.taltech.voshooter.controller.PlayerInputType;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
@@ -18,7 +19,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
-import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 
@@ -51,7 +52,8 @@ public final class Network {
 
         kryo.register(Player.class);
         kryo.register(Pos.class);
-        kryo.register(MovePlayer.class);
+        kryo.register(PlayerInput.class);
+        kryo.register(PlayerInputType.class);
 
         kryo.register(User.class);
         kryo.register(SetUsername.class);

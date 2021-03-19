@@ -23,7 +23,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
-import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 
@@ -98,9 +98,9 @@ public class VoServer {
         });
 
         server.addListener(
-        new RunMethodListener<MovePlayer>(MovePlayer.class) {
+        new RunMethodListener<PlayerInput>(PlayerInput.class) {
             @Override
-            public void run(VoConnection c, MovePlayer msg) {
+            public void run(VoConnection c, PlayerInput msg) {
                 handleMovePlayer(c, msg);
             }
         });
@@ -188,7 +188,7 @@ public class VoServer {
      * @param c The connection.
      * @param msg The MovePlayer message.
      */
-    private void handleMovePlayer(VoConnection c, MovePlayer msg) {
+    private void handleMovePlayer(VoConnection c, PlayerInput msg) {
         Optional<Lobby> optLobby = getUserLobby(c.user);
 
         if (optLobby.isPresent()) {
