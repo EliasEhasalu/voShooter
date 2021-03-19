@@ -32,10 +32,10 @@ public class VoServer {
     Server server;
 
     private long playerId = 0;
-    private Random rand = new Random();
+    private final Random rand = new Random();
 
-    private Set<VoConnection> connections = new HashSet<>();
-    private Map<String, Lobby> lobbies = new HashMap<>();
+    private final Set<VoConnection> connections = new HashSet<>();
+    private final Map<String, Lobby> lobbies = new HashMap<>();
 
     /**
      * Construct the server.
@@ -218,7 +218,7 @@ public class VoServer {
             connection.user = new User();
             connection.user.id = playerId++;
         }
-        if (!connections.contains(connection)) connections.add(connection);
+        connections.add(connection);
     }
 
     /**
@@ -227,7 +227,7 @@ public class VoServer {
      */
     private void handleDisconnects(VoConnection connection) {
        if (connection != null) {
-           if (connections.contains(connection)) connections.remove(connection);
+           connections.remove(connection);
            if (connection.user != null && connection.user.currentLobby != null) {
                Lobby lobby = lobbies.get(connection.user.currentLobby);
                lobby.removeConnection(connection);
@@ -246,7 +246,6 @@ public class VoServer {
     private boolean verifyUsername(String username) {
         return (
             !username.trim().equals("")
-            && username != null
             && username.length() >= 4
             && username.length() <= 12
         );
@@ -302,15 +301,6 @@ public class VoServer {
             break;
         }
         return attempt;
-    }
-
-    /** Close the server upon request. */
-    public void close() {
-        try {
-            server.dispose();
-        } catch (IOException e) {
-            //.
-        }
     }
 
     /**
