@@ -15,6 +15,7 @@ import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 
 
 public class VoClient {
@@ -57,6 +58,8 @@ public class VoClient {
                     updateLobby(update);
                 } else if (message instanceof GameStarted) {
                     screenToChangeTo = VoShooter.Screen.MAIN;
+                } else if (message instanceof PlayerPositionUpdate) {
+                    updatePlayerPositions((PlayerPositionUpdate) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -90,5 +93,9 @@ public class VoClient {
     private void updateLobby(LobbyUserUpdate update) {
         List<User> users = update.users;
         parent.gameState.currentLobby.setUsers(users);
+    }
+
+    private void updatePlayerPositions(PlayerPositionUpdate msg) {
+        System.out.println(msg.players);
     }
 }

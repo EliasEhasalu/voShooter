@@ -101,7 +101,7 @@ public class VoServer {
         new RunMethodListener<PlayerInput>(PlayerInput.class) {
             @Override
             public void run(VoConnection c, PlayerInput msg) {
-                handleMovePlayer(c, msg);
+                handlePlayerInput(c, msg);
             }
         });
 
@@ -184,11 +184,13 @@ public class VoServer {
     }
 
     /**
-     * Handle MovePlayer messages.
+     * Handle PlayerInput messages.
      * @param c The connection.
-     * @param msg The MovePlayer message.
+     * @param msg The PlayerInput message.
      */
-    private void handleMovePlayer(VoConnection c, PlayerInput msg) {
+    private void handlePlayerInput(VoConnection c, PlayerInput msg) {
+        // If the a lobby exists, pass the PlayerInput message to
+        // that lobby's Game object. Physics / game logic will be handled there.
         Optional<Lobby> optLobby = getUserLobby(c.user);
 
         if (optLobby.isPresent()) {

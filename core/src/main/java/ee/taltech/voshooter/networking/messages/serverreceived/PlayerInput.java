@@ -8,7 +8,6 @@ public class PlayerInput {
 
     public List<PlayerAction> inputs;
 
-    /** Serialize. */
     public PlayerInput() {
     }
 
