@@ -3,7 +3,6 @@ package ee.taltech.voshooter.screens;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -15,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.GameController;
-import ee.taltech.voshooter.controller.PlayerInputType;
+import ee.taltech.voshooter.controller.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.entity.player.Player;
 import ee.taltech.voshooter.geometry.Pos;
@@ -73,7 +72,7 @@ public class MainScreen implements Screen {
     @Override
     public void render(float delta) {
         // Send player inputs to server every render loop.
-        List<PlayerInputType> inputs = GameController.getInputs();
+        List<PlayerAction> inputs = GameController.getInputs();
         if (!inputs.isEmpty()) parent.getClient().sendTCP(new PlayerInput(inputs));
 
         // Refresh the graphics renderer every cycle.
@@ -102,15 +101,15 @@ public class MainScreen implements Screen {
      * Move camera when needed.
      */
     public void handleInputs() {
-        ArrayList<PlayerInputType> inputs = GameController.getInputs();
-        for (PlayerInputType input : inputs) {
-            if (input == PlayerInputType.MOVE_LEFT)
+        ArrayList<PlayerAction> inputs = GameController.getInputs();
+        for (PlayerAction input : inputs) {
+            if (input == PlayerAction.MOVE_LEFT)
                 camera.translate(-32, 0);
-            if (input == PlayerInputType.MOVE_RIGHT)
+            if (input == PlayerAction.MOVE_RIGHT)
                 camera.translate(32, 0);
-            if (input == PlayerInputType.MOVE_UP)
+            if (input == PlayerAction.MOVE_UP)
                 camera.translate(0, 32);
-            if (input == PlayerInputType.MOVE_DOWN)
+            if (input == PlayerAction.MOVE_DOWN)
                 camera.translate(0, -32);
         }
     }

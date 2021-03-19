@@ -10,6 +10,10 @@ public class AppPreferences {
     private static final String PREFS_NAME = "voshooter";
     private static final String PREF_PLAYER_COUNT = "4";
     private static final String PREF_GAME_MODE = "gamemode";
+    private static final String PREF_MOVE_UP_KEY = "up key";
+    private static final String PREF_MOVE_DOWN_KEY = "down key";
+    private static final String PREF_MOVE_LEFT_KEY = "left key";
+    private static final String PREF_MOVE_RIGHT_KEY = "right key";
 
     /** @return A preferences object containing the player's preferences */
     protected Preferences getPrefs() {

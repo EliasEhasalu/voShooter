@@ -11,27 +11,27 @@ public class GameController {
      * Get inputs of object and handle them.
      * @return ArrayList of keys and buttons currently pressed
      */
-    public static ArrayList<PlayerInputType> getInputs() {
-        ArrayList<PlayerInputType> pressedKeys = new ArrayList<>();
+    public static ArrayList<PlayerAction> getInputs() {
+        ArrayList<PlayerAction> pressedKeys = new ArrayList<>();
 
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            pressedKeys.add(PlayerInputType.MOVE_LEFT);
+            pressedKeys.add(PlayerAction.MOVE_LEFT);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            pressedKeys.add(PlayerInputType.MOVE_RIGHT);
+            pressedKeys.add(PlayerAction.MOVE_RIGHT);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            pressedKeys.add(PlayerInputType.MOVE_UP);
+            pressedKeys.add(PlayerAction.MOVE_UP);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            pressedKeys.add(PlayerInputType.MOVE_DOWN);
+            pressedKeys.add(PlayerAction.MOVE_DOWN);
         }
         // Mouse buttons
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            pressedKeys.add(PlayerInputType.MOUSE_LEFT);
+            pressedKeys.add(PlayerAction.MOUSE_LEFT);
         }
         if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-            pressedKeys.add(PlayerInputType.MOUSE_RIGHT);
+            pressedKeys.add(PlayerAction.MOUSE_RIGHT);
         }
         return pressedKeys;
     }

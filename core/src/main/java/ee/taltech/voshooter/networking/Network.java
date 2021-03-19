@@ -7,7 +7,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
-import ee.taltech.voshooter.controller.PlayerInputType;
+import ee.taltech.voshooter.controller.PlayerAction;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
@@ -53,7 +53,7 @@ public final class Network {
         kryo.register(Player.class);
         kryo.register(Pos.class);
         kryo.register(PlayerInput.class);
-        kryo.register(PlayerInputType.class);
+        kryo.register(PlayerAction.class);
 
         kryo.register(User.class);
         kryo.register(SetUsername.class);
