@@ -1,7 +1,7 @@
 package ee.taltech.voshooter.controller;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import ee.taltech.voshooter.AppPreferences;
 
 import java.util.ArrayList;
 
@@ -14,23 +14,23 @@ public class GameController {
     public static ArrayList<PlayerAction> getInputs() {
         ArrayList<PlayerAction> pressedKeys = new ArrayList<>();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+        if (Gdx.input.isKeyPressed(AppPreferences.getLeftKey())) {
             pressedKeys.add(PlayerAction.MOVE_LEFT);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+        if (Gdx.input.isKeyPressed(AppPreferences.getRightKey())) {
             pressedKeys.add(PlayerAction.MOVE_RIGHT);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
+        if (Gdx.input.isKeyPressed(AppPreferences.getUpKey())) {
             pressedKeys.add(PlayerAction.MOVE_UP);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+        if (Gdx.input.isKeyPressed(AppPreferences.getDownKey())) {
             pressedKeys.add(PlayerAction.MOVE_DOWN);
         }
         // Mouse buttons
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+        if (Gdx.input.isButtonPressed(AppPreferences.getMouseLeft())) {
             pressedKeys.add(PlayerAction.MOUSE_LEFT);
         }
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+        if (Gdx.input.isButtonPressed(AppPreferences.getMouseRight())) {
             pressedKeys.add(PlayerAction.MOUSE_RIGHT);
         }
         return pressedKeys;
