@@ -5,6 +5,9 @@ public class Pos {
     private float x;
     private float y;
 
+    public Pos() {
+    }
+
     /**
      * Construct a position object.
      * @param x The x coordinate of the position.
@@ -27,6 +30,22 @@ public class Pos {
      */
     public float getY() {
         return y;
+    }
+
+    /**
+     * Update this position's x coordinate.
+     * @param inc The amount to update by.
+     */
+    public void addX(float inc) {
+       x += inc;
+    }
+
+    /**
+     * Update this position's y coordinate.
+     * @param inc The amount to update by.
+     */
+    public void addY(float inc) {
+        y += inc;
     }
 
     /**

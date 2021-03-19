@@ -3,19 +3,16 @@ package ee.taltech.voshooter.networking;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
-import ee.taltech.voshooter.controller.PlayerInputType;
+import ee.taltech.voshooter.controller.PlayerAction;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
-import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
-import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
-import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
-import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
-import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
+import ee.taltech.voshooter.networking.messages.clientreceived.*;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
@@ -53,7 +50,9 @@ public final class Network {
         kryo.register(Player.class);
         kryo.register(Pos.class);
         kryo.register(PlayerInput.class);
-        kryo.register(PlayerInputType.class);
+        kryo.register(PlayerAction.class);
+        kryo.register(Vector2.class);
+        kryo.register(PlayerPositionUpdate.class);
 
         kryo.register(User.class);
         kryo.register(SetUsername.class);

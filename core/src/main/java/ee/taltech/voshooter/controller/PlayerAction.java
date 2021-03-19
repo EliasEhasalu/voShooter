@@ -3,7 +3,7 @@ package ee.taltech.voshooter.controller;
 /**
  * The inputs the player will send to the server.
  */
-public enum PlayerInputType {
+public enum PlayerAction {
     MOVE_UP,
     MOVE_RIGHT,
     MOVE_DOWN,
@@ -11,3 +11,5 @@ public enum PlayerInputType {
     MOUSE_LEFT,
     MOUSE_RIGHT
 }
+
+

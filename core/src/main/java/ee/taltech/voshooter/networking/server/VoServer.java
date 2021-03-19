@@ -101,7 +101,7 @@ public class VoServer {
         new RunMethodListener<PlayerInput>(PlayerInput.class) {
             @Override
             public void run(VoConnection c, PlayerInput msg) {
-                handleMovePlayer(c, msg);
+                handlePlayerInput(c, msg);
             }
         });
 
