@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -13,7 +14,14 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.ActionType;
@@ -24,7 +32,7 @@ import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
 
-public class    MainScreen implements Screen {
+public class MainScreen implements Screen {
 
     private final VoShooter parent;
     private final Stage stage;
@@ -56,10 +64,14 @@ public class    MainScreen implements Screen {
         camera.update();
         tiledMap = new TmxMapLoader().load("tileset/voShooterMap.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
         MusicPlayer.stopMusic();
+
         // Have it handle player's input.
         Gdx.input.setInputProcessor(stage);
         stage.clear();
+
+        createMenuButtons();
     }
 
     /**
@@ -150,6 +162,72 @@ public class    MainScreen implements Screen {
         camera.translate(xTranslate, yTranslate);
 
         // camera.position.set(playerPos.getX(), playerPos.getY(), camera.position.z);
+    }
+
+    /**
+     * Create the buttons for the menu and add functionality to them.
+     */
+    private void createMenuButtons() {
+        // A Skin object defines the theme for menu objects.
+        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+
+        // Add a table which will contain menu items to the stage.
+        Table table = new Table();
+        table.setFillParent(true);
+        stage.addActor(table);
+
+        // Create the objects in the scene.
+        TextButton resumeButton = new TextButton("Resume", skin);
+        TextButton settingsButton = new TextButton("Settings", skin);
+        TextButton exitButton = new TextButton("Exit", skin);
+        resumeButton.setVisible(false);
+        settingsButton.setVisible(false);
+        exitButton.setVisible(false);
+
+        // Add the buttons to the table.
+        table.add(resumeButton).fillX();
+        table.row().padTop(10);
+        table.add(settingsButton).fillX();
+        table.row().padTop(10);
+        table.add(exitButton).fillX();
+
+        // Add button functionality.
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    resumeButton.setVisible(true);
+                    settingsButton.setVisible(true);
+                    exitButton.setVisible(true);
+                }
+                return true;
+            }
+        });
+
+        resumeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                resumeButton.setVisible(false);
+                settingsButton.setVisible(false);
+                exitButton.setVisible(false);
+            }
+        });
+
+        settingsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                resumeButton.setVisible(false);
+                settingsButton.setVisible(false);
+                exitButton.setVisible(false);
+            }
+        });
+
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.changeScreen(VoShooter.Screen.MENU);
+            }
+        });
     }
 
     /**
