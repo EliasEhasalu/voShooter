@@ -1,6 +1,7 @@
 package ee.taltech.voshooter.controller;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import ee.taltech.voshooter.AppPreferences;
 
 import java.util.ArrayList;
@@ -36,5 +37,4 @@ public class GameController {
         }
         return pressedKeys;
     }
-
 }

@@ -1,0 +1,29 @@
+package ee.taltech.voshooter.settingsinputs;
+
+public class SettingsInput {
+
+    private static Integer inputKey;
+
+    /**
+     * Getter for input key.
+     * @return input key
+     */
+    public static Integer getInputKey() {
+        return inputKey;
+    }
+
+    /**
+     * Setter for input key.
+     * @param inputKey that was pressed down.
+     */
+    public static void setInputKey(int inputKey) {
+        SettingsInput.inputKey = inputKey;
+    }
+
+    /**
+     * Remove input key when key is not pressed.
+     */
+    public static void removeInputKey() {
+        SettingsInput.inputKey = null;
+    }
+}

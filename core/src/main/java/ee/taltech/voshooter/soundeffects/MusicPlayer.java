@@ -27,6 +27,13 @@ public class MusicPlayer {
      */
     public static void setVolume(float musicVolume) {
         volume = musicVolume;
-        mp3Music.setVolume(musicVolume / 1.3f);
+        mp3Music.setVolume(musicVolume / 1.5f);
+    }
+
+    /**
+     * Stop the music.
+     */
+    public static void stopMusic() {
+        mp3Music.stop();
     }
 }
