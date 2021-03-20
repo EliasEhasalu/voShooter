@@ -14,6 +14,7 @@ public class LobbyJoined {
     public String lobbyCode;
     public List<User> users;
     public User host;
+    public long id;
 
     /** For serialization. */
     public LobbyJoined() {
@@ -25,12 +26,14 @@ public class LobbyJoined {
      * @param lobbyCode The lobby code of the lobby created.
      * @param users List of users in this lobby.
      * @param host The host of the lobby.
+     * @param id The ID of the client user.
      */
-    public LobbyJoined(int gameMode, int maxPlayers, String lobbyCode, List<User> users, User host) {
+    public LobbyJoined(int gameMode, int maxPlayers, String lobbyCode, List<User> users, User host, long id) {
         this.gameMode = gameMode;
         this.maxPlayers = maxPlayers;
         this.lobbyCode = lobbyCode;
         this.users = users;
         this.host = host;
+        this.id = id;
     }
 }

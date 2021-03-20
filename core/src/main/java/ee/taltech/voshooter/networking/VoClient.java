@@ -12,7 +12,6 @@ import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
-import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
@@ -103,11 +102,12 @@ public class VoClient {
         parent.gameState.currentLobby.setUsers(users);
     }
 
+    /**
+     * Create the player objects in lobby.
+     * @param msg Message containing Player objects.
+     */
     private void createPlayerObjects(GameStarted msg) {
-        for (Player p : msg.players) {
-            ClientPlayer newP = new ClientPlayer(p.pos, p.id, p.name);
-            parent.gameState.addEntity(newP);
-        }
+        parent.gameState.createPlayerObjects(msg.players);
     }
 
     private void updatePlayerPositions(PlayerPositionUpdate msg) {

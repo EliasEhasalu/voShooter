@@ -10,11 +10,14 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.controller.PlayerAction;
+import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.rendering.Drawable;
 
@@ -69,7 +72,7 @@ public class MainScreen implements Screen {
         Gdx.gl.glClearColor(0.25882354f, 0.25882354f, 0.90588236f, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        handleInputs();
+        moveCameraToPlayer();
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
@@ -88,19 +91,25 @@ public class MainScreen implements Screen {
     }
 
     /**
-     * Move camera when needed.
+     * Set the camera position to the players position.
      */
-    private void handleInputs() {
-        for (PlayerAction input : GameController.getInputs()) {
-            if (input == PlayerAction.MOVE_LEFT)
-                camera.translate(0, 0);
-            if (input == PlayerAction.MOVE_RIGHT)
-                camera.translate(0, 0);
-            if (input == PlayerAction.MOVE_UP)
-                camera.translate(0, 0);
-            if (input == PlayerAction.MOVE_DOWN)
-                camera.translate(0, 0);
-        }
+    private void moveCameraToPlayer() {
+        final float maxCameraDist = 150;
+        final float minCameraTranslate = 0.3f;
+        final Pos playerPos = parent.gameState.userPlayer.getPosition();
+        final Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+
+        Vector2 vecToPanPoint = new Vector2(mousePos.x - playerPos.getX(), mousePos.y - playerPos.getY());
+        vecToPanPoint.limit(maxCameraDist);
+        final Vector2 vecFromCamera = new Vector2(playerPos.getX() + vecToPanPoint.x - camera.position.x,
+                playerPos.getY() + vecToPanPoint.y - camera.position.y);
+
+        float xTranslate = vecFromCamera.x / 15;
+        float yTranslate = vecFromCamera.y / 15;
+
+        camera.translate(xTranslate, yTranslate);
+
+        // camera.position.set(playerPos.getX(), playerPos.getY(), camera.position.z);
     }
 
     /**

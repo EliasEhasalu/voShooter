@@ -123,7 +123,7 @@ public class VoServer {
         newLobby.addConnection(connection);
         newLobby.setHost(connection);
 
-        LobbyJoined res = new LobbyJoined(msg.gameMode, msg.maxPlayers, code, newLobby.getUsers(), user);
+        LobbyJoined res = new LobbyJoined(msg.gameMode, msg.maxPlayers, code, newLobby.getUsers(), user, user.id);
         connection.sendTCP(res);
     }
 
@@ -145,7 +145,7 @@ public class VoServer {
                 List<User> users = lobby.getUsers();
                 User host = lobby.getHost().user;
 
-                connection.sendTCP(new LobbyJoined(gameMode, maxPlayers, code, users, host));
+                connection.sendTCP(new LobbyJoined(gameMode, maxPlayers, code, users, host, connection.user.id));
                 lobby.addConnection(connection);
             }
         } else {
