@@ -6,6 +6,7 @@ import java.util.List;
 import ee.taltech.voshooter.controller.PlayerAction;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.rendering.Drawable;
 
@@ -18,6 +19,7 @@ public class GameState {
 
     public User clientUser = new User();
     public List<ClientPlayer> players = new ArrayList<>();
+    public ClientPlayer userPlayer;
     public List<PlayerAction> currentInputs = new ArrayList<>();
 
     /**
@@ -48,6 +50,20 @@ public class GameState {
 
             if (e instanceof ClientPlayer) {
                 players.add((ClientPlayer) e);
+            }
+        }
+    }
+
+    /**
+     * Create all the player objects.
+     * @param players List of players.
+     */
+    public void createPlayerObjects(List<Player> players) {
+        for (Player p : players) {
+            ClientPlayer newP = new ClientPlayer(p.pos, p.id, p.name);
+            addEntity(newP);
+            if (p.id == clientUser.id) {
+                userPlayer = newP;
             }
         }
     }
