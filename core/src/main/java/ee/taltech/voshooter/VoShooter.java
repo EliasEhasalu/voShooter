@@ -29,6 +29,8 @@ public class VoShooter extends Game {
     public CreateGameScreen createGameScreen;
     public JoinGameScreen joinGameScreen;
     private LobbyScreen lobbyScreen;
+    private boolean codeCorrect;
+    private String lobbyCode;
     public VoClient client;
     public GameState gameState;
 
@@ -108,6 +110,36 @@ public class VoShooter extends Game {
      */
     public Client getClient() {
         return client.client;
+    }
+
+    /**
+     * Get the code correct boolean.
+     * @return boolean
+     */
+    public boolean isCodeCorrect() {
+        return codeCorrect;
+    }
+
+    /**
+     * Set a boolean if the code was incorrect.
+     * @param codeCorrect boolean
+     */
+    public void setCodeCorrect(boolean codeCorrect) {
+        this.codeCorrect = codeCorrect;
+    }
+
+    /**
+     * @return code of the attempted lobby.
+     */
+    public String getLobbyCode() {
+        return lobbyCode;
+    }
+
+    /**
+     * @param lobbyCode Code of the lobby.
+     */
+    public void setLobbyCode(String lobbyCode) {
+        this.lobbyCode = lobbyCode;
     }
 
     /**

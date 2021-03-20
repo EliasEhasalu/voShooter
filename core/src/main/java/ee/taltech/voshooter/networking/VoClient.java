@@ -16,6 +16,7 @@ import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 
@@ -66,6 +67,9 @@ public class VoClient {
                     updatePlayerPositions((PlayerPositionUpdate) message);
                 } else if (message instanceof PlayerViewUpdate) {
                     updatePlayerViewDirections((PlayerViewUpdate) message);
+                } else if (message instanceof NoSuchLobby) {
+                    parent.setCodeCorrect(false);
+                    parent.setLobbyCode(((NoSuchLobby) message).lobbyCode);
                 }
 
                 // Define actions to be taken on the next cycle
