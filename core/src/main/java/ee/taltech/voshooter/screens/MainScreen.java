@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -13,10 +15,14 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.controller.PlayerAction;
+import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
@@ -29,6 +35,8 @@ public class    MainScreen implements Screen {
     private final VoShooter parent;
     private final Stage stage;
     public VoShooter.Screen shouldChangeScreen;
+    private BitmapFont font;
+    private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     OrthographicCamera camera;
     TiledMap tiledMap;
     TiledMapRenderer tiledMapRenderer;
@@ -56,6 +64,8 @@ public class    MainScreen implements Screen {
         camera.update();
         tiledMap = new TmxMapLoader().load("tileset/voShooterMap.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        font = new BitmapFont();
+        font.setColor(Color.BLACK);
         MusicPlayer.stopMusic();
         // Have it handle player's input.
         Gdx.input.setInputProcessor(stage);
@@ -92,6 +102,12 @@ public class    MainScreen implements Screen {
         stage.getBatch().begin();
         for (Drawable drawable : parent.gameState.getDrawables()) {
             drawable.getSprite().draw(stage.getBatch());
+            if (drawable instanceof ClientPlayer) {
+                Vector3 spritePos = camera.project(new Vector3(drawable.getPosition().getX(), drawable.getPosition().getY(), 0f));
+                font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(), 0, 0);
+                System.out.println(spritePos);
+                System.out.println(drawable.getPosition().getX());
+            }
         }
         stage.getBatch().end();
     }
