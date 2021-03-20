@@ -60,9 +60,9 @@ public class GameState {
      */
     public void createPlayerObjects(List<Player> players) {
         for (Player p : players) {
-            ClientPlayer newP = new ClientPlayer(p.pos, p.id, p.name);
+            ClientPlayer newP = new ClientPlayer(p.getPos(), p.getId(), p.getName());
             addEntity(newP);
-            if (p.id == clientUser.id) {
+            if (p.getId() == clientUser.id) {
                 userPlayer = newP;
             }
         }
