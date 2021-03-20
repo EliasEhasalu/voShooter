@@ -135,6 +135,7 @@ public class ClientLobby {
      * @param message The message with lobby info received from the server.
      */
     public void handleJoining(LobbyJoined message) {
+        parent.clientUser.id = message.id;
         if (message.host.id == parent.clientUser.id) {
             parent.clientUser.setHost(true);
         }
