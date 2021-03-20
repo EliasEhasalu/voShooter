@@ -23,7 +23,6 @@ import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
-import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
@@ -102,14 +101,6 @@ public class VoServer {
         new RunMethodListener<PlayerInput>(PlayerInput.class) {
             @Override
             public void run(VoConnection c, PlayerInput msg) {
-                handlePlayerInput(c, msg);
-            }
-        });
-
-        server.addListener(
-        new RunMethodListener<MouseCoords>(MouseCoords.class) {
-            @Override
-            public void run(VoConnection c, MouseCoords msg) {
                 handlePlayerInput(c, msg);
             }
         });
@@ -197,7 +188,7 @@ public class VoServer {
      * @param c The connection.
      * @param msg The PlayerInput message.
      */
-    private void handlePlayerInput(VoConnection c, Object msg) {
+    private void handlePlayerInput(VoConnection c, PlayerInput msg) {
         // If the a lobby exists, pass the PlayerInput message to
         // that lobby's Game object. Physics / game logic will be handled there.
         Optional<Lobby> optLobby = getUserLobby(c.user);
@@ -206,7 +197,7 @@ public class VoServer {
             Lobby lobby = optLobby.get();
 
             if (lobby.getGame() != null) {
-                lobby.getGame().handlePlayerInput(c, msg);
+                lobby.getGame().addPlayerInput(c, msg);
             }
         }
     }

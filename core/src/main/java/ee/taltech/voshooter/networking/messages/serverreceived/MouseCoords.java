@@ -1,6 +1,6 @@
 package ee.taltech.voshooter.networking.messages.serverreceived;
 
-public class MouseCoords {
+public class MouseCoords extends PlayerAction {
 
     public float x;
     public float y;

@@ -7,12 +7,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import ee.taltech.voshooter.controller.PlayerAction;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
-import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
-import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
+import ee.taltech.voshooter.networking.messages.serverreceived.*;
 import ee.taltech.voshooter.networking.server.VoConnection;
 
 public class Game extends Thread {
@@ -31,19 +29,6 @@ public class Game extends Thread {
      */
     public void addConnection(VoConnection connection) {
         connectionInputs.computeIfAbsent(connection, k -> new HashSet<>());
-    }
-
-    /**
-     * Add an update to be calculated next tick.
-     * @param connection The connection the update came from.
-     * @param update     The update to add.
-     */
-    public void handlePlayerInput(VoConnection connection, Object update) {
-        if (update instanceof MouseCoords) {
-            updatePlayerDirection(connection, (MouseCoords) update);
-        } else if (update instanceof PlayerInput && connectionInputs.containsKey(connection)) {
-            connectionInputs.get(connection).addAll(((PlayerInput) update).inputs);
-        }
     }
 
     /**
@@ -71,22 +56,31 @@ public class Game extends Thread {
     }
 
     /**
-     * Delegate input handling to sub-functions.
-     * @param c The connection the input came from.
-     * @param actions The action the player requests.
+     * React to the players' inputs
+     * @param c The connection which performed the inputs.
+     * @param actions The actions they wish to take.
      */
     private void handleInputs(VoConnection c, Set<PlayerAction> actions) {
         actions.forEach(a -> {
-            if (a == PlayerAction.MOVE_LEFT) {
-                c.player.addMoveDirection(-1, 0);
-            } else if (a == PlayerAction.MOVE_RIGHT) {
-                c.player.addMoveDirection(1, 0);
-            } else if (a == PlayerAction.MOVE_UP) {
-                c.player.addMoveDirection(0, 1);
-            } else if (a == PlayerAction.MOVE_DOWN) {
-                c.player.addMoveDirection(0, -1);
-            }
+                if (a instanceof MovePlayer) {
+                    c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
+                } else if (a instanceof Shoot) {
+                    c.getPlayer().shoot();
+                } else if (a instanceof MouseCoords) {
+                    c.getPlayer().setViewDirection((MouseCoords) a);
+                }
         });
+    }
+
+    /**
+     * Add inputs to be dealt with next tick.
+     * @param c The connection the input came from.
+     * @param input The actions the player requests.
+     */
+    public void addPlayerInput(VoConnection c, PlayerInput input) {
+        if (connectionInputs.containsKey(c)) {
+            connectionInputs.get(c).addAll(input.inputs);
+        }
     }
 
     /**
