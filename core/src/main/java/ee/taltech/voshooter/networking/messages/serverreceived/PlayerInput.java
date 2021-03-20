@@ -1,7 +1,5 @@
 package ee.taltech.voshooter.networking.messages.serverreceived;
 
-import ee.taltech.voshooter.controller.PlayerAction;
-
 import java.util.List;
 
 public class PlayerInput {

@@ -1,8 +1,10 @@
 package ee.taltech.voshooter.screens;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,23 +16,28 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.controller.PlayerAction;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.networking.messages.serverreceived.*;
 import ee.taltech.voshooter.geometry.Pos;
-import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
-import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
 
-public class    MainScreen implements Screen {
+public class MainScreen implements Screen {
 
     private final VoShooter parent;
     private final Stage stage;
@@ -68,9 +75,12 @@ public class    MainScreen implements Screen {
         font.setColor(Color.BLACK);
         font.getData().setScale(1.5f);
         MusicPlayer.stopMusic();
+
         // Have it handle player's input.
         Gdx.input.setInputProcessor(stage);
         stage.clear();
+
+        createMenuButtons();
     }
 
     /**
@@ -79,11 +89,7 @@ public class    MainScreen implements Screen {
     @Override
     public void render(float delta) {
         // Send player inputs to server every render loop.
-        List<PlayerAction> inputs = GameController.getInputs();
-        if (!inputs.isEmpty()) parent.getClient().sendTCP(new PlayerInput(inputs));
-        // Get the mouse coordinates in world space.
-        Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-        parent.getClient().sendTCP(new MouseCoords(mousePos.x, mousePos.y));
+        handlePlayerInputs();
 
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(0.25882354f, 0.25882354f, 0.90588236f, 1);
@@ -113,6 +119,44 @@ public class    MainScreen implements Screen {
     }
 
     /**
+     * Send player inputs to server.
+     * Might also perform other things based on inputs client-side in the future.
+     */
+    private void handlePlayerInputs() {
+        List<ActionType> inputs = GameController.getInputs();
+        Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+
+        List<PlayerAction> inputsToSend = new ArrayList<>();
+        inputsToSend.add(new MouseCoords(mousePos.x, mousePos.y));
+
+        for (ActionType a : inputs) {
+            switch (a) {
+                case MOVE_LEFT:
+                    inputsToSend.add(new MovePlayer(-1, 0));
+                    break;
+                case MOVE_RIGHT:
+                    inputsToSend.add(new MovePlayer(1, 0));
+                    break;
+                case MOVE_UP:
+                    inputsToSend.add(new MovePlayer(0, 1));
+                    break;
+                case MOVE_DOWN:
+                    inputsToSend.add(new MovePlayer(0, -1));
+                    break;
+                case MOUSE_LEFT:
+                    inputsToSend.add(new Shoot());
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+        // Send all inputs this frame to server.
+        parent.getClient().sendTCP(new PlayerInput(inputsToSend));
+    }
+
+    /**
      * Set the camera position to the players position.
      */
     private void moveCameraToPlayer() {
@@ -132,6 +176,72 @@ public class    MainScreen implements Screen {
         camera.translate(xTranslate, yTranslate);
 
         // camera.position.set(playerPos.getX(), playerPos.getY(), camera.position.z);
+    }
+
+    /**
+     * Create the buttons for the menu and add functionality to them.
+     */
+    private void createMenuButtons() {
+        // A Skin object defines the theme for menu objects.
+        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+
+        // Add a table which will contain menu items to the stage.
+        Table table = new Table();
+        table.setFillParent(true);
+        stage.addActor(table);
+
+        // Create the objects in the scene.
+        TextButton resumeButton = new TextButton("Resume", skin);
+        TextButton settingsButton = new TextButton("Settings", skin);
+        TextButton exitButton = new TextButton("Exit", skin);
+        resumeButton.setVisible(false);
+        settingsButton.setVisible(false);
+        exitButton.setVisible(false);
+
+        // Add the buttons to the table.
+        table.add(resumeButton).fillX();
+        table.row().padTop(10);
+        table.add(settingsButton).fillX();
+        table.row().padTop(10);
+        table.add(exitButton).fillX();
+
+        // Add button functionality.
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    resumeButton.setVisible(true);
+                    settingsButton.setVisible(true);
+                    exitButton.setVisible(true);
+                }
+                return true;
+            }
+        });
+
+        resumeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                resumeButton.setVisible(false);
+                settingsButton.setVisible(false);
+                exitButton.setVisible(false);
+            }
+        });
+
+        settingsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                resumeButton.setVisible(false);
+                settingsButton.setVisible(false);
+                exitButton.setVisible(false);
+            }
+        });
+
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.changeScreen(VoShooter.Screen.MENU);
+            }
+        });
     }
 
     /**

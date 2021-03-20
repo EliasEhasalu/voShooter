@@ -3,7 +3,7 @@ package ee.taltech.voshooter.gamestate;
 import java.util.ArrayList;
 import java.util.List;
 
-import ee.taltech.voshooter.controller.PlayerAction;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.networking.messages.Player;
