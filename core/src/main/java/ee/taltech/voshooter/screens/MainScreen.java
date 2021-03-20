@@ -66,6 +66,7 @@ public class    MainScreen implements Screen {
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         font = new BitmapFont();
         font.setColor(Color.BLACK);
+        font.getData().setScale(1.5f);
         MusicPlayer.stopMusic();
         // Have it handle player's input.
         Gdx.input.setInputProcessor(stage);
@@ -103,10 +104,9 @@ public class    MainScreen implements Screen {
         for (Drawable drawable : parent.gameState.getDrawables()) {
             drawable.getSprite().draw(stage.getBatch());
             if (drawable instanceof ClientPlayer) {
-                Vector3 spritePos = camera.project(new Vector3(drawable.getPosition().getX(), drawable.getPosition().getY(), 0f));
-                font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(), 0, 0);
-                System.out.println(spritePos);
-                System.out.println(drawable.getPosition().getX());
+                font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
+                        drawable.getPosition().getX() - (((ClientPlayer) drawable).getName().length() * 6),
+                        drawable.getPosition().getY() + 40);
             }
         }
         stage.getBatch().end();
