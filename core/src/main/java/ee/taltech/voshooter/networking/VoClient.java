@@ -13,7 +13,11 @@ import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.networking.messages.User;
-import ee.taltech.voshooter.networking.messages.clientreceived.*;
+import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 
 
 public class VoClient {
@@ -126,6 +130,10 @@ public class VoClient {
      * @param msg The message describing the poses of the players.
      */
     private void updatePlayerViewDirections(PlayerViewUpdate msg) {
-        System.out.printf("(%f, %f) - %d%n", msg.viewDirection.x, msg.viewDirection.y, msg.id);
+        for (ClientPlayer p : parent.gameState.players) {
+            if (p.getId() == msg.id) {
+                p.getSprite().setRotation(msg.viewDirection.angleDeg());
+            }
+        }
     }
 }
