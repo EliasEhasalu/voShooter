@@ -13,10 +13,7 @@ import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.networking.messages.User;
-import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
-import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
-import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.*;
 
 
 public class VoClient {
@@ -63,6 +60,8 @@ public class VoClient {
                     screenToChangeTo = VoShooter.Screen.MAIN;
                 } else if (message instanceof PlayerPositionUpdate) {
                     updatePlayerPositions((PlayerPositionUpdate) message);
+                } else if (message instanceof PlayerViewUpdate) {
+                    updatePlayerViewDirections((PlayerViewUpdate) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -110,12 +109,23 @@ public class VoClient {
         parent.gameState.createPlayerObjects(msg.players);
     }
 
+    /**
+     * Update players' positions.
+     * @param msg The message containing information about player positions.
+     */
     private void updatePlayerPositions(PlayerPositionUpdate msg) {
-        System.out.printf("(%f, %f) - %d %n", msg.pos.getX(), msg.pos.getY(), msg.id);
         for (ClientPlayer p : parent.gameState.players) {
             if (p.getId() == msg.id) {
                 p.setPos(msg.pos);
             }
         }
+    }
+
+    /**
+     * Update the players' view directions.
+     * @param msg The message describing the poses of the players.
+     */
+    private void updatePlayerViewDirections(PlayerViewUpdate msg) {
+        System.out.printf("(%f, %f) - %d%n", msg.viewDirection.x, msg.viewDirection.y, msg.id);
     }
 }

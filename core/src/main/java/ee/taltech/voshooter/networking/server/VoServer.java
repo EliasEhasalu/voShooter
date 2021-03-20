@@ -110,7 +110,7 @@ public class VoServer {
         new RunMethodListener<MouseCoords>(MouseCoords.class) {
             @Override
             public void run(VoConnection c, MouseCoords msg) {
-                System.out.println(msg.x);
+                handlePlayerInput(c, msg);
             }
         });
 
@@ -197,7 +197,7 @@ public class VoServer {
      * @param c The connection.
      * @param msg The PlayerInput message.
      */
-    private void handlePlayerInput(VoConnection c, PlayerInput msg) {
+    private void handlePlayerInput(VoConnection c, Object msg) {
         // If the a lobby exists, pass the PlayerInput message to
         // that lobby's Game object. Physics / game logic will be handled there.
         Optional<Lobby> optLobby = getUserLobby(c.user);
@@ -206,7 +206,7 @@ public class VoServer {
             Lobby lobby = optLobby.get();
 
             if (lobby.getGame() != null) {
-                lobby.getGame().addUpdate(c, msg);
+                lobby.getGame().handlePlayerInput(c, msg);
             }
         }
     }
