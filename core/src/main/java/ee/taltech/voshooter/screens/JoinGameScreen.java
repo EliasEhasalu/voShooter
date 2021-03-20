@@ -63,7 +63,6 @@ public class JoinGameScreen implements Screen {
         table.setVisible(true);
         stage.addActor(table);
 
-
         // Table for no connection pop-up.
         popUpTable = new Table();
         stage.addActor(popUpTable);
@@ -74,7 +73,6 @@ public class JoinGameScreen implements Screen {
         popUpTable.add(noConnection);
         popUpTable.row().pad(10, 0, 0, 0);
         popUpTable.add(closePopUp);
-
 
         join = new TextButton("Join lobby", skin);
         TextButton back = new TextButton("Back", skin);

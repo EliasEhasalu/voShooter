@@ -3,22 +3,28 @@ package ee.taltech.voshooter.soundeffects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 
+import java.util.Objects;
+
 public class MusicPlayer {
 
     private static Music mp3Music;
     private static float volume;
+    private static String song;
 
     /**
      * Set the music to be played.
      * @param fileName  Name of the file to switch the music to.
      */
     public static void setMusic(String fileName) {
-        if (mp3Music != null) {
-            mp3Music.stop();
+        if (!Objects.equals(song, fileName)) {
+            if (mp3Music != null) {
+                mp3Music.stop();
+            }
+            song = fileName;
+            mp3Music = Gdx.audio.newMusic(Gdx.files.internal(fileName));
+            mp3Music.setVolume(volume);
+            mp3Music.play();
         }
-        mp3Music = Gdx.audio.newMusic(Gdx.files.internal(fileName));
-        mp3Music.setVolume(volume);
-        mp3Music.play();
     }
 
     /**
@@ -35,5 +41,13 @@ public class MusicPlayer {
      */
     public static void stopMusic() {
         mp3Music.stop();
+    }
+
+    /**
+     * Get the current song that is playing.
+     * @return Song that is playing
+     */
+    public static String getMusic() {
+        return song;
     }
 }
