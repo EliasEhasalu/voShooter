@@ -23,6 +23,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
@@ -102,6 +103,14 @@ public class VoServer {
             @Override
             public void run(VoConnection c, PlayerInput msg) {
                 handlePlayerInput(c, msg);
+            }
+        });
+
+        server.addListener(
+        new RunMethodListener<MouseCoords>(MouseCoords.class) {
+            @Override
+            public void run(VoConnection c, MouseCoords msg) {
+                System.out.println(msg.x);
             }
         });
 

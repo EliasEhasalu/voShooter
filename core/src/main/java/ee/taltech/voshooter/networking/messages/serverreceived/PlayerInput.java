@@ -8,6 +8,7 @@ public class PlayerInput {
 
     public List<PlayerAction> inputs;
 
+    /** */
     public PlayerInput() {
     }
 
