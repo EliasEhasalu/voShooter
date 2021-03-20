@@ -3,6 +3,7 @@ package ee.taltech.voshooter.settingsinputs;
 public class SettingsInput {
 
     private static Integer inputKey;
+    private static Integer inputButton;
 
     /**
      * Getter for input key.
@@ -25,5 +26,26 @@ public class SettingsInput {
      */
     public static void removeInputKey() {
         SettingsInput.inputKey = null;
+    }
+
+    /**
+     * @return input button.
+     */
+    public static Integer getInputButton() {
+        return inputButton;
+    }
+
+    /**
+     * @param inputButton new input.
+     */
+    public static void setInputButton(int inputButton) {
+        SettingsInput.inputButton = inputButton;
+    }
+
+    /**
+     * Remove the button when released.
+     */
+    public static void removeInputButton() {
+        SettingsInput.inputButton = null;
     }
 }
