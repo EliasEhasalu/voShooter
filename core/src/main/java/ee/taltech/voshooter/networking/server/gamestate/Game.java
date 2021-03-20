@@ -15,8 +15,9 @@ public class Game extends Thread {
     private static final double TICK_RATE_IN_HZ = 64.0;
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
-    private static final float DRAG_CONSTANT = 0.85f;
-    private static final float BASE_MOVEMENT_SPEED = (float) (120.0f / TICK_RATE_IN_HZ);
+    private static final float DRAG_CONSTANT = 0.8f;
+    private static final float BASE_PLAYER_ACCELERATION = (float) (150.0f / TICK_RATE_IN_HZ);
+    private static final float MAX_PLAYER_VELOCITY = (float) (300.0f / TICK_RATE_IN_HZ);
 
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new HashMap<>();
     private boolean running = false;
@@ -74,10 +75,10 @@ public class Game extends Thread {
      * @param c    The connection requesting the action.
      */
     private void applyForce(int xDir, int yDir, VoConnection c) {
-        Vector2 shift = new Vector2(BASE_MOVEMENT_SPEED * xDir, BASE_MOVEMENT_SPEED * yDir);
+        Vector2 shift = new Vector2(BASE_PLAYER_ACCELERATION * xDir, BASE_PLAYER_ACCELERATION * yDir);
 
         c.player.vel.add(shift);
-        c.player.vel.limit(BASE_MOVEMENT_SPEED);
+        c.player.vel.limit(MAX_PLAYER_VELOCITY);
     }
 
     /**
