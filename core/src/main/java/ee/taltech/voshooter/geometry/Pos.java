@@ -55,4 +55,9 @@ public class Pos {
     public float distanceTo(Pos that) {
         return (float) (Math.sqrt(Math.pow((that.getX() - this.getX()), 2) + Math.pow((that.getY() - this.getY()), 2)));
     }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof Pos)) return false;
+        return (((Pos) o).x == this.x && ((Pos) o).y == this.y);
+    }
 }

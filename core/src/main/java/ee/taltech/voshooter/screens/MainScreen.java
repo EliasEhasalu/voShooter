@@ -16,17 +16,13 @@ import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.controller.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
-import ee.taltech.voshooter.entity.player.Player;
-import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.rendering.Drawable;
-
-import java.util.ArrayList;
 
 
 public class MainScreen implements Screen {
 
-    private VoShooter parent;
-    private Stage stage;
+    private final VoShooter parent;
+    private final Stage stage;
     public VoShooter.Screen shouldChangeScreen;
     OrthographicCamera camera;
     TiledMap tiledMap;
@@ -41,12 +37,6 @@ public class MainScreen implements Screen {
 
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
-
-        // Create the player controller and the player.
-        parent.gameState.createController();
-        Player newPlayer = new Player(new Pos(0, 0));
-        parent.gameState.playerCharacter = newPlayer;
-        parent.gameState.addEntity(newPlayer);
     }
 
     /**
@@ -100,17 +90,16 @@ public class MainScreen implements Screen {
     /**
      * Move camera when needed.
      */
-    public void handleInputs() {
-        ArrayList<PlayerAction> inputs = GameController.getInputs();
-        for (PlayerAction input : inputs) {
+    private void handleInputs() {
+        for (PlayerAction input : GameController.getInputs()) {
             if (input == PlayerAction.MOVE_LEFT)
-                camera.translate(-32, 0);
+                camera.translate(0, 0);
             if (input == PlayerAction.MOVE_RIGHT)
-                camera.translate(32, 0);
+                camera.translate(0, 0);
             if (input == PlayerAction.MOVE_UP)
-                camera.translate(0, 32);
+                camera.translate(0, 0);
             if (input == PlayerAction.MOVE_DOWN)
-                camera.translate(0, -32);
+                camera.translate(0, 0);
         }
     }
 

@@ -25,7 +25,7 @@ public class Lobby {
 
     /**
      * @param maxUsers The maximum amount of users that can be in this lobby.
-     * @param gameMode An integer representing the gamemode of this lobby.
+     * @param gameMode An integer representing the game mode of this lobby.
      * @param lobbyCode The lobby code assigned to this lobby.
      */
     protected Lobby(int gameMode, int maxUsers, String lobbyCode) {
@@ -47,14 +47,14 @@ public class Lobby {
         game = new Game();
 
         for (VoConnection con : connections) {
-            con.player = new Player(new Pos(300, 300));
+            con.player = new Player(new Pos(20, 20), con.user.id, con.user.name);
             game.addConnection(con);
         }
 
         game.start();
 
         for (VoConnection con : connections) {
-            con.sendTCP(new GameStarted());
+            con.sendTCP(new GameStarted(game.getPlayers()));
         }
     }
 

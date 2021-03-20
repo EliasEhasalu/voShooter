@@ -1,20 +1,24 @@
 package ee.taltech.voshooter.networking.messages.clientreceived;
 
+import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 
 import java.util.List;
 
 public class PlayerPositionUpdate {
 
-    public List<Player> players;
+    public long id;
+    public Pos pos;
 
     public PlayerPositionUpdate() {
     }
 
     /**
-     * @param players An update of players' state.
+     * @param id The id of the player.
+     * @param pos The new position of the player.
      */
-    public PlayerPositionUpdate(List<Player> players) {
-        this.players = players;
+    public PlayerPositionUpdate(Pos pos, long id) {
+        this.pos = pos;
+        this.id = id;
     }
 }

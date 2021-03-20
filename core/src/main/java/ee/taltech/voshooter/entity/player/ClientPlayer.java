@@ -7,17 +7,20 @@ import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.rendering.Drawable;
 
-public class Player extends Entity implements Drawable {
+public class ClientPlayer extends Entity implements Drawable {
 
     private Sprite sprite;
     private float spriteScale = -0.85f;
+    private long id;
+    private String name;
 
     /**
      * Construct player with default sprite.
      * @param position The initial position of this player.
      */
-    public Player(Pos position) {
+    public ClientPlayer(Pos position, long id, String name) {
         super(position);
+        this.id = id;
         this.sprite = new Sprite(new Texture("proxy-image.png"));
         this.sprite.scale(spriteScale);
     }
@@ -27,10 +30,12 @@ public class Player extends Entity implements Drawable {
      * @param position The initial position of this player.
      * @param spritePath The path to the sprite image this player should have.
      */
-    public Player(Pos position, String spritePath) {
+    public ClientPlayer(Pos position, String spritePath) {
         super(position);
         this.sprite = new Sprite(new Texture(spritePath));
         this.sprite.scale(spriteScale);
+        this.sprite.setCenterX(position.getX());
+        this.sprite.setCenterY(position.getY());
     }
 
     /**
@@ -55,5 +60,29 @@ public class Player extends Entity implements Drawable {
     @Override
     public boolean isVisible() {
         return true;
+    }
+
+    /**
+     * @return Get the player's id.
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * Set the player's position.
+     * @param pos The position to set the player to.
+     */
+    public void setPos(Pos pos) {
+        this.position = pos;
+        this.sprite.setCenterX(pos.getX());
+        this.sprite.setCenterY(pos.getY());
+    }
+
+    /**
+     * @return The player's name.
+     */
+    public String getName() {
+        return name;
     }
 }
