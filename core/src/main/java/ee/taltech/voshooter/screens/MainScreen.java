@@ -10,16 +10,18 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.controller.PlayerAction;
+import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.rendering.Drawable;
 
 
-public class MainScreen implements Screen {
+public class    MainScreen implements Screen {
 
     private final VoShooter parent;
     private final Stage stage;
@@ -64,6 +66,9 @@ public class MainScreen implements Screen {
         // Send player inputs to server every render loop.
         List<PlayerAction> inputs = GameController.getInputs();
         if (!inputs.isEmpty()) parent.getClient().sendTCP(new PlayerInput(inputs));
+        // Get the mouse coordinates in world space.
+        Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+        parent.getClient().sendTCP(new MouseCoords(mousePos.x, mousePos.y));
 
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(0.25882354f, 0.25882354f, 0.90588236f, 1);
