@@ -17,6 +17,7 @@ import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.controller.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.rendering.Drawable;
+import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
 
 public class MainScreen implements Screen {
@@ -51,6 +52,7 @@ public class MainScreen implements Screen {
         camera.update();
         tiledMap = new TmxMapLoader().load("tileset/voShooterMap.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        MusicPlayer.stopMusic();
         // Have it handle player's input.
         Gdx.input.setInputProcessor(stage);
         stage.clear();

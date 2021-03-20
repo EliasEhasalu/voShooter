@@ -54,6 +54,7 @@ public class PreferencesScreen implements Screen {
         final Slider volumeMusicSlider = new Slider(0.0f, 1.0f, 0.05f, false, skin);
         final Slider volumeSoundSlider = new Slider(0, 100, 5, false, skin);
         final TextButton returnToMenuScreen = new TextButton("Main menu", skin);
+        final TextButton goToChangeControls = new TextButton("Change controls", skin);
 
         final Label titleLabel = new Label("Settings", skin);
         final Label volumeMusicLabel = new Label("Music volume", skin);
@@ -78,8 +79,9 @@ public class PreferencesScreen implements Screen {
         table.add(volumeSoundSlider).fillX().uniformX();
         table.add(volumeSoundIndicator).fillX().uniformX();
 
-        table.row();
+        table.row().pad(0, 0, 0, 30);
         table.add(returnToMenuScreen).fillX().uniformX().bottom().right();
+        table.add(goToChangeControls).fillX().uniformX().bottom().right();
 
         table.pack();
 
@@ -103,6 +105,14 @@ public class PreferencesScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 stage.clear();
                 parent.changeScreen(VoShooter.Screen.MENU);
+            }
+        });
+
+        goToChangeControls.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                stage.clear();
+                parent.changeScreen(VoShooter.Screen.CHANGE_CONTROLS);
             }
         });
     }

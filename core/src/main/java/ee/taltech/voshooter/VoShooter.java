@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Client;
 
 import ee.taltech.voshooter.gamestate.GameState;
 import ee.taltech.voshooter.networking.VoClient;
+import ee.taltech.voshooter.screens.ChangeControlsScreen;
 import ee.taltech.voshooter.screens.CreateGameScreen;
 import ee.taltech.voshooter.screens.JoinGameScreen;
 import ee.taltech.voshooter.screens.LoadingScreen;
@@ -24,6 +25,7 @@ public class VoShooter extends Game {
     private MenuScreen menuScreen;
     private MainScreen mainScreen;
     private AppPreferences preferences;
+    private ChangeControlsScreen changeControlsScreen;
     public CreateGameScreen createGameScreen;
     public JoinGameScreen joinGameScreen;
     private LobbyScreen lobbyScreen;
@@ -37,7 +39,8 @@ public class VoShooter extends Game {
         MAIN,
         CREATE_GAME,
         JOIN_GAME,
-        LOBBY
+        LOBBY,
+        CHANGE_CONTROLS
     }
 
     /**
@@ -83,6 +86,10 @@ public class VoShooter extends Game {
             case LOBBY:
                 if (lobbyScreen == null) lobbyScreen = new LobbyScreen(this);
                 setScreen(lobbyScreen);
+                break;
+            case CHANGE_CONTROLS:
+                if (changeControlsScreen == null) changeControlsScreen = new ChangeControlsScreen(this);
+                setScreen(changeControlsScreen);
                 break;
             default:
                 // Noop.
