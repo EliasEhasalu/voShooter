@@ -79,6 +79,13 @@ public class Player implements Draggable {
     }
 
     /**
+     * Shoot the current weapon.
+     */
+    public void shoot() {
+       // TODO
+    }
+
+    /**
      * @param dragFactor The factor to reduce this entity's velocity vector by.
      */
     @Override

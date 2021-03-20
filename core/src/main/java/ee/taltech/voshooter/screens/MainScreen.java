@@ -1,5 +1,6 @@
 package ee.taltech.voshooter.screens;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -15,11 +16,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
-import ee.taltech.voshooter.controller.PlayerAction;
+import ee.taltech.voshooter.networking.messages.serverreceived.*;
 import ee.taltech.voshooter.geometry.Pos;
-import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
-import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
@@ -68,11 +68,7 @@ public class    MainScreen implements Screen {
     @Override
     public void render(float delta) {
         // Send player inputs to server every render loop.
-        List<PlayerAction> inputs = GameController.getInputs();
-        if (!inputs.isEmpty()) parent.getClient().sendTCP(new PlayerInput(inputs));
-        // Get the mouse coordinates in world space.
-        Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-        parent.getClient().sendTCP(new MouseCoords(mousePos.x, mousePos.y));
+        handlePlayerInputs();
 
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(0.25882354f, 0.25882354f, 0.90588236f, 1);
@@ -94,6 +90,44 @@ public class    MainScreen implements Screen {
             drawable.getSprite().draw(stage.getBatch());
         }
         stage.getBatch().end();
+    }
+
+    /**
+     * Send player inputs to server.
+     * Might also perform other things based on inputs client-side in the future.
+     */
+    private void handlePlayerInputs() {
+        List<ActionType> inputs = GameController.getInputs();
+        Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+
+        List<PlayerAction> inputsToSend = new ArrayList<>();
+        inputsToSend.add(new MouseCoords(mousePos.x, mousePos.y));
+
+        for (ActionType a : inputs) {
+            switch (a) {
+                case MOVE_LEFT:
+                    inputsToSend.add(new MovePlayer(-1, 0));
+                    break;
+                case MOVE_RIGHT:
+                    inputsToSend.add(new MovePlayer(1, 0));
+                    break;
+                case MOVE_UP:
+                    inputsToSend.add(new MovePlayer(0, 1));
+                    break;
+                case MOVE_DOWN:
+                    inputsToSend.add(new MovePlayer(0, -1));
+                    break;
+                case MOUSE_LEFT:
+                    inputsToSend.add(new Shoot());
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+        // Send all inputs this frame to server.
+        parent.getClient().sendTCP(new PlayerInput(inputsToSend));
     }
 
     /**
