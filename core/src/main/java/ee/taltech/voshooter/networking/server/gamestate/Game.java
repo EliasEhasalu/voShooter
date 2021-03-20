@@ -1,23 +1,26 @@
 package ee.taltech.voshooter.networking.server.gamestate;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.badlogic.gdx.math.Vector2;
 import ee.taltech.voshooter.controller.PlayerAction;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.server.VoConnection;
 
 public class Game extends Thread {
 
-    private static final double TICK_RATE_IN_HZ = 64.0;
+    public static final double TICK_RATE_IN_HZ = 64.0;
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
-    private static final float DRAG_CONSTANT = 0.8f;
-    private static final float BASE_PLAYER_ACCELERATION = (float) (150.0f / TICK_RATE_IN_HZ);
-    private static final float MAX_PLAYER_VELOCITY = (float) (300.0f / TICK_RATE_IN_HZ);
+    private static final float DRAG_CONSTANT = 0.9f;
 
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new HashMap<>();
     private boolean running = false;
@@ -35,10 +38,20 @@ public class Game extends Thread {
      * @param connection The connection the update came from.
      * @param update     The update to add.
      */
-    public void addUpdate(VoConnection connection, PlayerInput update) {
-        if (connectionInputs.containsKey(connection)) {
-            connectionInputs.get(connection).addAll(update.inputs);
+    public void handlePlayerInput(VoConnection connection, Object update) {
+        if (update instanceof MouseCoords) {
+            updatePlayerDirection(connection, (MouseCoords) update);
+        } else if (update instanceof PlayerInput && connectionInputs.containsKey(connection)) {
+            connectionInputs.get(connection).addAll(((PlayerInput) update).inputs);
         }
+    }
+
+    /**
+     * @param connection The connection the update was received from.
+     * @param update The mouse movement update.
+     */
+    public void updatePlayerDirection(VoConnection connection, MouseCoords update) {
+        connection.player.setViewDirection(update);
     }
 
     /** Main game logic. */
@@ -47,73 +60,47 @@ public class Game extends Thread {
         connectionInputs.forEach(this::handleInputs);
 
         // Move players.
-        connectionInputs.keySet().forEach(this::movePlayer);
+        connectionInputs.keySet().forEach(c -> {
+            c.player.drag(DRAG_CONSTANT);
+            c.player.move();
+        });
 
         // Forget all inputs received since last tick.
-        sendPlayerPositionUpdates();
+        sendPlayerPoseUpdates();
         clearPlayerInputs();
     }
 
+    /**
+     * Delegate input handling to sub-functions.
+     * @param c The connection the input came from.
+     * @param actions The action the player requests.
+     */
     private void handleInputs(VoConnection c, Set<PlayerAction> actions) {
         actions.forEach(a -> {
             if (a == PlayerAction.MOVE_LEFT) {
-                applyForce(-1, 0, c);
+                c.player.addMoveDirection(-1, 0);
             } else if (a == PlayerAction.MOVE_RIGHT) {
-                applyForce(1, 0, c);
+                c.player.addMoveDirection(1, 0);
             } else if (a == PlayerAction.MOVE_UP) {
-                applyForce(0, 1, c);
+                c.player.addMoveDirection(0, 1);
             } else if (a == PlayerAction.MOVE_DOWN) {
-                applyForce(0, -1, c);
+                c.player.addMoveDirection(0, -1);
             }
         });
     }
 
     /**
-     * Given a direction to move, apply a force to the connection's player object.
-     * @param xDir The direction to move on the x axis.
-     * @param yDir The direction to move on the y axis.
-     * @param c    The connection requesting the action.
+     * Send position updates to players.
      */
-    private void applyForce(int xDir, int yDir, VoConnection c) {
-        Vector2 shift = new Vector2(BASE_PLAYER_ACCELERATION * xDir, BASE_PLAYER_ACCELERATION * yDir);
-
-        c.player.vel.add(shift);
-        c.player.vel.limit(MAX_PLAYER_VELOCITY);
-    }
-
-    /**
-     * Update player positions given their velocity vectors.
-     * @param c The connection whose player object to update.
-     */
-    private void movePlayer(VoConnection c) {
-        // Apply drag.
-        applyDrag(c);
-
-        // Move the player.
-        float xIncrement = c.player.vel.x;
-        float yIncrement = c.player.vel.y;
-
-        c.player.pos.addX(xIncrement);
-        c.player.pos.addY(yIncrement);
-    }
-
-    private void applyDrag(VoConnection c) {
-        c.player.vel.x *= DRAG_CONSTANT;
-        c.player.vel.y *= DRAG_CONSTANT;
-
-        // Round off to 0 if already very small.
-        if (Math.abs(c.player.vel.x) < 0.1) c.player.vel.x = 0;
-        if (Math.abs(c.player.vel.y) < 0.1) c.player.vel.y = 0;
-    }
-
-    private void sendPlayerPositionUpdates() {
+    private void sendPlayerPoseUpdates() {
         List<Player> players = connectionInputs.keySet().stream()
                 .map(c -> c.player)
                 .collect(Collectors.toList());
 
         for (VoConnection c : connectionInputs.keySet()) {
             for (Player p : players) {
-                c.sendTCP(new PlayerPositionUpdate(p.pos, p.id));
+                c.sendTCP(new PlayerPositionUpdate(p.getPos(), p.getId()));
+                c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
             }
         }
     }

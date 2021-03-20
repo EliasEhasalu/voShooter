@@ -9,4 +9,11 @@ public class VoConnection extends Connection {
 
     public transient User user;
     public transient Player player;
+
+    /**
+     * @return The player object associated with this connection.
+     */
+    public Player getPlayer() {
+       return player;
+    }
 }
