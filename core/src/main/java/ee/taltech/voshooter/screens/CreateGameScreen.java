@@ -106,9 +106,6 @@ public class CreateGameScreen implements Screen {
         table.add(back).left();
         table.add(createGame);
 
-        // Music.
-        MusicPlayer.setMusic("soundfx/bensound-evolution.mp3");
-
         back.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {

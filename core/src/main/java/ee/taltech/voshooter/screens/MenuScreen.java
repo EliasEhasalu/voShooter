@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
@@ -65,7 +66,8 @@ public class MenuScreen implements Screen {
         table.add(exit).fillX().uniformX();
 
         // Music.
-        MusicPlayer.setMusic("soundfx/bensound-epic.mp3");
+        MusicPlayer.setMusic("soundfx/bensound-evolution.mp3");
+        MusicPlayer.setVolume(AppPreferences.getMusicVolume());
 
         joinGame.addListener(new ChangeListener() {
             @Override

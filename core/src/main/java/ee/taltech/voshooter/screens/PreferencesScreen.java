@@ -23,6 +23,8 @@ public class PreferencesScreen implements Screen {
     private Stage stage;
     private Label volumeMusicIndicator;
     private Label volumeSoundIndicator;
+    private Slider volumeMusicSlider;
+    private Slider volumeSoundSlider;
 
     /**
      * Construct the preferences screen. Pass in a reference to the orchestrator.
@@ -51,8 +53,8 @@ public class PreferencesScreen implements Screen {
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         // Create the settings objects for our stage.
-        final Slider volumeMusicSlider = new Slider(0.0f, 1.0f, 0.05f, false, skin);
-        final Slider volumeSoundSlider = new Slider(0, 100, 5, false, skin);
+        volumeMusicSlider = new Slider(0.0f, 1.0f, 0.05f, false, skin);
+        volumeSoundSlider = new Slider(0.0f, 1.0f, 0.05f, false, skin);
         final TextButton returnToMenuScreen = new TextButton("Main menu", skin);
         final TextButton goToChangeControls = new TextButton("Change controls", skin);
 
@@ -60,11 +62,8 @@ public class PreferencesScreen implements Screen {
         final Label volumeMusicLabel = new Label("Music volume", skin);
         final Label volumeSoundLabel = new Label("Sound volume", skin);
 
-        volumeMusicIndicator = new Label(String.valueOf(Math.round(volumeMusicSlider.getValue() * 100)), skin);
-        volumeSoundIndicator = new Label(String.valueOf(volumeSoundSlider.getValue()), skin);
-
-        // Music.
-        MusicPlayer.setMusic("soundfx/bensound-evolution.mp3");
+        volumeMusicIndicator = new Label(String.valueOf(Math.round(AppPreferences.getMusicVolume() * 100)), skin);
+        volumeSoundIndicator = new Label(String.valueOf(Math.round(AppPreferences.getSoundVolume() * 100)), skin);
 
         // Add the sliders and labels to the table.
         table.add(titleLabel).fillX().uniformX().pad(0, 0, 20, 0).bottom().right();
@@ -89,14 +88,14 @@ public class PreferencesScreen implements Screen {
         volumeMusicSlider.setValue(AppPreferences.getMusicVolume());
         volumeMusicSlider.addListener(event -> {
             AppPreferences.setMusicVolume(volumeMusicSlider.getValue());
-            volumeMusicIndicator.setText(String.valueOf(Math.round(volumeMusicSlider.getValue() * 100)));
+            volumeMusicIndicator.setText(String.valueOf(Math.round(AppPreferences.getMusicVolume() * 100)));
             return false;
         });
 
         volumeSoundSlider.setValue(AppPreferences.getSoundVolume());
         volumeSoundSlider.addListener(event -> {
             AppPreferences.setSoundVolume(volumeSoundSlider.getValue());
-            volumeSoundIndicator.setText(String.valueOf(volumeSoundSlider.getValue()));
+            volumeSoundIndicator.setText(String.valueOf(Math.round(AppPreferences.getSoundVolume() * 100)));
             return false;
         });
 

@@ -119,9 +119,6 @@ public class JoinGameScreen implements Screen {
         bottomTable.add(back).left().pad(0, 0, 0, 10).maxWidth(200);
         table.add(bottomTable).fill().maxWidth(200);
 
-        // Music.
-        MusicPlayer.setMusic("soundfx/bensound-evolution.mp3");
-
         // Add button functionality.
         join.addListener(new ChangeListener() {
             @Override
