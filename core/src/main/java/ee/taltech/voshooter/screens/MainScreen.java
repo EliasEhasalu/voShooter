@@ -196,9 +196,15 @@ public class MainScreen implements Screen {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
-                    resumeButton.setVisible(true);
-                    settingsButton.setVisible(true);
-                    exitButton.setVisible(true);
+                    if (resumeButton.isVisible()) {
+                        resumeButton.setVisible(false);
+                        settingsButton.setVisible(false);
+                        exitButton.setVisible(false);
+                    } else {
+                        resumeButton.setVisible(true);
+                        settingsButton.setVisible(true);
+                        exitButton.setVisible(true);
+                    }
                 }
                 return true;
             }
