@@ -1,9 +1,8 @@
 package ee.taltech.voshooter.settingsinputs;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.InputProcessor;
 
-public class SettingsInputsHandler implements InputProcessor, ApplicationListener {
+public class SettingsInputsHandler implements InputProcessor {
 
     /**
      * Key is pressed.
@@ -12,7 +11,6 @@ public class SettingsInputsHandler implements InputProcessor, ApplicationListene
      */
     @Override
     public boolean keyDown(int k) {
-        System.out.println(k);
         SettingsInput.setInputKey(k);
         return true;
     }
@@ -29,9 +27,9 @@ public class SettingsInputsHandler implements InputProcessor, ApplicationListene
     }
 
     /**
-     * Key down didn't register, so using this as keydown in settings menu.
-     * @param character that was typed
-     * @return boolean ignored
+     * Placeholder.
+     * @param character Placeholder.
+     * @return Placeholder.
      */
     @Override
     public boolean keyTyped(char character) {
@@ -48,7 +46,6 @@ public class SettingsInputsHandler implements InputProcessor, ApplicationListene
      */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        System.out.println(button);
         SettingsInput.setInputButton(button);
         return true;
     }
@@ -99,29 +96,5 @@ public class SettingsInputsHandler implements InputProcessor, ApplicationListene
     @Override
     public boolean scrolled(float amountX, float amountY) {
         return false;
-    }
-
-    @Override
-    public void create() {
-    }
-
-    @Override
-    public void resize(int width, int height) {
-    }
-
-    @Override
-    public void render() {
-    }
-
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void dispose() {
     }
 }
