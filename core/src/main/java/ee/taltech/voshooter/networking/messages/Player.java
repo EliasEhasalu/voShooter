@@ -8,7 +8,8 @@ import ee.taltech.voshooter.networking.server.gamestate.Game;
 
 public class Player implements Draggable {
 
-    private static final transient float BASE_PLAYER_ACCELERATION = (float) (20.0f / Game.TICK_RATE_IN_HZ);
+    private static final transient float BASE_PLAYER_ACCELERATION = (float) (5f / Game.TICK_RATE_IN_HZ);
+    private static final transient float MAX_PLAYER_VELOCITY = (float) (400f / Game.TICK_RATE_IN_HZ);
 
     private long id;
     private String name;
@@ -16,9 +17,8 @@ public class Player implements Draggable {
 
     private transient Body body;
 
-    private final Vector2 playerVel = new Vector2(0f, 0f);
+    private final Vector2 playerAcc = new Vector2(0f, 0f);
 
-    private final Vector2 vel = new Vector2(0f, 0f);
     private Vector2 viewDirection = new Vector2(0f, 0f);
 
     /** Serialize. **/
@@ -50,16 +50,20 @@ public class Player implements Draggable {
      */
     public void addMoveDirection(int xDir, int yDir) {
         Vector2 moveVector = new Vector2(BASE_PLAYER_ACCELERATION * xDir, BASE_PLAYER_ACCELERATION * yDir);
-        moveVector.limit(BASE_PLAYER_ACCELERATION);
-        playerVel.add(moveVector);
+        playerAcc.add(moveVector);
+        playerAcc.limit(BASE_PLAYER_ACCELERATION);
     }
 
     /**
      * Update the player's position.
      */
     public void move() {
-        body.applyForceToCenter(playerVel, true);
-        playerVel.limit(0);
+        Vector2 newVel = body.getLinearVelocity();
+        newVel.add(playerAcc);
+        newVel.limit(MAX_PLAYER_VELOCITY);
+
+        body.setLinearVelocity(newVel);
+        playerAcc.limit(0);
     }
 
     /**

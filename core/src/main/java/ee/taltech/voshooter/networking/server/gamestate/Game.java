@@ -110,7 +110,7 @@ public class Game extends Thread {
         });
 
         // Update the world.
-        world.step((float) TICK_RATE, 1, 1);
+        world.step((float) TICK_RATE, 8, 4);
 
         // Forget all inputs received since last tick.
         sendPlayerPoseUpdates();
