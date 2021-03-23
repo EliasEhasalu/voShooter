@@ -18,7 +18,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
-import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
 
 public class JoinGameScreen implements Screen {
@@ -129,6 +128,10 @@ public class JoinGameScreen implements Screen {
                         parent.createNetworkClient();
                         parent.getClient().sendTCP(new SetUsername(name));
                         parent.getClient().sendTCP(new JoinLobby(gameCode.getText().trim()));
+                        if (!parent.isCodeCorrect()) {
+                            gameCodeCheck.setText("No such lobby");
+                            gameCodeCheck.setColor(255, 0, 0, 255);
+                        }
                     } catch (IOException e) {
                         popUpTable.setVisible(true);
                         table.setVisible(false);
@@ -183,9 +186,15 @@ public class JoinGameScreen implements Screen {
                     gameCodeCheck.setColor(255, 0, 0, 255);
                     isCodeGood = false;
                 } else {
-                    gameCodeCheck.setText("Good code");
-                    gameCodeCheck.setColor(0, 255, 0, 255);
-                    isCodeGood = true;
+                    if (parent.getLobbyCode() == null || !gameCode.getText().toUpperCase().equals(parent.getLobbyCode())) {
+                        gameCodeCheck.setText("Good code");
+                        gameCodeCheck.setColor(0, 255, 0, 255);
+                        isCodeGood = true;
+                    } else {
+                        gameCodeCheck.setText("No such lobby");
+                        gameCodeCheck.setColor(255, 0, 0, 255);
+                        isCodeGood = false;
+                    }
                 }
             }
         });

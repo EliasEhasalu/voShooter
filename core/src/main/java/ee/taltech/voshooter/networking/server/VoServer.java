@@ -149,7 +149,7 @@ public class VoServer {
                 lobby.addConnection(connection);
             }
         } else {
-            connection.sendTCP(new NoSuchLobby());
+            connection.sendTCP(new NoSuchLobby(code));
         }
     }
 
