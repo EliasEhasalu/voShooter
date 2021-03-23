@@ -1,14 +1,12 @@
 package ee.taltech.voshooter.screens;
 
-import static ee.taltech.voshooter.VoShooter.Screen.MENU;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -16,12 +14,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
 public class LobbyScreen implements Screen {
 
@@ -85,6 +87,18 @@ public class LobbyScreen implements Screen {
 
         // Music.
         MusicPlayer.setMusic("soundfx/bensound-theelevatorbossanova.mp3");
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    leaveButton.toggle();
+                } else if (keycode == Input.Keys.ENTER) {
+                    startGame.toggle();
+                }
+                return true;
+            }
+        });
 
         // Add button functionality.
         leaveButton.addListener(new ChangeListener() {

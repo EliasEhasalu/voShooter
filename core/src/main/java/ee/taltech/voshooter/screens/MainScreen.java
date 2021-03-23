@@ -1,8 +1,5 @@
 package ee.taltech.voshooter.screens;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -37,6 +34,9 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainScreen implements Screen {
