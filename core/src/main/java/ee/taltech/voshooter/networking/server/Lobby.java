@@ -1,15 +1,13 @@
 package ee.taltech.voshooter.networking.server;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
-import ee.taltech.voshooter.geometry.Pos;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Lobby {
 
@@ -47,7 +45,6 @@ public class Lobby {
         game = new Game();
 
         for (VoConnection con : connections) {
-            con.player = new Player(new Pos(20, 20), con.user.id, con.user.name);
             game.addConnection(con);
         }
 

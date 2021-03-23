@@ -3,6 +3,7 @@ package ee.taltech.voshooter.entity.player;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
+import com.badlogic.gdx.math.Vector2;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.rendering.Drawable;
@@ -18,7 +19,7 @@ public class ClientPlayer extends Entity implements Drawable {
      * Construct player with default sprite.
      * @param position The initial position of this player.
      */
-    public ClientPlayer(Pos position, long id, String name) {
+    public ClientPlayer(Vector2 position, long id, String name) {
         super(position);
         this.id = id;
         this.name = name;
@@ -74,10 +75,10 @@ public class ClientPlayer extends Entity implements Drawable {
      * Set the player's position.
      * @param pos The position to set the player to.
      */
-    public void setPos(Pos pos) {
+    public void setPos(Vector2 pos) {
         this.position = pos;
-        this.sprite.setCenterX(pos.getX());
-        this.sprite.setCenterY(pos.getY());
+        this.sprite.setCenterX(pos.x);
+        this.sprite.setCenterY(pos.y);
     }
 
     /**

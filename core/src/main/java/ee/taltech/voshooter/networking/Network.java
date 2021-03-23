@@ -1,19 +1,33 @@
 package ee.taltech.voshooter.networking;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
-
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
-import ee.taltech.voshooter.networking.messages.clientreceived.*;
-import ee.taltech.voshooter.networking.messages.serverreceived.*;
+import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
+import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
+import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
+import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
+import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 import ee.taltech.voshooter.networking.server.gamestate.Draggable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Network {
 

@@ -1,5 +1,13 @@
 package ee.taltech.voshooter.networking.server.gamestate;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
+import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
@@ -22,17 +30,64 @@ public class Game extends Thread {
     public static final double TICK_RATE_IN_HZ = 64.0;
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
-    private static final float DRAG_CONSTANT = 0.9f;
+    private static final float DRAG_CONSTANT = 0.93f;
 
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new HashMap<>();
     private boolean running = false;
+
+    private final World world = new World(new Vector2(0, 0), false);
 
     /**
      * Add a connection to this game.
      * @param connection The connection to add.
      */
     public void addConnection(VoConnection connection) {
+        // Track the connection.
         connectionInputs.computeIfAbsent(connection, k -> new HashSet<>());
+
+        // Create a player object with a physics body which will be tracked in the world.
+        createPlayer(connection);
+    }
+
+    /**
+     * Create a player object for a given connection.
+     * @param c The connection to create the player for.
+     */
+    private void createPlayer(VoConnection c) {
+        Player p = new Player(c.user.id, c.user.getName());
+
+        // Create a body definition.
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.DynamicBody;
+        def.position.set(getSpawnPoint());
+
+        // Create the body and set its bounding box.
+        // Add the body to the world.
+        Body body = world.createBody(def);
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(15, 15);
+
+        // Set its physical properties.
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0.7f;
+
+        Fixture fixture = body.createFixture(fixtureDef);
+
+        // Set the body field on the player.
+        p.setBody(body);
+
+        // Set the player object on the connection.
+        c.player = p;
+        c.player.initialPos = body.getPosition();
+        shape.dispose();
+    }
+
+    /**
+     * @return A spawn point for a player.
+     */
+    private Pos getSpawnPoint() {
+        return new Pos(30, 30);
     }
 
     /**
@@ -48,11 +103,14 @@ public class Game extends Thread {
         // Handle each player's inputs.
         connectionInputs.forEach(this::handleInputs);
 
-        // Move players.
+        // Update players' velocities.
         connectionInputs.keySet().forEach(c -> {
             c.player.drag(DRAG_CONSTANT);
             c.player.move();
         });
+
+        // Update the world.
+        world.step((float) TICK_RATE, 1, 1);
 
         // Forget all inputs received since last tick.
         sendPlayerPoseUpdates();

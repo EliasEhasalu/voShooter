@@ -1,14 +1,11 @@
 package ee.taltech.voshooter.networking.messages.clientreceived;
 
-import ee.taltech.voshooter.geometry.Pos;
-import ee.taltech.voshooter.networking.messages.Player;
-
-import java.util.List;
+import com.badlogic.gdx.math.Vector2;
 
 public class PlayerPositionUpdate {
 
     public long id;
-    public Pos pos;
+    public Vector2 pos;
 
     public PlayerPositionUpdate() {
     }
@@ -17,7 +14,7 @@ public class PlayerPositionUpdate {
      * @param id The id of the player.
      * @param pos The new position of the player.
      */
-    public PlayerPositionUpdate(Pos pos, long id) {
+    public PlayerPositionUpdate(Vector2 pos, long id) {
         this.pos = pos;
         this.id = id;
     }

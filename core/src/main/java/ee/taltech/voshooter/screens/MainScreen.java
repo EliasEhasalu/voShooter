@@ -1,8 +1,5 @@
 package ee.taltech.voshooter.screens;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -29,7 +26,6 @@ import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
-import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
@@ -37,6 +33,9 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainScreen implements Screen {
@@ -113,11 +112,14 @@ public class MainScreen implements Screen {
             drawable.getSprite().draw(stage.getBatch());
             if (drawable instanceof ClientPlayer) {
                 font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
-                        drawable.getPosition().getX() - (((ClientPlayer) drawable).getName().length() * 6),
-                        drawable.getPosition().getY() + 40);
+                        drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 6),
+                        drawable.getPosition().y + 40);
             }
         }
         stage.getBatch().end();
+        System.out.print(parent.gameState.userPlayer.getPosition());
+        System.out.print(parent.gameState.userPlayer.getSprite().getX());
+        System.out.print(parent.gameState.userPlayer.getSprite().getY());
     }
 
     /**
@@ -164,13 +166,13 @@ public class MainScreen implements Screen {
     private void moveCameraToPlayer() {
         final float maxCameraDist = 150;
         final float minCameraTranslate = 0.3f;
-        final Pos playerPos = parent.gameState.userPlayer.getPosition();
+        final Vector2 playerPos = parent.gameState.userPlayer.getPosition();
         final Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
-        Vector2 vecToPanPoint = new Vector2(mousePos.x - playerPos.getX(), mousePos.y - playerPos.getY());
+        Vector2 vecToPanPoint = new Vector2(mousePos.x - playerPos.x, mousePos.y - playerPos.y);
         vecToPanPoint.limit(maxCameraDist);
-        final Vector2 vecFromCamera = new Vector2(playerPos.getX() + vecToPanPoint.x - camera.position.x,
-                playerPos.getY() + vecToPanPoint.y - camera.position.y);
+        final Vector2 vecFromCamera = new Vector2(playerPos.x + vecToPanPoint.x - camera.position.x,
+                playerPos.y + vecToPanPoint.y - camera.position.y);
 
         float xTranslate = vecFromCamera.x / 15;
         float yTranslate = vecFromCamera.y / 15;

@@ -1,23 +1,23 @@
 package ee.taltech.voshooter.entity;
 
-import ee.taltech.voshooter.geometry.Pos;
+import com.badlogic.gdx.math.Vector2;
 
 public class Entity {
 
-    protected Pos position;
+    protected Vector2 position;
 
     /**
      * Construct this entity.
      * @param position The initial position of this entity.
      */
-    public Entity(Pos position) {
+    public Entity(Vector2 position) {
         this.position = position;
     }
 
     /**
      * @return The position object tied to this entity.
      */
-    public Pos getPosition() {
+    public Vector2 getPosition() {
         return position;
     }
 }

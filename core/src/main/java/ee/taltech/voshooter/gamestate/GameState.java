@@ -1,14 +1,14 @@
 package ee.taltech.voshooter.gamestate;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.rendering.Drawable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameState {
 
@@ -67,7 +67,7 @@ public class GameState {
      */
     public void createPlayerObjects(List<Player> players) {
         for (Player p : players) {
-            ClientPlayer newP = new ClientPlayer(p.getPos(), p.getId(), p.getName());
+            ClientPlayer newP = new ClientPlayer(p.initialPos, p.getId(), p.getName());
             addEntity(newP);
             if (p.getId() == clientUser.id) {
                 userPlayer = newP;

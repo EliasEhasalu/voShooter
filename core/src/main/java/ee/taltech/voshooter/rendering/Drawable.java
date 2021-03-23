@@ -1,8 +1,7 @@
 package ee.taltech.voshooter.rendering;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
-
-import ee.taltech.voshooter.geometry.Pos;
+import com.badlogic.gdx.math.Vector2;
 
 public interface Drawable {
 
@@ -19,7 +18,7 @@ public interface Drawable {
     /**
      * @return A position object describing where this drawable object's sprite should be drawn.
      */
-    Pos getPosition();
+    Vector2 getPosition();
 
     /**
      * @return What the scale of the drawable's sprite should currently be.
