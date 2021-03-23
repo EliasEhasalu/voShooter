@@ -1,8 +1,5 @@
 package ee.taltech.voshooter.screens;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -38,6 +35,9 @@ import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MainScreen implements Screen {
 
@@ -45,6 +45,7 @@ public class MainScreen implements Screen {
     private final Stage stage;
     public VoShooter.Screen shouldChangeScreen;
     private BitmapFont font;
+    private boolean pauseMenuActive;
     private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     OrthographicCamera camera;
     TiledMap tiledMap;
@@ -90,14 +91,15 @@ public class MainScreen implements Screen {
      */
     @Override
     public void render(float delta) {
-        // Send player inputs to server every render loop.
-        handlePlayerInputs();
-
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(0.25882354f, 0.25882354f, 0.90588236f, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        moveCameraToPlayer();
+        if (!pauseMenuActive) {
+            // Send player inputs to server every render loop.
+            handlePlayerInputs();
+            moveCameraToPlayer();
+        }
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
@@ -216,10 +218,12 @@ public class MainScreen implements Screen {
                         resumeButton.setVisible(false);
                         settingsButton.setVisible(false);
                         exitButton.setVisible(false);
+                        pauseMenuActive = false;
                     } else {
                         resumeButton.setVisible(true);
                         settingsButton.setVisible(true);
                         exitButton.setVisible(true);
+                        pauseMenuActive = true;
                     }
                 }
                 return true;
