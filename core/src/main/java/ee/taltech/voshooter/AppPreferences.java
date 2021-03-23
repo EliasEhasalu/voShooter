@@ -4,6 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class AppPreferences {
 
     private static final String PREF_MUSIC_VOLUME = "volume";
@@ -17,6 +20,7 @@ public class AppPreferences {
     private static final String PREF_MOVE_RIGHT_KEY = "right key";
     private static final String PREF_MOUSE_LEFT = "mouse left";
     private static final String PREF_MOUSE_RIGHT = "mouse right";
+    private static final List<String> BUTTONS_LIST = Arrays.asList("Left Button", "Right Button", "Middle Button", "Back", "Forward");
 
     /** @return A preferences object containing the player's preferences */
     protected static Preferences getPrefs() {
@@ -157,5 +161,18 @@ public class AppPreferences {
     /** @return Key that triggers MOUSE_RIGHT action. */
     public static int getMouseRight() {
         return getPrefs().getInteger(PREF_MOUSE_RIGHT, Input.Buttons.RIGHT);
+    }
+
+    /**
+     * Get the string form of given button.
+     * @param inputButton that was clicked
+     * @return the string representation
+     */
+    public static String stringRepresentation(int inputButton) {
+        if (inputButton < 5) {
+            return BUTTONS_LIST.get(inputButton);
+        } else {
+            return "Not a button";
+        }
     }
 }
