@@ -46,6 +46,9 @@ public class MainScreen implements Screen {
     public VoShooter.Screen shouldChangeScreen;
     private BitmapFont font;
     private boolean pauseMenuActive;
+    private TextButton exitButton;
+    private TextButton resumeButton;
+    private TextButton settingsButton;
     private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     OrthographicCamera camera;
     TiledMap tiledMap;
@@ -210,12 +213,14 @@ public class MainScreen implements Screen {
         stage.addActor(table);
 
         // Create the objects in the scene.
-        TextButton resumeButton = new TextButton("Resume", skin);
-        TextButton settingsButton = new TextButton("Settings", skin);
-        TextButton exitButton = new TextButton("Exit", skin);
-        resumeButton.setVisible(false);
-        settingsButton.setVisible(false);
-        exitButton.setVisible(false);
+        resumeButton = new TextButton("Resume", skin);
+        settingsButton = new TextButton("Settings", skin);
+        exitButton = new TextButton("Exit", skin);
+        if (!pauseMenuActive) {
+            resumeButton.setVisible(false);
+            settingsButton.setVisible(false);
+            exitButton.setVisible(false);
+        }
 
         // Add the buttons to the table.
         table.add(resumeButton).fillX();
