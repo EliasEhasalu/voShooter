@@ -1,10 +1,13 @@
 package ee.taltech.voshooter.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -90,6 +93,16 @@ public class PreferencesScreen implements Screen {
         table.pack();
 
         // Slider and button functionality.
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    returnToMenuScreen.toggle();
+                }
+                return true;
+            }
+        });
+
         volumeMusicSlider.setValue(AppPreferences.getMusicVolume());
         volumeMusicSlider.addListener(event -> {
             AppPreferences.setMusicVolume(volumeMusicSlider.getValue());

@@ -30,6 +30,13 @@ public class GameState {
     }
 
     /**
+     * @return The list of players.
+     */
+    public List<ClientPlayer> getPlayers() {
+        return players;
+    }
+
+    /**
      * Act as a single game tick.
      */
     public void tick() {

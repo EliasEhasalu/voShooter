@@ -21,6 +21,7 @@ public class ClientPlayer extends Entity implements Drawable {
     public ClientPlayer(Pos position, long id, String name) {
         super(position);
         this.id = id;
+        this.name = name;
         this.sprite = new Sprite(new Texture("proxy-image.png"));
         this.sprite.scale(spriteScale);
     }
@@ -30,7 +31,7 @@ public class ClientPlayer extends Entity implements Drawable {
      * @param position The initial position of this player.
      * @param spritePath The path to the sprite image this player should have.
      */
-    public ClientPlayer(Pos position, String spritePath) {
+    public ClientPlayer(Pos position, long id, String name, String spritePath) {
         super(position);
         this.sprite = new Sprite(new Texture(spritePath));
         this.sprite.scale(spriteScale);

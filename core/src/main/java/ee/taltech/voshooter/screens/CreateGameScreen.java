@@ -1,10 +1,13 @@
 package ee.taltech.voshooter.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -16,7 +19,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
-import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
 import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
@@ -105,6 +107,23 @@ public class CreateGameScreen implements Screen {
         table.row().pad(100, 0, 0, 0);
         table.add(back).left();
         table.add(createGame);
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ENTER) {
+                    if (popUpTable.isVisible()) {
+                        closePopUp.toggle();
+                    } else if (stage.getKeyboardFocus() == playerNameField) {
+                        createGame.toggle();
+                    }
+                }
+                if (keycode == Input.Keys.ESCAPE && !popUpTable.isVisible()) {
+                    back.toggle();
+                }
+                return true;
+            }
+        });
 
         back.addListener(new ChangeListener() {
             @Override

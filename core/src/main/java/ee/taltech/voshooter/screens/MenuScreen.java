@@ -1,9 +1,12 @@
 package ee.taltech.voshooter.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -68,6 +71,16 @@ public class MenuScreen implements Screen {
         // Music.
         MusicPlayer.setMusic("soundfx/bensound-evolution.mp3");
         MusicPlayer.setVolume(AppPreferences.getMusicVolume());
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.NUM_1) joinGame.toggle();
+                else if (keycode == Input.Keys.NUM_2) createGame.toggle();
+                else if (keycode == Input.Keys.NUM_3) preferences.toggle();
+                return true;
+            }
+        });
 
         joinGame.addListener(new ChangeListener() {
             @Override

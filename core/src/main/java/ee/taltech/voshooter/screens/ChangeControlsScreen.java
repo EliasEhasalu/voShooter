@@ -19,6 +19,7 @@ import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.settingsinputs.SettingsInput;
 import ee.taltech.voshooter.settingsinputs.SettingsInputsHandler;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,9 +31,17 @@ public class ChangeControlsScreen implements Screen {
     private InputMultiplexer inputMultiplexer;
     private Map<Label, TextButton> controls;
     private Label keyUp;
+    private boolean keyUpIsButton;
     private Label keyDown;
+    private boolean keyDownIsButton;
     private Label keyLeft;
+    private boolean keyLeftIsButton;
     private Label keyRight;
+    private boolean keyRightIsButton;
+    private Label buttonLeft;
+    private boolean buttonLeftIsKey;
+    private Label buttonRight;
+    private boolean buttonRightIsKey;
     private Map.Entry<Label, TextButton> changeControlEntry;
 
     /**
@@ -70,16 +79,7 @@ public class ChangeControlsScreen implements Screen {
         final Label titleLabel = new Label("Change controls", skin);
 
         // Control labels.
-        controls = new LinkedHashMap<Label, TextButton>() {{
-                keyUp = new Label("Move up", skin);
-                put(keyUp, new TextButton(Input.Keys.toString(AppPreferences.getUpKey()), skin));
-                keyDown = new Label("Move down", skin);
-                put(keyDown, new TextButton(Input.Keys.toString(AppPreferences.getDownKey()), skin));
-                keyLeft = new Label("Move left", skin);
-                put(keyLeft, new TextButton(Input.Keys.toString(AppPreferences.getLeftKey()), skin));
-                keyRight = new Label("Move right", skin);
-                put(keyRight, new TextButton(Input.Keys.toString(AppPreferences.getRightKey()), skin));
-            }};
+        controls = setButtonsCorrect();
 
         // Add the sliders and labels to the table.
         table.add(titleLabel).fillX().uniformX().pad(0, 0, 20, 0).bottom().right();
@@ -118,6 +118,52 @@ public class ChangeControlsScreen implements Screen {
     }
 
     /**
+     * Set the buttons to be buttons if buttons or keys if keys.
+     * @return hashmap with correct buttons.
+     */
+    private HashMap<Label, TextButton> setButtonsCorrect() {
+        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+        return new LinkedHashMap<Label, TextButton>() {{
+            keyUp = new Label("Move up", skin);
+            if (!keyUpIsButton) {
+                put(keyUp, new TextButton(Input.Keys.toString(AppPreferences.getUpKey()), skin));
+            } else {
+                put(keyUp, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getUpKey()), skin));
+            }
+            keyLeft = new Label("Move left", skin);
+            if (!keyLeftIsButton) {
+                put(keyLeft, new TextButton(Input.Keys.toString(AppPreferences.getLeftKey()), skin));
+            } else {
+                put(keyLeft, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getLeftKey()), skin));
+            }
+            keyDown = new Label("Move down", skin);
+            if (!keyDownIsButton) {
+                put(keyDown, new TextButton(Input.Keys.toString(AppPreferences.getDownKey()), skin));
+            } else {
+                put(keyDown, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getDownKey()), skin));
+            }
+            keyRight = new Label("Move right", skin);
+            if (!keyRightIsButton) {
+                put(keyRight, new TextButton(Input.Keys.toString(AppPreferences.getRightKey()), skin));
+            } else {
+                put(keyRight, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getRightKey()), skin));
+            }
+            buttonLeft = new Label("Shoot", skin);
+            if (buttonLeftIsKey) {
+                put(buttonLeft, new TextButton(Input.Keys.toString(AppPreferences.getMouseLeft()), skin));
+            } else {
+                put(buttonLeft, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getMouseLeft()), skin));
+            }
+            buttonRight = new Label("Aim", skin);
+            if (buttonRightIsKey) {
+                put(buttonRight, new TextButton(Input.Keys.toString(AppPreferences.getMouseRight()), skin));
+            } else {
+                put(buttonRight, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getMouseRight()), skin));
+            }
+        }};
+    }
+
+    /**
      * Set all the buttons back to white.
      */
     public void setButtonsWhite() {
@@ -136,36 +182,77 @@ public class ChangeControlsScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         if (changeControlEntry != null) {
             Integer inputKey = SettingsInput.getInputKey();
+            Integer inputButton = SettingsInput.getInputButton();
             if (inputKey != null) {
-                Gdx.app.log("Input key", String.valueOf(inputKey));
-                Gdx.app.log("Set key", String.valueOf(AppPreferences.getUpKey()));
-                if (changeControlEntry.getKey().equals(keyUp)) {
-                    AppPreferences.setUpKey(inputKey);
-                    changeControlEntry.getValue().setText(Input.Keys.toString(AppPreferences.getUpKey()));
-                    setButtonsWhite();
-                    changeControlEntry = null;
-                } else if (changeControlEntry.getKey().equals(keyDown)) {
-                    AppPreferences.setDownKey(inputKey);
-                    changeControlEntry.getValue().setText(Input.Keys.toString(AppPreferences.getDownKey()));
-                    setButtonsWhite();
-                    changeControlEntry = null;
-                } else if (changeControlEntry.getKey().equals(keyLeft)) {
-                    AppPreferences.setLeftKey(inputKey);
-                    changeControlEntry.getValue().setText(Input.Keys.toString(AppPreferences.getLeftKey()));
-                    setButtonsWhite();
-                    changeControlEntry = null;
-                } else if (changeControlEntry.getKey().equals(keyRight)) {
-                    AppPreferences.setRightKey(inputKey);
-                    changeControlEntry.getValue().setText(Input.Keys.toString(AppPreferences.getRightKey()));
-                    setButtonsWhite();
-                    changeControlEntry = null;
-                }
+                changeControlKey(inputKey);
+            } else if (inputButton != null) {
+                changeControlButton(inputButton);
             }
         }
 
         // And draw over it again.
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));  // Cap menu FPS to 30.
         stage.draw();
+    }
+
+    /**
+     * Change control when a key clicked.
+     * @param inputKey that was clicked
+     */
+    private void changeControlKey(Integer inputKey) {
+        Label key = changeControlEntry.getKey();
+        if (key.equals(keyUp)) {
+            AppPreferences.setUpKey(inputKey);
+            keyUpIsButton = false;
+        } else if (key.equals(keyDown)) {
+            AppPreferences.setDownKey(inputKey);
+            keyDownIsButton = false;
+        } else if (key.equals(keyLeft)) {
+            AppPreferences.setLeftKey(inputKey);
+            keyLeftIsButton = false;
+        } else if (key.equals(keyRight)) {
+            AppPreferences.setRightKey(inputKey);
+            keyRightIsButton = false;
+        } else if (key.equals(buttonLeft)) {
+            AppPreferences.setMouseLeft(inputKey);
+            buttonLeftIsKey = true;
+        } else if (key.equals(buttonRight)) {
+            AppPreferences.setMouseRight(inputKey);
+            buttonRightIsKey = true;
+        }
+        changeControlEntry.getValue().setText(Input.Keys.toString(inputKey));
+        setButtonsWhite();
+        changeControlEntry = null;
+    }
+
+    /**
+     * Change input when button clicked.
+     * @param inputButton that was clicked
+     */
+    private void changeControlButton(Integer inputButton) {
+        Label key = changeControlEntry.getKey();
+        if (key.equals(keyUp)) {
+            AppPreferences.setUpKey(inputButton);
+            keyUpIsButton = true;
+        } else if (key.equals(keyDown)) {
+            AppPreferences.setDownKey(inputButton);
+            keyDownIsButton = true;
+        } else if (key.equals(keyLeft)) {
+            AppPreferences.setLeftKey(inputButton);
+            keyLeftIsButton = true;
+        } else if (key.equals(keyRight)) {
+            AppPreferences.setRightKey(inputButton);
+            keyRightIsButton = true;
+        } else if (key.equals(buttonLeft)) {
+            AppPreferences.setMouseLeft(inputButton);
+            buttonLeftIsKey = false;
+        } else if (key.equals(buttonRight)) {
+            AppPreferences.setMouseRight(inputButton);
+            buttonRightIsKey = false;
+        }
+        changeControlEntry.getValue().setText(AppPreferences.stringRepresentation(inputButton));
+        setButtonsWhite();
+        changeControlEntry = null;
     }
 
     /**
