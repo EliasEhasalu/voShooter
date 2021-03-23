@@ -7,6 +7,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -100,6 +102,16 @@ public class ChangeControlsScreen implements Screen {
         table.add(returnToPreferencesScreen).fillX().uniformX().bottom().right();
 
         table.pack();
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    returnToPreferencesScreen.toggle();
+                }
+                return true;
+            }
+        });
 
         returnToPreferencesScreen.addListener(new ChangeListener() {
             @Override

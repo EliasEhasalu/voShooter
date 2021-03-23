@@ -28,6 +28,7 @@ public class PreferencesScreen implements Screen {
     private Label volumeSoundIndicator;
     private Slider volumeMusicSlider;
     private Slider volumeSoundSlider;
+    private TextButton goToChangeControls;
     private TextButton returnToPreviousScreen;
 
     /**
@@ -64,7 +65,7 @@ public class PreferencesScreen implements Screen {
         } else {
             returnToPreviousScreen = new TextButton("Main menu", skin);
         }
-        final TextButton goToChangeControls = new TextButton("Change controls", skin);
+        goToChangeControls = new TextButton("Change controls", skin);
 
         final Label titleLabel = new Label("Settings", skin);
         final Label volumeMusicLabel = new Label("Music volume", skin);
@@ -98,6 +99,8 @@ public class PreferencesScreen implements Screen {
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
                     returnToPreviousScreen.toggle();
+                } else if (keycode == Input.Keys.ENTER) {
+                    goToChangeControls.toggle();
                 }
                 return true;
             }
