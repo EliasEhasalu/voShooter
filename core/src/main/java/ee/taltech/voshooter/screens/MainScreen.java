@@ -26,8 +26,12 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
-import ee.taltech.voshooter.networking.messages.serverreceived.*;
 import ee.taltech.voshooter.geometry.Pos;
+import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
+import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
+import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
@@ -222,9 +226,8 @@ public class MainScreen implements Screen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                resumeButton.setVisible(false);
-                settingsButton.setVisible(false);
-                exitButton.setVisible(false);
+                parent.setCameFromGame(true);
+                parent.changeScreen(VoShooter.Screen.PREFERENCES);
             }
         });
 
