@@ -15,23 +15,29 @@ public class GameController {
     public static List<ActionType> getInputs() {
         List<ActionType> actionsPerformed = new ArrayList<>();
 
-        if (Gdx.input.isKeyPressed(AppPreferences.getLeftKey())) {
+        if ((Gdx.input.isKeyPressed(AppPreferences.getLeftKey()) && AppPreferences.getLeftKeyIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getLeftKey()) && !AppPreferences.getLeftKeyIsKey())) {
             actionsPerformed.add(ActionType.MOVE_LEFT);
         }
-        if (Gdx.input.isKeyPressed(AppPreferences.getRightKey())) {
+        if ((Gdx.input.isKeyPressed(AppPreferences.getRightKey()) && AppPreferences.getRightKeyIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getRightKey()) && !AppPreferences.getRightKeyIsKey())) {
             actionsPerformed.add(ActionType.MOVE_RIGHT);
         }
-        if (Gdx.input.isKeyPressed(AppPreferences.getUpKey())) {
+        if ((Gdx.input.isKeyPressed(AppPreferences.getUpKey()) && AppPreferences.getUpKeyIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getUpKey()) && !AppPreferences.getUpKeyIsKey())) {
             actionsPerformed.add(ActionType.MOVE_UP);
         }
-        if (Gdx.input.isKeyPressed(AppPreferences.getDownKey())) {
+        if ((Gdx.input.isKeyPressed(AppPreferences.getDownKey()) && AppPreferences.getDownKeyIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getDownKey()) && !AppPreferences.getDownKeyIsKey())) {
             actionsPerformed.add(ActionType.MOVE_DOWN);
         }
         // Mouse buttons
-        if (Gdx.input.isButtonPressed(AppPreferences.getMouseLeft())) {
+        if ((Gdx.input.isKeyPressed(AppPreferences.getMouseLeft()) && AppPreferences.getButtonLeftIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getMouseRight()) && !AppPreferences.getButtonLeftIsKey())) {
             actionsPerformed.add(ActionType.MOUSE_LEFT);
         }
-        if (Gdx.input.isButtonPressed(AppPreferences.getMouseRight())) {
+        if ((Gdx.input.isKeyPressed(AppPreferences.getMouseRight()) && AppPreferences.getButtonRightIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getMouseRight()) && !AppPreferences.getButtonRightIsKey())) {
             actionsPerformed.add(ActionType.MOUSE_RIGHT);
         }
 
