@@ -238,9 +238,8 @@ public class MainScreen implements Screen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                resumeButton.setVisible(false);
-                settingsButton.setVisible(false);
-                exitButton.setVisible(false);
+                parent.setCameFromGame(true);
+                parent.changeScreen(VoShooter.Screen.PREFERENCES);
             }
         });
 
