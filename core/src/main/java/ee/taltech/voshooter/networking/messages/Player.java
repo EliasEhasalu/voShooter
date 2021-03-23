@@ -9,7 +9,7 @@ import ee.taltech.voshooter.networking.server.gamestate.Game;
 public class Player implements Draggable {
 
     private static final transient float BASE_PLAYER_ACCELERATION = (float) (5f / Game.TICK_RATE_IN_HZ);
-    private static final transient float MAX_PLAYER_VELOCITY = (float) (400f / Game.TICK_RATE_IN_HZ);
+    private static final transient float MAX_PLAYER_VELOCITY = 400f;
 
     private long id;
     private String name;
