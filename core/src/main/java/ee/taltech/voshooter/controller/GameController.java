@@ -2,7 +2,6 @@ package ee.taltech.voshooter.controller;
 
 import com.badlogic.gdx.Gdx;
 import ee.taltech.voshooter.AppPreferences;
-import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 
 import java.util.ArrayList;
 import java.util.List;
