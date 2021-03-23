@@ -28,6 +28,7 @@ public class PreferencesScreen implements Screen {
     private Label volumeSoundIndicator;
     private Slider volumeMusicSlider;
     private Slider volumeSoundSlider;
+    private TextButton returnToPreviousScreen;
 
     /**
      * Construct the preferences screen. Pass in a reference to the orchestrator.
@@ -58,7 +59,11 @@ public class PreferencesScreen implements Screen {
         // Create the settings objects for our stage.
         volumeMusicSlider = new Slider(0.0f, 1.0f, 0.05f, false, skin);
         volumeSoundSlider = new Slider(0.0f, 1.0f, 0.05f, false, skin);
-        final TextButton returnToMenuScreen = new TextButton("Main menu", skin);
+        if (parent.isCameFromGame()) {
+            returnToPreviousScreen = new TextButton("Back to game", skin);
+        } else {
+            returnToPreviousScreen = new TextButton("Main menu", skin);
+        }
         final TextButton goToChangeControls = new TextButton("Change controls", skin);
 
         final Label titleLabel = new Label("Settings", skin);
@@ -82,7 +87,7 @@ public class PreferencesScreen implements Screen {
         table.add(volumeSoundIndicator).fillX().uniformX();
 
         table.row().pad(0, 0, 0, 30);
-        table.add(returnToMenuScreen).fillX().uniformX().bottom().right();
+        table.add(returnToPreviousScreen).fillX().uniformX().bottom().right();
         table.add(goToChangeControls).fillX().uniformX().bottom().right();
 
         table.pack();
@@ -92,7 +97,7 @@ public class PreferencesScreen implements Screen {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
-                    returnToMenuScreen.toggle();
+                    returnToPreviousScreen.toggle();
                 }
                 return true;
             }
@@ -112,11 +117,16 @@ public class PreferencesScreen implements Screen {
             return false;
         });
 
-        returnToMenuScreen.addListener(new ChangeListener() {
+        returnToPreviousScreen.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 stage.clear();
-                parent.changeScreen(VoShooter.Screen.MENU);
+                VoShooter.Screen screenToGoTo = VoShooter.Screen.MENU;
+                if (parent.isCameFromGame()) {
+                    screenToGoTo = VoShooter.Screen.MAIN;
+                }
+                parent.setCameFromGame(false);
+                parent.changeScreen(screenToGoTo);
             }
         });
 

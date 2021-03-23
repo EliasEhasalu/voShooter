@@ -3,10 +3,11 @@ package ee.taltech.voshooter.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -49,6 +50,17 @@ public class MainScreen implements Screen {
     TiledMap tiledMap;
     TiledMapRenderer tiledMapRenderer;
 
+    private final SpriteBatch hudBatch = new SpriteBatch();
+    private final Texture selectedGunBackground
+            = new Texture("textures/hud/background/selectedGunBackground.png");
+    private final Texture handgun = new Texture("textures/hud/item/handgun.png");
+    private final Texture healthEmpty = new Texture("textures/hud/background/healthBarEmpty.png");
+    private final Texture healthFull = new Texture("textures/hud/background/healthBarFull.png");
+    private Texture selectedGun = handgun;
+    private float healthFraction = 0.75f;
+    private int currentAmmo = 16;
+    private int maxAmmo = 20;
+
     /**
      * Construct the menu screen.
      * @param parent A reference to the orchestrator object.
@@ -72,9 +84,9 @@ public class MainScreen implements Screen {
         camera.update();
         tiledMap = new TmxMapLoader().load("tileset/voShooterMap.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-        font = new BitmapFont();
-        font.setColor(Color.BLACK);
-        font.getData().setScale(1.5f);
+        font = new BitmapFont(Gdx.files.internal("bitmapFont/commodore.fnt"),
+                Gdx.files.internal("bitmapFont/commodore.png"), false);
+        font.getData().setScale(0.6f);
         MusicPlayer.stopMusic();
 
         // Have it handle player's input.
@@ -112,14 +124,15 @@ public class MainScreen implements Screen {
             drawable.getSprite().draw(stage.getBatch());
             if (drawable instanceof ClientPlayer) {
                 font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
-                        drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 6),
-                        drawable.getPosition().y + 40);
+                        drawable.getPosition().getX() - (((ClientPlayer) drawable).getName().length() * 7),
+                        drawable.getPosition().getY() + 40);
             }
         }
         stage.getBatch().end();
-        System.out.print(parent.gameState.userPlayer.getPosition());
-        System.out.print(parent.gameState.userPlayer.getSprite().getX());
-        System.out.print(parent.gameState.userPlayer.getSprite().getY());
+
+        hudBatch.begin();
+        drawHUD();
+        hudBatch.end();
     }
 
     /**
@@ -240,9 +253,8 @@ public class MainScreen implements Screen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                resumeButton.setVisible(false);
-                settingsButton.setVisible(false);
-                exitButton.setVisible(false);
+                parent.setCameFromGame(true);
+                parent.changeScreen(VoShooter.Screen.PREFERENCES);
             }
         });
 
@@ -252,6 +264,20 @@ public class MainScreen implements Screen {
                 parent.changeScreen(VoShooter.Screen.MENU);
             }
         });
+    }
+
+    /**
+     * Draw the HUD in the render cycle.
+     */
+    private void drawHUD() {
+        hudBatch.draw(selectedGunBackground, 64, 64);
+        hudBatch.draw(selectedGun, 64, 64);
+
+        hudBatch.draw(healthEmpty, 64, 128);
+        hudBatch.draw(healthFull, 64, 128, 0, 0,
+                Math.round(healthFull.getWidth() * healthFraction), healthFull.getHeight());
+
+        font.draw(hudBatch, String.format("%d/%d", currentAmmo, maxAmmo), 138, 80);
     }
 
     /**

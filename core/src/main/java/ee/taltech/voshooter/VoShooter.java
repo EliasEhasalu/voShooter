@@ -31,6 +31,7 @@ public class VoShooter extends Game {
     private LobbyScreen lobbyScreen;
     private boolean codeCorrect;
     private String lobbyCode;
+    private boolean cameFromGame;
     public VoClient client;
     public GameState gameState;
 
@@ -140,6 +141,20 @@ public class VoShooter extends Game {
      */
     public void setLobbyCode(String lobbyCode) {
         this.lobbyCode = lobbyCode;
+    }
+
+    /**
+     * @return true if previous screen was main screen.
+     */
+    public boolean isCameFromGame() {
+        return cameFromGame;
+    }
+
+    /**
+     * @param cameFromGame set true if came from main screen.
+     */
+    public void setCameFromGame(boolean cameFromGame) {
+        this.cameFromGame = cameFromGame;
     }
 
     /**
