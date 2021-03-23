@@ -1,12 +1,8 @@
 package ee.taltech.voshooter.screens;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -37,6 +33,9 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainScreen implements Screen {
@@ -73,9 +72,9 @@ public class MainScreen implements Screen {
         camera.update();
         tiledMap = new TmxMapLoader().load("tileset/voShooterMap.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-        font = new BitmapFont();
-        font.setColor(Color.BLACK);
-        font.getData().setScale(1.5f);
+        font = new BitmapFont(Gdx.files.internal("bitmapFont/commodore.fnt"),
+                Gdx.files.internal("bitmapFont/commodore.png"), false);
+        font.getData().setScale(0.6f);
         MusicPlayer.stopMusic();
 
         // Have it handle player's input.
@@ -113,7 +112,7 @@ public class MainScreen implements Screen {
             drawable.getSprite().draw(stage.getBatch());
             if (drawable instanceof ClientPlayer) {
                 font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
-                        drawable.getPosition().getX() - (((ClientPlayer) drawable).getName().length() * 6),
+                        drawable.getPosition().getX() - (((ClientPlayer) drawable).getName().length() * 7),
                         drawable.getPosition().getY() + 40);
             }
         }
