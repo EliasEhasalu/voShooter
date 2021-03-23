@@ -124,8 +124,8 @@ public class MainScreen implements Screen {
             drawable.getSprite().draw(stage.getBatch());
             if (drawable instanceof ClientPlayer) {
                 font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
-                        drawable.getPosition().getX() - (((ClientPlayer) drawable).getName().length() * 7),
-                        drawable.getPosition().getY() + 40);
+                        drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
+                        drawable.getPosition().y + 40);
             }
         }
         stage.getBatch().end();
