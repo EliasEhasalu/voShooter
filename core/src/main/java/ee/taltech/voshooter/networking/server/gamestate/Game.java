@@ -1,17 +1,21 @@
 package ee.taltech.voshooter.networking.server.gamestate;
 
+import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
+import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
+import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
+import ee.taltech.voshooter.networking.server.VoConnection;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import ee.taltech.voshooter.networking.messages.Player;
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
-import ee.taltech.voshooter.networking.messages.serverreceived.*;
-import ee.taltech.voshooter.networking.server.VoConnection;
 
 public class Game extends Thread {
 
@@ -56,7 +60,7 @@ public class Game extends Thread {
     }
 
     /**
-     * React to the players' inputs
+     * React to the players' inputs.
      * @param c The connection which performed the inputs.
      * @param actions The actions they wish to take.
      */
