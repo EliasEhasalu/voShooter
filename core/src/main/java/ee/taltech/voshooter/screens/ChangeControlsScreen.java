@@ -29,7 +29,6 @@ public class ChangeControlsScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
-    private SettingsInputsHandler inputHandler;
     private InputMultiplexer inputMultiplexer;
     private Map<Label, TextButton> controls;
     private Label keyUp;
@@ -48,11 +47,10 @@ public class ChangeControlsScreen implements Screen {
         this.parent = parent;
 
         // Create stage which will contain this screen's objects
-        stage = new Stage(new ScreenViewport());
-        inputHandler = new SettingsInputsHandler();
         inputMultiplexer = new InputMultiplexer();
+        stage = new Stage(new ScreenViewport());
         inputMultiplexer.addProcessor(stage);
-        inputMultiplexer.addProcessor(inputHandler);
+        inputMultiplexer.addProcessor(new SettingsInputsHandler());
     }
 
     /**
@@ -189,6 +187,8 @@ public class ChangeControlsScreen implements Screen {
         if (changeControlEntry != null) {
             Integer inputKey = SettingsInput.getInputKey();
             Integer inputButton = SettingsInput.getInputButton();
+            System.out.println(inputKey);
+            System.out.println(inputButton);
             if (inputKey != null) {
                 changeControlKey(inputKey);
             } else if (inputButton != null) {

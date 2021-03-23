@@ -10,6 +10,7 @@ public class SettingsInput {
      * @return input key
      */
     public static Integer getInputKey() {
+        System.out.println(SettingsInput.inputKey);
         return inputKey;
     }
 
@@ -32,6 +33,7 @@ public class SettingsInput {
      * @return input button.
      */
     public static Integer getInputButton() {
+        System.out.println(SettingsInput.inputKey);
         return inputButton;
     }
 
