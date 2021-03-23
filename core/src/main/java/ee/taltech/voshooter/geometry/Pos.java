@@ -2,12 +2,12 @@ package ee.taltech.voshooter.geometry;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class Pos {
+public class Pos extends Vector2 {
 
     private float x;
     private float y;
 
-    /** Serialize **/
+    /** Serialize. **/
     public Pos() {
     }
 
@@ -17,8 +17,15 @@ public class Pos {
      * @param y The y coordinate of the position.
      */
     public Pos(float x, float y) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
+    }
+
+    /**
+     * Construct a position object.
+     * @param vec The 2D vector to base the position on.
+     */
+    public Pos(Vector2 vec) {
+        super(vec.x, vec.y);
     }
 
     /**
@@ -49,14 +56,6 @@ public class Pos {
      */
     public void addY(float inc) {
         y += inc;
-    }
-
-    /**
-     * @param vec The vector to add to this position.
-     */
-    public void add(Vector2 vec) {
-        x += vec.x;
-        y += vec.y;
     }
 
     /**
