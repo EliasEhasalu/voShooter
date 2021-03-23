@@ -1,10 +1,8 @@
 package ee.taltech.voshooter.settingsinputs;
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 
-public class SettingsInputsHandler extends InputAdapter implements ApplicationListener {
+public class SettingsInputsHandler extends InputAdapter {
 
     /**
      * Key is pressed.
@@ -54,29 +52,5 @@ public class SettingsInputsHandler extends InputAdapter implements ApplicationLi
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         SettingsInput.removeInputButton();
         return true;
-    }
-
-    @Override
-    public void create() {
-    }
-
-    @Override
-    public void resize(int width, int height) {
-    }
-
-    @Override
-    public void render() {
-    }
-
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void dispose() {
     }
 }
