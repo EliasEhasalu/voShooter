@@ -5,7 +5,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -48,6 +50,17 @@ public class MainScreen implements Screen {
     OrthographicCamera camera;
     TiledMap tiledMap;
     TiledMapRenderer tiledMapRenderer;
+
+    private final SpriteBatch hudBatch = new SpriteBatch();
+    private final Texture selectedGunBackground
+            = new Texture("textures/hud/background/selectedGunBackground.png");
+    private final Texture handgun = new Texture("textures/hud/item/handgun.png");
+    private final Texture healthEmpty = new Texture("textures/hud/background/healthBarEmpty.png");
+    private final Texture healthFull = new Texture("textures/hud/background/healthBarFull.png");
+    private Texture selectedGun = handgun;
+    private float healthFraction = 0.75f;
+    private int currentAmmo = 16;
+    private int maxAmmo = 20;
 
     /**
      * Construct the menu screen.
@@ -117,6 +130,10 @@ public class MainScreen implements Screen {
             }
         }
         stage.getBatch().end();
+
+        hudBatch.begin();
+        drawHUD();
+        hudBatch.end();
     }
 
     /**
@@ -248,6 +265,20 @@ public class MainScreen implements Screen {
                 parent.changeScreen(VoShooter.Screen.MENU);
             }
         });
+    }
+
+    /**
+     * Draw the HUD in the render cycle.
+     */
+    private void drawHUD() {
+        hudBatch.draw(selectedGunBackground, 64, 64);
+        hudBatch.draw(selectedGun, 64, 64);
+
+        hudBatch.draw(healthEmpty, 64, 128);
+        hudBatch.draw(healthFull, 64, 128, 0, 0,
+                Math.round(healthFull.getWidth() * healthFraction), healthFull.getHeight());
+
+        font.draw(hudBatch, String.format("%d/%d", currentAmmo, maxAmmo), 138, 80);
     }
 
     /**
