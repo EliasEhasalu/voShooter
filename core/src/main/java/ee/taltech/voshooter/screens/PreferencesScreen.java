@@ -97,7 +97,7 @@ public class PreferencesScreen implements Screen {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
-                    returnToMenuScreen.toggle();
+                    returnToPreviousScreen.toggle();
                 }
                 return true;
             }
