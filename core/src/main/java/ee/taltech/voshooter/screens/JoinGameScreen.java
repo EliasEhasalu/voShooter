@@ -3,9 +3,12 @@ package ee.taltech.voshooter.screens;
 import java.io.IOException;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -80,6 +83,7 @@ public class JoinGameScreen implements Screen {
         Table nameTable = new Table();
         Label enterName = new Label("Enter your username: ", skin);
         TextField playerName = new TextField("", skin);
+        stage.setKeyboardFocus(playerName);
         playerName.setMaxLength(12);
         nameLengthCheck = new Label("Too short", skin);
         nameLengthCheck.setColor(255, 0, 0, 255);
@@ -115,6 +119,25 @@ public class JoinGameScreen implements Screen {
         table.row().pad(10, 0, 0, 0);
         bottomTable.add(back).left().pad(0, 0, 0, 10).maxWidth(200);
         table.add(bottomTable).fill().maxWidth(200);
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ENTER) {
+                    if (popUpTable.isVisible()) {
+                        closePopUp.toggle();
+                    } else if (stage.getKeyboardFocus() == playerName) {
+                        stage.setKeyboardFocus(gameCode);
+                    } else if (stage.getKeyboardFocus() == gameCode) {
+                        join.toggle();
+                    }
+                }
+                if (keycode == Input.Keys.ESCAPE && !popUpTable.isVisible()) {
+                    back.toggle();
+                }
+                return true;
+            }
+        });
 
         // Add button functionality.
         join.addListener(new ChangeListener() {
