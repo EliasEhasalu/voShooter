@@ -42,7 +42,7 @@ public class Lobby {
 
     /** Send all users in this lobby a message that the game has started. */
     protected void sendGameStart() {
-        game = new Game();
+        game = new Game(gameMode);
 
         for (VoConnection con : connections) {
             game.addConnection(con);

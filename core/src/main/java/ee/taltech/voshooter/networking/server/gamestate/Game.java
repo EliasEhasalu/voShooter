@@ -1,11 +1,22 @@
 package ee.taltech.voshooter.networking.server.gamestate;
 
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.CircleMapObject;
+import com.badlogic.gdx.maps.objects.PolygonMapObject;
+import com.badlogic.gdx.maps.objects.PolylineMapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
@@ -17,7 +28,10 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.server.VoConnection;
+import ee.taltech.voshooter.networking.server.gamestate.collision.HijackedTmxLoader;
+import ee.taltech.voshooter.networking.server.gamestate.collision.ShapeFactory;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +49,71 @@ public class Game extends Thread {
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new HashMap<>();
     private boolean running = false;
 
+    private TiledMap currentMap;
     private final World world = new World(new Vector2(0, 0), false);
+
+    /**
+     * Construct the game.
+     * @param gameMode The game mode for the game.
+     */
+    public Game(int gameMode) {
+
+        if (gameMode == 1) {
+            currentMap = new HijackedTmxLoader(new MyFileHandleResolver()).load("./core/assets/tileset/voShooterMap.tmx");
+        }
+
+        generateTerrain();
+    }
+
+    public static class MyFileHandleResolver implements FileHandleResolver {
+        /**
+         * Get the file handle.
+         * @param fileName The name of the file.
+         * @return The file handle.
+         */
+        @Override
+        public FileHandle resolve(String fileName) {
+            return new FileHandle(new File(fileName));
+        }
+    }
+
+    /**
+     * Add the collidable objects from the tiled map to the world object.
+     */
+    private void generateTerrain() {
+        MapObjects objects;
+
+        for (MapLayer l : currentMap.getLayers()) {
+            if (l.getName().equals("WallsObjects")) {
+                objects = l.getObjects();
+                for (MapObject object : objects) {
+                    Shape shape;
+
+                    if (object instanceof RectangleMapObject) {
+                        shape = ShapeFactory.getRectangle((RectangleMapObject) object);
+                    } else if (object instanceof PolygonMapObject) {
+                        shape = ShapeFactory.getPolygon((PolygonMapObject) object);
+                    } else if (object instanceof PolylineMapObject) {
+                        shape = ShapeFactory.getPolyline((PolylineMapObject) object);
+                    } else if (object instanceof CircleMapObject) {
+                        shape = ShapeFactory.getCircle((CircleMapObject) object);
+                    } else {
+                        continue;
+                    }
+
+                    BodyDef bodyDef = new BodyDef();
+                    bodyDef.type = BodyDef.BodyType.StaticBody;
+                    Body body = world.createBody(bodyDef);
+                    body.createFixture(shape, 1);
+
+                    shape.dispose();
+                }
+
+                break;
+            }
+        }
+
+    }
 
     /**
      * Add a connection to this game.
@@ -87,7 +165,7 @@ public class Game extends Thread {
      * @return A spawn point for a player.
      */
     private Pos getSpawnPoint() {
-        return new Pos(30, 30);
+        return new Pos(60, 60);
     }
 
     /**
