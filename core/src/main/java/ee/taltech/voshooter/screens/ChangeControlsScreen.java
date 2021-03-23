@@ -31,17 +31,11 @@ public class ChangeControlsScreen implements Screen {
     private InputMultiplexer inputMultiplexer;
     private Map<Label, TextButton> controls;
     private Label keyUp;
-    private boolean keyUpIsButton;
     private Label keyDown;
-    private boolean keyDownIsButton;
     private Label keyLeft;
-    private boolean keyLeftIsButton;
     private Label keyRight;
-    private boolean keyRightIsButton;
     private Label buttonLeft;
-    private boolean buttonLeftIsKey;
     private Label buttonRight;
-    private boolean buttonRightIsKey;
     private Map.Entry<Label, TextButton> changeControlEntry;
 
     /**
@@ -125,37 +119,37 @@ public class ChangeControlsScreen implements Screen {
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
         return new LinkedHashMap<Label, TextButton>() {{
             keyUp = new Label("Move up", skin);
-            if (!keyUpIsButton) {
+            if (AppPreferences.getUpKeyIsKey()) {
                 put(keyUp, new TextButton(Input.Keys.toString(AppPreferences.getUpKey()), skin));
             } else {
                 put(keyUp, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getUpKey()), skin));
             }
             keyLeft = new Label("Move left", skin);
-            if (!keyLeftIsButton) {
+            if (AppPreferences.getLeftKeyIsKey()) {
                 put(keyLeft, new TextButton(Input.Keys.toString(AppPreferences.getLeftKey()), skin));
             } else {
                 put(keyLeft, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getLeftKey()), skin));
             }
             keyDown = new Label("Move down", skin);
-            if (!keyDownIsButton) {
+            if (AppPreferences.getDownKeyIsKey()) {
                 put(keyDown, new TextButton(Input.Keys.toString(AppPreferences.getDownKey()), skin));
             } else {
                 put(keyDown, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getDownKey()), skin));
             }
             keyRight = new Label("Move right", skin);
-            if (!keyRightIsButton) {
+            if (AppPreferences.getRightKeyIsKey()) {
                 put(keyRight, new TextButton(Input.Keys.toString(AppPreferences.getRightKey()), skin));
             } else {
                 put(keyRight, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getRightKey()), skin));
             }
             buttonLeft = new Label("Shoot", skin);
-            if (buttonLeftIsKey) {
+            if (AppPreferences.getButtonLeftIsKey()) {
                 put(buttonLeft, new TextButton(Input.Keys.toString(AppPreferences.getMouseLeft()), skin));
             } else {
                 put(buttonLeft, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getMouseLeft()), skin));
             }
             buttonRight = new Label("Aim", skin);
-            if (buttonRightIsKey) {
+            if (AppPreferences.getButtonRightIsKey()) {
                 put(buttonRight, new TextButton(Input.Keys.toString(AppPreferences.getMouseRight()), skin));
             } else {
                 put(buttonRight, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getMouseRight()), skin));
@@ -203,22 +197,22 @@ public class ChangeControlsScreen implements Screen {
         Label key = changeControlEntry.getKey();
         if (key.equals(keyUp)) {
             AppPreferences.setUpKey(inputKey);
-            keyUpIsButton = false;
+            AppPreferences.setUpKeyIsKey(true);
         } else if (key.equals(keyDown)) {
             AppPreferences.setDownKey(inputKey);
-            keyDownIsButton = false;
+            AppPreferences.setDownKeyIsKey(true);
         } else if (key.equals(keyLeft)) {
             AppPreferences.setLeftKey(inputKey);
-            keyLeftIsButton = false;
+            AppPreferences.setLeftKeyIsKey(true);
         } else if (key.equals(keyRight)) {
             AppPreferences.setRightKey(inputKey);
-            keyRightIsButton = false;
+            AppPreferences.setRightKeyIsKey(true);
         } else if (key.equals(buttonLeft)) {
             AppPreferences.setMouseLeft(inputKey);
-            buttonLeftIsKey = true;
+            AppPreferences.setButtonLeftIsKey(true);
         } else if (key.equals(buttonRight)) {
             AppPreferences.setMouseRight(inputKey);
-            buttonRightIsKey = true;
+            AppPreferences.setButtonRightIsKey(true);
         }
         changeControlEntry.getValue().setText(Input.Keys.toString(inputKey));
         setButtonsWhite();
@@ -233,22 +227,22 @@ public class ChangeControlsScreen implements Screen {
         Label key = changeControlEntry.getKey();
         if (key.equals(keyUp)) {
             AppPreferences.setUpKey(inputButton);
-            keyUpIsButton = true;
+            AppPreferences.setUpKeyIsKey(false);
         } else if (key.equals(keyDown)) {
             AppPreferences.setDownKey(inputButton);
-            keyDownIsButton = true;
+            AppPreferences.setDownKeyIsKey(false);
         } else if (key.equals(keyLeft)) {
             AppPreferences.setLeftKey(inputButton);
-            keyLeftIsButton = true;
+            AppPreferences.setLeftKeyIsKey(false);
         } else if (key.equals(keyRight)) {
             AppPreferences.setRightKey(inputButton);
-            keyRightIsButton = true;
+            AppPreferences.setRightKeyIsKey(false);
         } else if (key.equals(buttonLeft)) {
             AppPreferences.setMouseLeft(inputButton);
-            buttonLeftIsKey = false;
+            AppPreferences.setButtonLeftIsKey(false);
         } else if (key.equals(buttonRight)) {
             AppPreferences.setMouseRight(inputButton);
-            buttonRightIsKey = false;
+            AppPreferences.setButtonRightIsKey(false);
         }
         changeControlEntry.getValue().setText(AppPreferences.stringRepresentation(inputButton));
         setButtonsWhite();
