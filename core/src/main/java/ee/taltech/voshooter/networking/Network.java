@@ -1,5 +1,6 @@
 package ee.taltech.voshooter.networking;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
@@ -24,7 +25,6 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
-import ee.taltech.voshooter.networking.server.gamestate.Draggable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +79,6 @@ public final class Network {
         kryo.register(LobbyUserUpdate.class);
         kryo.register(StartGame.class);
         kryo.register(GameStarted.class);
-        kryo.register(Draggable.class);
+        kryo.register(Game.class);
     }
 }

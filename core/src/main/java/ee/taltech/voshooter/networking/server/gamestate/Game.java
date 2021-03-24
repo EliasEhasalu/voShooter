@@ -13,11 +13,13 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
@@ -31,6 +33,7 @@ import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.collision.HijackedTmxLoader;
 import ee.taltech.voshooter.networking.server.gamestate.collision.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.ShapeFactory;
+import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.io.File;
 import java.util.HashMap;
@@ -42,22 +45,26 @@ import java.util.stream.Collectors;
 
 public class Game extends Thread {
 
+    private boolean running = false;
+
     public static final double TICK_RATE_IN_HZ = 64.0;
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
-    private static final float DRAG_CONSTANT = 0.9f;
+    public static final float DRAG_CONSTANT = 0.9f;
 
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new HashMap<>();
-    private boolean running = false;
+    private final Array<Body> bodies = new Array<>();
 
     private TiledMap currentMap;
-    private final World world = new World(new Vector2(0, 0), false);
+    private final World world;
 
     /**
      * Construct the game.
      * @param gameMode The game mode for the game.
      */
     public Game(int gameMode) {
+        world = new World(new Vector2(0, 0), false);
+        world.getBodies(bodies);
 
         if (gameMode == 1) {
             currentMap = new HijackedTmxLoader(new MyFileHandleResolver()).load("./core/assets/tileset/voShooterMap.tmx");
@@ -133,7 +140,7 @@ public class Game extends Thread {
      * @param c The connection to create the player for.
      */
     private void createPlayer(VoConnection c) {
-        Player p = new Player(c.user.id, c.user.getName());
+        Player p = new Player(this, c.user.id, c.user.getName());
 
         // Create a body definition.
         BodyDef def = new BodyDef();
@@ -155,6 +162,7 @@ public class Game extends Thread {
 
         // Set the body field on the player.
         p.setBody(body);
+        body.setUserData(p);
 
         // Set the player object on the connection.
         c.player = p;
@@ -173,7 +181,7 @@ public class Game extends Thread {
      * @param connection The connection the update was received from.
      * @param update The mouse movement update.
      */
-    public void updatePlayerDirection(VoConnection connection, MouseCoords update) {
+    private void updatePlayerDirection(VoConnection connection, MouseCoords update) {
         connection.player.setViewDirection(update);
     }
 
@@ -184,9 +192,10 @@ public class Game extends Thread {
 
         // Update players' velocities.
         connectionInputs.keySet().forEach(c -> {
-            c.player.drag(DRAG_CONSTANT);
-            c.player.move();
+            c.player.update();
         });
+
+        handleCustomCollisions();
 
         // Update the world.
         world.step((float) TICK_RATE, 8, 4);
@@ -194,6 +203,19 @@ public class Game extends Thread {
         // Forget all inputs received since last tick.
         sendPlayerPoseUpdates();
         clearPlayerInputs();
+    }
+
+    private void handleCustomCollisions() {
+        for (Contact c : world.getContactList()) {
+            Body b1 = c.getFixtureA().getBody();
+            Body b2 = c.getFixtureB().getBody();
+            if (b1.getUserData() instanceof Projectile) {
+                ((Projectile) b1.getUserData()).handleCollision(b2.getUserData());
+            }
+            if (b2.getUserData() instanceof Projectile) {
+                ((Projectile) b2.getUserData()).handleCollision(b1.getUserData());
+            }
+        }
     }
 
     /**
@@ -274,6 +296,14 @@ public class Game extends Thread {
        return connectionInputs.keySet().stream()
                .map(c -> c.player)
                .collect(Collectors.toList());
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public Array<Body> getBodies() {
+        return bodies;
     }
 
     /** Close the game simulation. */

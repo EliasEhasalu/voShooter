@@ -3,19 +3,23 @@ package ee.taltech.voshooter.networking.messages;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
-import ee.taltech.voshooter.networking.server.gamestate.Draggable;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
+import ee.taltech.voshooter.weapon.RocketLauncher;
+import ee.taltech.voshooter.weapon.Weapon;
 
-public class Player implements Draggable {
+public class Player {
 
     private transient float basePlayerAcceleration = (float) (0.005f / Game.TICK_RATE_IN_HZ);
     private final transient float MAX_PLAYER_VELOCITY = 0.01f;
+
+    private transient Game game;
 
     private long id;
     private String name;
     public Vector2 initialPos;
 
     private transient Body body;
+    private transient Weapon currentWeapon = new RocketLauncher(this);
 
     private final Vector2 playerAcc = new Vector2(0f, 0f);
     private Vector2 viewDirection = new Vector2(0f, 0f);
@@ -28,7 +32,8 @@ public class Player implements Draggable {
      * @param id The ID associated with the player.
      * @param name The name associated with the player.
      */
-    public Player(long id, String name) {
+    public Player(Game game, long id, String name) {
+        this.game = game;
         this.id = id;
         this.name = name;
     }
@@ -53,10 +58,15 @@ public class Player implements Draggable {
         playerAcc.limit(basePlayerAcceleration);
     }
 
+    public void update() {
+       move();
+       drag();
+    }
+
     /**
      * Update the player's position.
      */
-    public void move() {
+    private void move() {
         body.applyLinearImpulse(playerAcc, body.getPosition(), true);
         if (body.getLinearVelocity().len() > MAX_PLAYER_VELOCITY) {
             body.getLinearVelocity().limit(MAX_PLAYER_VELOCITY);
@@ -68,15 +78,13 @@ public class Player implements Draggable {
      * Shoot the current weapon.
      */
     public void shoot() {
-       // TODO
+        if (currentWeapon.canFire()) {
+            currentWeapon.fire();
+        }
     }
 
-    /**
-     * @param dragFactor The factor to reduce this entity's velocity vector by.
-     */
-    @Override
-    public void drag(float dragFactor) {
-        body.setLinearVelocity(body.getLinearVelocity().scl(dragFactor));
+    private void drag() {
+        body.setLinearVelocity(body.getLinearVelocity().scl(Game.DRAG_CONSTANT));
     }
 
     /**
@@ -119,5 +127,9 @@ public class Player implements Draggable {
      */
     public void setBody(Body b) {
         this.body = b;
+    }
+
+    public Game getGame() {
+        return game;
     }
 }
