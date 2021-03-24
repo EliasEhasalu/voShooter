@@ -148,7 +148,7 @@ public class Game extends Thread {
         // Set its physical properties.
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 0.7f;
+        fixtureDef.density = 40f;
 
         Fixture fixture = body.createFixture(fixtureDef);
 

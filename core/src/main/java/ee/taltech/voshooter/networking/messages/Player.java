@@ -8,8 +8,7 @@ import ee.taltech.voshooter.networking.server.gamestate.Game;
 
 public class Player implements Draggable {
 
-    private static final transient float BASE_PLAYER_ACCELERATION = (float) (5f / Game.TICK_RATE_IN_HZ);
-    private static final transient float MAX_PLAYER_VELOCITY = 400f;
+    private static final transient float BASE_PLAYER_ACCELERATION = (float) (0.1f / Game.TICK_RATE_IN_HZ);
 
     private long id;
     private String name;
@@ -58,12 +57,8 @@ public class Player implements Draggable {
      * Update the player's position.
      */
     public void move() {
-        Vector2 newVel = body.getLinearVelocity();
-        newVel.add(playerAcc);
-        newVel.limit(MAX_PLAYER_VELOCITY);
-
-        body.setLinearVelocity(newVel);
-        playerAcc.limit(0);
+        body.applyLinearImpulse(playerAcc, body.getPosition(), true);
+        playerAcc.limit(0);  // Reset player acceleration vector after application.
     }
 
     /**
@@ -78,7 +73,9 @@ public class Player implements Draggable {
      */
     @Override
     public void drag(float dragFactor) {
-        body.setLinearVelocity(body.getLinearVelocity().scl(dragFactor));
+        if (playerAcc.len() == 0) {  // Apply only when no input given.
+            body.setLinearVelocity(body.getLinearVelocity().scl(dragFactor));
+        }
     }
 
     /**
