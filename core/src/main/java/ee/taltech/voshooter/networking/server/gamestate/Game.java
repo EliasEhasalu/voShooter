@@ -29,6 +29,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.collision.HijackedTmxLoader;
+import ee.taltech.voshooter.networking.server.gamestate.collision.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.ShapeFactory;
 
 import java.io.File;
@@ -44,7 +45,7 @@ public class Game extends Thread {
     public static final double TICK_RATE_IN_HZ = 64.0;
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
-    private static final float DRAG_CONSTANT = 0.93f;
+    private static final float DRAG_CONSTANT = 0.9f;
 
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new HashMap<>();
     private boolean running = false;
@@ -143,12 +144,12 @@ public class Game extends Thread {
         // Add the body to the world.
         Body body = world.createBody(def);
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(15, 15);
+        shape.setAsBox(0.5f, 0.5f);
 
         // Set its physical properties.
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 0.7f;
+        fixtureDef.density = 100_000f;
 
         Fixture fixture = body.createFixture(fixtureDef);
 
@@ -165,7 +166,7 @@ public class Game extends Thread {
      * @return A spawn point for a player.
      */
     private Pos getSpawnPoint() {
-        return new Pos(60, 60);
+        return new Pos(4, 4);
     }
 
     /**
@@ -233,7 +234,7 @@ public class Game extends Thread {
 
         for (VoConnection c : connectionInputs.keySet()) {
             for (Player p : players) {
-                c.sendTCP(new PlayerPositionUpdate(p.getPos(), p.getId()));
+                c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
                 c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
             }
         }

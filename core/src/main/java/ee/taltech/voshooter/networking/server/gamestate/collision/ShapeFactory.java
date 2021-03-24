@@ -23,13 +23,13 @@ public final class ShapeFactory {
         PolygonShape polygon = new PolygonShape();
 
         Vector2 size = new Vector2(
-                rectangle.x + rectangle.width * 0.5f,
-                rectangle.y + rectangle.height * 0.5f
+                PixelToSimulation.toUnits(rectangle.x + rectangle.width * 0.5f),
+                PixelToSimulation.toUnits(rectangle.y + rectangle.height * 0.5f)
         );
 
         polygon.setAsBox(
-                rectangle.width * 0.5f,
-                rectangle.height * 0.5f,
+                PixelToSimulation.toUnits(rectangle.width * 0.5f),
+                PixelToSimulation.toUnits(rectangle.height * 0.5f),
                 size,
                 0.0f
         );
