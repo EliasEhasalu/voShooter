@@ -17,7 +17,6 @@ public class Player implements Draggable {
     private transient Body body;
 
     private final Vector2 playerAcc = new Vector2(0f, 0f);
-
     private Vector2 viewDirection = new Vector2(0f, 0f);
 
     /** Serialize. **/
@@ -73,9 +72,7 @@ public class Player implements Draggable {
      */
     @Override
     public void drag(float dragFactor) {
-        if (playerAcc.len() == 0) {  // Apply only when no input given.
-            body.setLinearVelocity(body.getLinearVelocity().scl(dragFactor));
-        }
+        body.setLinearVelocity(body.getLinearVelocity().scl(dragFactor));
     }
 
     /**
