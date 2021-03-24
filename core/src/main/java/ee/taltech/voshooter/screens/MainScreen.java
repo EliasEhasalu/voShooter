@@ -218,9 +218,7 @@ public class MainScreen implements Screen {
         settingsButton = new TextButton("Settings", skin);
         exitButton = new TextButton("Exit", skin);
         if (!pauseMenuActive) {
-            resumeButton.setVisible(false);
-            settingsButton.setVisible(false);
-            exitButton.setVisible(false);
+            setPauseTableVisibility(false);
         }
 
         // Add the buttons to the table.
@@ -236,15 +234,9 @@ public class MainScreen implements Screen {
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
                     if (resumeButton.isVisible()) {
-                        resumeButton.setVisible(false);
-                        settingsButton.setVisible(false);
-                        exitButton.setVisible(false);
-                        pauseMenuActive = false;
+                        setPauseTableVisibility(false);
                     } else {
-                        resumeButton.setVisible(true);
-                        settingsButton.setVisible(true);
-                        exitButton.setVisible(true);
-                        pauseMenuActive = true;
+                        setPauseTableVisibility(true);
                     }
                 }
                 return true;
@@ -254,9 +246,7 @@ public class MainScreen implements Screen {
         resumeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                resumeButton.setVisible(false);
-                settingsButton.setVisible(false);
-                exitButton.setVisible(false);
+                setPauseTableVisibility(false);
             }
         });
 
@@ -274,6 +264,17 @@ public class MainScreen implements Screen {
                 parent.changeScreen(VoShooter.Screen.MENU);
             }
         });
+    }
+
+    /**
+     * Set the pause table visibility.
+     * @param visibility to set to
+     */
+    private void setPauseTableVisibility(boolean visibility) {
+        resumeButton.setVisible(visibility);
+        settingsButton.setVisible(visibility);
+        exitButton.setVisible(visibility);
+        pauseMenuActive = visibility;
     }
 
     /**
