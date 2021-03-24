@@ -1,8 +1,8 @@
 package ee.taltech.voshooter.settingsinputs;
 
-import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputProcessor;
 
-public class SettingsInputsHandler extends InputAdapter {
+public class SettingsInputsHandler implements InputProcessor {
 
     /**
      * Key is pressed.
@@ -24,6 +24,16 @@ public class SettingsInputsHandler extends InputAdapter {
     public boolean keyUp(int k) {
         SettingsInput.removeInputKey();
         return true;
+    }
+
+    /**
+     * Placeholder.
+     * @param character Placeholder.
+     * @return Placeholder.
+     */
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
     }
 
     /**
@@ -52,5 +62,39 @@ public class SettingsInputsHandler extends InputAdapter {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         SettingsInput.removeInputButton();
         return true;
+    }
+
+    /**
+     * Placeholder.
+     * @param screenX Placeholder.
+     * @param screenY Placeholder.
+     * @param pointer Placeholder.
+     * @return Placeholder.
+     */
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    /**
+     * Placeholder.
+     * @param screenX Placeholder.
+     * @param screenY Placeholder.
+     * @return Placeholder.
+     */
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    /**
+     * Placeholder.
+     * @param amountX Placeholder.
+     * @param amountY Placeholder.
+     * @return Placeholder.
+     */
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        return false;
     }
 }

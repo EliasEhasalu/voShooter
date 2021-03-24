@@ -7,8 +7,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -29,7 +27,6 @@ public class ChangeControlsScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
-    private SettingsInputsHandler inputHandler;
     private InputMultiplexer inputMultiplexer;
     private Map<Label, TextButton> controls;
     private Label keyUp;
@@ -38,6 +35,7 @@ public class ChangeControlsScreen implements Screen {
     private Label keyRight;
     private Label buttonLeft;
     private Label buttonRight;
+    private TextButton returnToPreferencesScreen;
     private Map.Entry<Label, TextButton> changeControlEntry;
 
     /**
@@ -48,11 +46,10 @@ public class ChangeControlsScreen implements Screen {
         this.parent = parent;
 
         // Create stage which will contain this screen's objects
-        stage = new Stage(new ScreenViewport());
-        inputHandler = new SettingsInputsHandler();
         inputMultiplexer = new InputMultiplexer();
+        stage = new Stage(new ScreenViewport());
         inputMultiplexer.addProcessor(stage);
-        inputMultiplexer.addProcessor(inputHandler);
+        inputMultiplexer.addProcessor(new SettingsInputsHandler());
     }
 
     /**
@@ -71,7 +68,7 @@ public class ChangeControlsScreen implements Screen {
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         // Create the settings objects for our stage.
-        final TextButton returnToPreferencesScreen = new TextButton("Back", skin);
+        returnToPreferencesScreen = new TextButton("Back", skin);
         final Label titleLabel = new Label("Change controls", skin);
 
         // Control labels.
@@ -102,16 +99,6 @@ public class ChangeControlsScreen implements Screen {
         table.add(returnToPreferencesScreen).fillX().uniformX().bottom().right();
 
         table.pack();
-
-        stage.addListener(new InputListener() {
-            @Override
-            public boolean keyDown(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.ESCAPE) {
-                    returnToPreferencesScreen.toggle();
-                }
-                return true;
-            }
-        });
 
         returnToPreferencesScreen.addListener(new ChangeListener() {
             @Override
@@ -186,8 +173,11 @@ public class ChangeControlsScreen implements Screen {
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Integer inputKey = SettingsInput.getInputKey();
+        if (inputKey != null && inputKey == Input.Keys.ESCAPE) {
+            returnToPreferencesScreen.toggle();
+        }
         if (changeControlEntry != null) {
-            Integer inputKey = SettingsInput.getInputKey();
             Integer inputButton = SettingsInput.getInputButton();
             if (inputKey != null) {
                 changeControlKey(inputKey);

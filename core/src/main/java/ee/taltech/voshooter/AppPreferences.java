@@ -37,7 +37,7 @@ public class AppPreferences {
      * @return The desired music volume.
      */
     public static float getMusicVolume() {
-        return getPrefs().getFloat(PREF_MUSIC_VOLUME, 0.5f);
+        return getPrefs().getFloat(PREF_MUSIC_VOLUME, 0.2f);
     }
 
     /**
@@ -53,7 +53,7 @@ public class AppPreferences {
      * @return The sound volume.
      */
     public static float getSoundVolume() {
-        return getPrefs().getFloat(PREF_SOUND_VOL, 0.5f);
+        return getPrefs().getFloat(PREF_SOUND_VOL, 0.2f);
     }
 
     /**
