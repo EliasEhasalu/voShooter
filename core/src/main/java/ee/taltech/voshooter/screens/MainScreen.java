@@ -146,7 +146,8 @@ public class MainScreen implements Screen {
         Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
         List<PlayerAction> inputsToSend = new ArrayList<>();
-        inputsToSend.add(new MouseCoords(mousePos.x, mousePos.y));
+        ClientPlayer p = parent.gameState.userPlayer;
+        inputsToSend.add(new MouseCoords(mousePos.x - p.getPosition().x, mousePos.y - p.getPosition().y));
 
         for (ActionType a : inputs) {
             switch (a) {

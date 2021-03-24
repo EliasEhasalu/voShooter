@@ -8,7 +8,8 @@ import ee.taltech.voshooter.networking.server.gamestate.Game;
 
 public class Player implements Draggable {
 
-    private static final transient float BASE_PLAYER_ACCELERATION = (float) (0.1f / Game.TICK_RATE_IN_HZ);
+    private transient float basePlayerAcceleration = (float) (0.005f / Game.TICK_RATE_IN_HZ);
+    private final transient float MAX_PLAYER_VELOCITY = 0.01f;
 
     private long id;
     private String name;
@@ -37,7 +38,7 @@ public class Player implements Draggable {
      * @param update The update to base the view direction on.
      */
     public void setViewDirection(MouseCoords update) {
-       viewDirection = new Vector2(update.x - getPos().x, update.y - getPos().y);
+       viewDirection = new Vector2(update.x, update.y);
     }
 
     /**
@@ -47,9 +48,9 @@ public class Player implements Draggable {
      * @param yDir The direction to move on the y-axis.
      */
     public void addMoveDirection(int xDir, int yDir) {
-        Vector2 moveVector = new Vector2(BASE_PLAYER_ACCELERATION * xDir, BASE_PLAYER_ACCELERATION * yDir);
+        Vector2 moveVector = new Vector2(basePlayerAcceleration * xDir, basePlayerAcceleration * yDir);
         playerAcc.add(moveVector);
-        playerAcc.limit(BASE_PLAYER_ACCELERATION);
+        playerAcc.limit(basePlayerAcceleration);
     }
 
     /**
@@ -57,6 +58,9 @@ public class Player implements Draggable {
      */
     public void move() {
         body.applyLinearImpulse(playerAcc, body.getPosition(), true);
+        if (body.getLinearVelocity().len() > MAX_PLAYER_VELOCITY) {
+            body.getLinearVelocity().limit(MAX_PLAYER_VELOCITY);
+        }
         playerAcc.limit(0);  // Reset player acceleration vector after application.
     }
 
