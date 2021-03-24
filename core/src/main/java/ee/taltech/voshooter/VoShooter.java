@@ -1,12 +1,8 @@
 package ee.taltech.voshooter;
 
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
 import com.badlogic.gdx.Game;
 import com.esotericsoftware.kryonet.Client;
-
 import ee.taltech.voshooter.gamestate.GameState;
 import ee.taltech.voshooter.networking.VoClient;
 import ee.taltech.voshooter.screens.ChangeControlsScreen;
@@ -18,12 +14,15 @@ import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.screens.MenuScreen;
 import ee.taltech.voshooter.screens.PreferencesScreen;
 
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 public class VoShooter extends Game {
 
     private LoadingScreen loadingScreen;
     private PreferencesScreen preferencesScreen;
     private MenuScreen menuScreen;
-    private MainScreen mainScreen;
+    public MainScreen mainScreen;
     private AppPreferences preferences;
     private ChangeControlsScreen changeControlsScreen;
     public CreateGameScreen createGameScreen;

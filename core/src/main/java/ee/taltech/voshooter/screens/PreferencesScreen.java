@@ -128,7 +128,6 @@ public class PreferencesScreen implements Screen {
                 if (parent.isCameFromGame()) {
                     screenToGoTo = VoShooter.Screen.MAIN;
                 }
-                parent.setCameFromGame(false);
                 parent.changeScreen(screenToGoTo);
             }
         });
