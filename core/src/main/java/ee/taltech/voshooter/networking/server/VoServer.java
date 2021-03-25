@@ -1,20 +1,9 @@
 package ee.taltech.voshooter.networking.server;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
-
 import ee.taltech.voshooter.networking.Network;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
@@ -27,6 +16,16 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 public class VoServer {
 
     Server server;
@@ -35,7 +34,7 @@ public class VoServer {
     private final Random rand = new Random();
 
     private final Set<VoConnection> connections = new HashSet<>();
-    private final Map<String, Lobby> lobbies = new HashMap<>();
+    private final Map<String, Lobby> lobbies = new ConcurrentHashMap<>();
 
     /**
      * Construct the server.
