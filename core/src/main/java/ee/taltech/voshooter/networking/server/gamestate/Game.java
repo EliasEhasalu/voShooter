@@ -24,6 +24,7 @@ import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
@@ -36,11 +37,11 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.ShapeFactory;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Game extends Thread {
@@ -52,11 +53,12 @@ public class Game extends Thread {
 
     public static final float DRAG_CONSTANT = 0.9f;
 
-    private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new HashMap<>();
+    private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new ConcurrentHashMap<>();
     private final Array<Body> bodies = new Array<>();
 
     private TiledMap currentMap;
     private final World world;
+    private final Set<Projectile> projectiles = new HashSet<>();
 
     /**
      * Construct the game.
@@ -187,6 +189,8 @@ public class Game extends Thread {
 
     /** Main game logic. */
     private void tick() {
+        clearUnusedProjectiles();
+
         // Handle each player's inputs.
         connectionInputs.forEach(this::handleInputs);
 
@@ -195,6 +199,8 @@ public class Game extends Thread {
             c.player.update();
         });
 
+        projectiles.forEach(Projectile::update);
+
         handleCustomCollisions();
 
         // Update the world.
@@ -202,7 +208,12 @@ public class Game extends Thread {
 
         // Forget all inputs received since last tick.
         sendPlayerPoseUpdates();
+        sendProjectileUpdates();
         clearPlayerInputs();
+        for (Projectile p : projectiles) {
+            System.out.printf("%d - %s", p.getId(), p.getPosition().toString());
+        }
+        System.out.printf("%n");
     }
 
     private void handleCustomCollisions() {
@@ -210,10 +221,10 @@ public class Game extends Thread {
             Body b1 = c.getFixtureA().getBody();
             Body b2 = c.getFixtureB().getBody();
             if (b1.getUserData() instanceof Projectile) {
-                ((Projectile) b1.getUserData()).handleCollision(b2.getUserData());
+//                ((Projectile) b1.getUserData()).handleCollision(b2.getUserData());
             }
             if (b2.getUserData() instanceof Projectile) {
-                ((Projectile) b2.getUserData()).handleCollision(b1.getUserData());
+//                ((Projectile) b2.getUserData()).handleCollision(b1.getUserData());
             }
         }
     }
@@ -235,6 +246,23 @@ public class Game extends Thread {
         });
     }
 
+    private void clearUnusedProjectiles() {
+        projectiles.removeIf(p -> p.getBody() == null);
+    }
+
+    private void sendProjectileUpdates() {
+        ProjectilePositions u = new ProjectilePositions();
+        u.updates = projectiles.stream().map(Projectile::getUpdate).collect(Collectors.toList());
+
+        for (VoConnection c : connectionInputs.keySet()) {
+            c.sendTCP(u);
+        }
+    }
+
+    public void addProjectile(Projectile p) {
+       projectiles.add(p);
+    }
+
     /**
      * Add inputs to be dealt with next tick.
      * @param c The connection the input came from.
@@ -250,12 +278,8 @@ public class Game extends Thread {
      * Send position updates to players.
      */
     private void sendPlayerPoseUpdates() {
-        List<Player> players = connectionInputs.keySet().stream()
-                .map(c -> c.player)
-                .collect(Collectors.toList());
-
         for (VoConnection c : connectionInputs.keySet()) {
-            for (Player p : players) {
+            for (Player p : getPlayers()) {
                 c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
                 c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
             }

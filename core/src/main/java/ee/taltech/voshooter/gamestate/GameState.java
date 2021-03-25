@@ -1,31 +1,38 @@
 package ee.taltech.voshooter.gamestate;
 
 import ee.taltech.voshooter.entity.Entity;
+import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.rendering.Drawable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GameState {
 
-    private final List<Entity> entities = new ArrayList<>();
-    private final List<Drawable> drawableEntities = new ArrayList<>();
+    private final Set<Entity> entities = new HashSet<>();
+    private final Set<Drawable> drawableEntities = new HashSet<>();
 
     public ClientLobby currentLobby = new ClientLobby(this);
 
     public User clientUser = new User();
-    public List<ClientPlayer> players = new ArrayList<>();
     public ClientPlayer userPlayer;
     public List<PlayerAction> currentInputs = new ArrayList<>();
+
+    public List<ClientPlayer> players = new ArrayList<>();
+    private final Set<ClientProjectile> projectiles = new HashSet<>();
 
     /**
      * @return The list of drawable entities.
      */
-    public List<Drawable> getDrawables() {
+    public Set<Drawable> getDrawables() {
         return drawableEntities;
     }
 
@@ -73,5 +80,16 @@ public class GameState {
                 userPlayer = newP;
             }
         }
+    }
+
+    public void updateProjectiles(ProjectilePositions msg) {
+        projectiles.clear();
+        for (ProjectilePositionUpdate u : msg.updates) {
+           projectiles.add(new ClientProjectile(u));
+        }
+    }
+
+    public Set<ClientProjectile> getProjectiles() {
+        return projectiles;
     }
 }

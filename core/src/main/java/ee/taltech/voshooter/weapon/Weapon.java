@@ -1,6 +1,7 @@
 package ee.taltech.voshooter.weapon;
 
 import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.Game;
 
 public abstract class Weapon {
 
@@ -14,10 +15,15 @@ public abstract class Weapon {
     public Weapon(Player wielder, float coolDown) {
         this.wielder = wielder;
         this.coolDown = coolDown;
+        this.remainingCoolDown = 0f;
     }
 
     public boolean canFire() {
         return (remainingCoolDown == 0);
+    }
+
+    public void coolDown() {
+        remainingCoolDown = (float) Math.max(0, remainingCoolDown - (1 / Game.TICK_RATE_IN_HZ));
     }
 
     public abstract void fire();

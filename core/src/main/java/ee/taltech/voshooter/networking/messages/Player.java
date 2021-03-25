@@ -59,8 +59,9 @@ public class Player {
     }
 
     public void update() {
-       move();
-       drag();
+        currentWeapon.coolDown();
+        move();
+        drag();
     }
 
     /**
@@ -131,5 +132,9 @@ public class Player {
 
     public Game getGame() {
         return game;
+    }
+
+    public Body getBody() {
+        return body;
     }
 }

@@ -5,29 +5,73 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
+import ee.taltech.voshooter.networking.server.gamestate.collision.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.ShapeFactory;
 
 public abstract class Projectile {
 
+    private static int ID_GENERATOR = 0;
+
+    protected int id;
     protected Body body;
-    protected Vector2 vel;
     protected Player owner;
+    protected Projectile.Type type;
+    protected boolean isNew = true;
+    protected Vector2 vel;
 
+    public enum Type {
+        ROCKET
+    }
 
-    public Projectile(Player owner, Vector2 pos, Vector2 dir, float speed, float rad) {
+    public Projectile(Projectile.Type type, Player owner, Vector2 pos, Vector2 vel, float rad) {
+        this.vel = vel;
+        this.type = type;
+        this.owner = owner;
+        this.id = ID_GENERATOR++;
+
         Shape shape = ShapeFactory.getCircle(pos, rad);
 
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
         body = owner.getGame().getWorld().createBody(bodyDef);
-        body.createFixture(shape, 1);
+        body.createFixture(shape, 300_000f);
 
         shape.dispose();
 
         body.setUserData(this);  // Have the body remember this rocket object.
-        vel = dir.limit(speed);
-        body.setLinearVelocity(vel);
     }
 
     public abstract void handleCollision(Object o);
+
+    public void update() {
+//        body.applyLinearImpulse(vel, body.getPosition(), true);
+//        if (body.getLinearVelocity().len() > 0.01f) {
+//            body.getLinearVelocity().limit(0.01f);
+//        }
+    }
+
+    public Body getBody() {
+        return body;
+    }
+
+    public Projectile.Type getType() {
+        return type;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public ProjectilePositionUpdate getUpdate() {
+       ProjectilePositionUpdate u =  new ProjectilePositionUpdate(
+               getId(), getType(), PixelToSimulation.toPixels(body.getPosition()),
+               PixelToSimulation.toPixels(vel), isNew);
+       isNew = false;
+       return u;
+    }
+
+    public Vector2 getPosition() {
+       return body.getPosition().cpy();
+    }
 }
