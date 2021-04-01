@@ -79,9 +79,7 @@ public class Player {
      * Shoot the current weapon.
      */
     public void shoot() {
-        if (currentWeapon.canFire()) {
-            currentWeapon.fire();
-        }
+        if (currentWeapon.canFire()) currentWeapon.fire();
     }
 
     private void drag() {

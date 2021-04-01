@@ -6,7 +6,7 @@ import ee.taltech.voshooter.networking.messages.Player;
 public class Rocket extends Projectile {
 
     private static final float rad = 0.1f;
-    private static final float speed = 0.005f;
+    private static final float speed = 0f;
     private static final float explosionRadius = 1f;
 
     public Rocket(Player owner, Vector2 pos, Vector2 dir) {
