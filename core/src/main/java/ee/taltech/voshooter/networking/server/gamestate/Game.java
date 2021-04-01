@@ -158,13 +158,14 @@ public class Game extends Thread {
         // Set its physical properties.
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 100_000f;
+        fixtureDef.density = 10f;
 
         Fixture fixture = body.createFixture(fixtureDef);
 
         // Set the body field on the player.
         p.setBody(body);
         body.setUserData(p);
+        body.setLinearDamping(0.1f);
 
         // Set the player object on the connection.
         c.player = p;
@@ -204,7 +205,7 @@ public class Game extends Thread {
         handleCustomCollisions();
 
         // Update the world.
-        world.step((float) TICK_RATE, 8, 4);
+        world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);
 
         // Forget all inputs received since last tick.
         sendPlayerPoseUpdates();
