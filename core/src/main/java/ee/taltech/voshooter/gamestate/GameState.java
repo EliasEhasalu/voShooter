@@ -89,6 +89,9 @@ public class GameState {
         }
     }
 
+    /**
+     * @return Set of projectiles on the client.
+     */
     public Set<ClientProjectile> getProjectiles() {
         return projectiles;
     }

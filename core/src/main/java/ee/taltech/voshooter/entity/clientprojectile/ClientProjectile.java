@@ -13,13 +13,13 @@ public class ClientProjectile extends Entity implements Drawable {
     private final int id;
     private final Projectile.Type type;
     private final Sprite sprite;
-    private final float spriteScale = -0.9f;
+    private final float spriteScale = -0.5f;
 
     public ClientProjectile(ProjectilePositionUpdate msg) {
         super(msg.pos, msg.vel);
         this.id = msg.id;
         this.type = msg.type;
-        this.sprite = new Sprite(new Texture("badlogic.jpg"));
+        this.sprite = new Sprite(new Texture("textures/projectiles/rocketProjectile.png"));
         this.sprite.scale(spriteScale);
         this.sprite.setCenterX(getPosition().x);
         this.sprite.setCenterY(getPosition().y);

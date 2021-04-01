@@ -24,6 +24,14 @@ public abstract class Projectile {
         ROCKET
     }
 
+    /**
+     * Construct the projectile.
+     * @param type The type of projectile.
+     * @param owner The player who shot the projectile.
+     * @param pos The position of the projectile.
+     * @param vel The velocity of the projectile.
+     * @param rad The radius of the collision circle for the projectile.
+     */
     public Projectile(Projectile.Type type, Player owner, Vector2 pos, Vector2 vel, float rad) {
         this.vel = vel;
         this.type = type;
@@ -36,6 +44,7 @@ public abstract class Projectile {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         body = owner.getGame().getWorld().createBody(bodyDef);
         body.createFixture(shape, 300_000f);
+        body.setTransform(owner.getPos(), vel.angleDeg());
 
         shape.dispose();
 
@@ -51,14 +60,17 @@ public abstract class Projectile {
 //        }
     }
 
+    /** @return The body object of the projectile. */
     public Body getBody() {
         return body;
     }
 
+    /** @return Projectile type. */
     public Projectile.Type getType() {
         return type;
     }
 
+    /** @return Projectile ID. */
     public int getId() {
         return id;
     }
@@ -71,6 +83,7 @@ public abstract class Projectile {
        return u;
     }
 
+    /** @return The position of the projectile in world space. */
     public Vector2 getPosition() {
        return body.getPosition().cpy();
     }
