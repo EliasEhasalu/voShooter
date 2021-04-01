@@ -233,11 +233,7 @@ public class MainScreen implements Screen {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
-                    if (resumeButton.isVisible()) {
-                        setPauseTableVisibility(false);
-                    } else {
-                        setPauseTableVisibility(true);
-                    }
+                    setPauseTableVisibility(!resumeButton.isVisible());
                 }
                 return true;
             }
