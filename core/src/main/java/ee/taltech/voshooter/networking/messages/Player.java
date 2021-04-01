@@ -9,8 +9,8 @@ import ee.taltech.voshooter.weapon.Weapon;
 
 public class Player {
 
-    private transient float basePlayerAcceleration = (float) (0.005f / Game.TICK_RATE_IN_HZ);
-    private final transient float MAX_PLAYER_VELOCITY = 0.01f;
+    private transient float basePlayerAcceleration = (float) (100f / Game.TICK_RATE_IN_HZ);
+    private final transient float MAX_PLAYER_VELOCITY = 5000f;
 
     private transient Game game;
 
@@ -61,14 +61,14 @@ public class Player {
     public void update() {
         currentWeapon.coolDown();
         move();
-        drag();
+        if (id == 0) System.out.println(body.getLinearVelocity());
     }
 
     /**
      * Update the player's position.
      */
     private void move() {
-        body.applyLinearImpulse(playerAcc, body.getPosition(), true);
+        body.applyForceToCenter(playerAcc, true);
         if (body.getLinearVelocity().len() > MAX_PLAYER_VELOCITY) {
             body.getLinearVelocity().limit(MAX_PLAYER_VELOCITY);
         }
@@ -80,10 +80,6 @@ public class Player {
      */
     public void shoot() {
         if (currentWeapon.canFire()) currentWeapon.fire();
-    }
-
-    private void drag() {
-        body.setLinearVelocity(body.getLinearVelocity().scl(Game.DRAG_CONSTANT));
     }
 
     /**
