@@ -21,7 +21,8 @@ public abstract class Projectile {
     protected Vector2 vel;
 
     public enum Type {
-        ROCKET
+        ROCKET,
+        PISTOL_BULLET
     }
 
     /**
@@ -45,6 +46,7 @@ public abstract class Projectile {
         body = owner.getGame().getWorld().createBody(bodyDef);
         body.createFixture(shape, 300_000f);
         body.setTransform(owner.getPos(), vel.angleDeg());
+        body.setLinearVelocity(vel);
 
         shape.dispose();
 

@@ -11,7 +11,6 @@ public class Rocket extends Projectile {
 
     public Rocket(Player owner, Vector2 pos, Vector2 dir) {
         super(Type.ROCKET, owner, pos, dir.scl(speed), rad);
-        System.out.println("ROCKET");
     }
 
     @Override
