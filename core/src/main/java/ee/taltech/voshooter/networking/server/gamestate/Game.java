@@ -167,7 +167,6 @@ public class Game extends Thread {
     private void tick() {
         clearUnusedProjectiles();
 
-        // Handle each player's inputs.
         connectionInputs.forEach(this::handleInputs);
         connectionInputs.keySet().forEach(c -> c.player.update());
 

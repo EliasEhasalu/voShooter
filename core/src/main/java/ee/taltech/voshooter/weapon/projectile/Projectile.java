@@ -19,7 +19,8 @@ public abstract class Projectile {
     protected Vector2 vel;
 
     public enum Type {
-        ROCKET
+        ROCKET,
+        PISTOL_BULLET
     }
 
     /**
