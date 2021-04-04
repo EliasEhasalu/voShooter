@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
+import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
@@ -127,13 +128,13 @@ public class MainScreen implements Screen {
             setRespawnTableVisibility(true);
         }
 
-        // And draw over it again.
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap menu FPS to 64.
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap FPS to 64.
         stage.draw();
 
-        // Draw drawable entities to the stage.
         stage.getBatch().setProjectionMatrix(camera.combined);
         stage.getBatch().begin();
+
+        // TODO: Move all of this to a renderer.
         for (Drawable drawable : parent.gameState.getDrawables()) {
             if (drawable.isVisible()) {
                 drawable.getSprite().draw(stage.getBatch());
@@ -144,6 +145,11 @@ public class MainScreen implements Screen {
                         drawable.getPosition().y + 40);
             }
         }
+
+        for (ClientProjectile p : parent.gameState.getProjectiles()) {
+            p.getSprite().draw(stage.getBatch());
+        }
+
         stage.getBatch().end();
 
         hudBatch.begin();

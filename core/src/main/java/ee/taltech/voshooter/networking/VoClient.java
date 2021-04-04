@@ -16,6 +16,10 @@ import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+
+import java.io.IOException;
+import java.util.List;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,6 +49,7 @@ public class VoClient {
         client.addListener(new ThreadedListener(new Listener() {
             private VoShooter.Screen screenToChangeTo;
             private GameStarted gameStart;
+            private ProjectilePositions projectileUpdate;
 
             @Override
             public void connected(Connection connection) {
@@ -67,6 +72,8 @@ public class VoClient {
                     updatePlayerPositions((PlayerPositionUpdate) message);
                 } else if (message instanceof PlayerViewUpdate) {
                     updatePlayerViewDirections((PlayerViewUpdate) message);
+                } else if (message instanceof ProjectilePositions) {
+                   projectileUpdate = (ProjectilePositions) message;
                 } else if (message instanceof NoSuchLobby) {
                     parent.setCodeCorrect(false);
                     parent.setLobbyCode(((NoSuchLobby) message).lobbyCode);
@@ -85,6 +92,10 @@ public class VoClient {
                         if (gameStart != null) {
                             createPlayerObjects(gameStart);
                             gameStart = null;
+                        }
+                        if (projectileUpdate != null) {
+                            updateProjectilePositions(projectileUpdate);
+                            projectileUpdate = null;
                         }
                     }
                 });
@@ -153,5 +164,9 @@ public class VoClient {
                 p.getSprite().setRotation(msg.viewDirection.angleDeg());
             }
         }
+    }
+
+    private void updateProjectilePositions(ProjectilePositions msg) {
+        parent.gameState.updateProjectiles(msg);
     }
 }

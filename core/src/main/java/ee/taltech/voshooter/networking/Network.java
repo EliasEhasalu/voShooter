@@ -1,5 +1,6 @@
 package ee.taltech.voshooter.networking;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
@@ -15,6 +16,8 @@ import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
@@ -26,7 +29,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerRespawn;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
-import ee.taltech.voshooter.networking.server.gamestate.Draggable;
+import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +86,9 @@ public final class Network {
         kryo.register(PlayerRespawn.class);
         kryo.register(StartGame.class);
         kryo.register(GameStarted.class);
-        kryo.register(Draggable.class);
+        kryo.register(Game.class);
+        kryo.register(ProjectilePositionUpdate.class);
+        kryo.register(Projectile.Type.class);
+        kryo.register(ProjectilePositions.class);
     }
 }

@@ -88,4 +88,12 @@ public final class ShapeFactory {
 
         return chain;
     }
+
+    public static CircleShape getCircle(Vector2 pos, float radius) {
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(radius);
+        circleShape.setPosition(new Vector2(pos.x, pos.y));
+
+        return circleShape;
+    }
 }
