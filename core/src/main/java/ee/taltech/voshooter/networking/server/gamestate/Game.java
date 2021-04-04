@@ -193,11 +193,10 @@ public class Game extends Thread {
         connectionInputs.forEach(this::handleInputs);
         connectionInputs.keySet().forEach(c -> c.player.update());
 
-        handleCustomCollisions();
-
         // Update the world.
         world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);
 
+        sendUpdatesToPlayers();
         // Forget all inputs received since last tick.
         clearPlayerInputs();
     }

@@ -55,13 +55,6 @@ public abstract class Projectile {
 
     public abstract void handleCollision(Object o);
 
-    public void update() {
-//        body.applyLinearImpulse(vel, body.getPosition(), true);
-//        if (body.getLinearVelocity().len() > 0.01f) {
-//            body.getLinearVelocity().limit(0.01f);
-//        }
-    }
-
     /** @return The body object of the projectile. */
     public Body getBody() {
         return body;
