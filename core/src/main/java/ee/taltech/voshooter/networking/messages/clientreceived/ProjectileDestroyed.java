@@ -9,6 +9,7 @@ public class ProjectileDestroyed {
 
     /**
      * Constructor.
+     * @param id The id of the projectile to destroy.
      */
     public ProjectileDestroyed(int id) {
         this.id = id;

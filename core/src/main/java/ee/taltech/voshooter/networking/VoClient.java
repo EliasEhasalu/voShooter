@@ -15,10 +15,14 @@ import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class VoClient {
@@ -45,6 +49,8 @@ public class VoClient {
         client.addListener(new ThreadedListener(new Listener() {
             private VoShooter.Screen screenToChangeTo;
             private GameStarted gameStart;
+            private Set<ProjectileCreated> projectilesCreatedSet = new HashSet<>();
+            private Set<ProjectileDestroyed> projectileDestroyedSet = new HashSet<>();
             private ProjectilePositions projectileUpdate;
 
             @Override
@@ -68,6 +74,10 @@ public class VoClient {
                     updatePlayerPositions((PlayerPositionUpdate) message);
                 } else if (message instanceof PlayerViewUpdate) {
                     updatePlayerViewDirections((PlayerViewUpdate) message);
+                } else if (message instanceof ProjectileCreated) {
+                    projectilesCreatedSet.add((ProjectileCreated) message);
+                } else if (message instanceof ProjectileDestroyed) {
+                    projectileDestroyedSet.add((ProjectileDestroyed) message);
                 } else if (message instanceof ProjectilePositions) {
                    projectileUpdate = (ProjectilePositions) message;
                 } else if (message instanceof NoSuchLobby) {
@@ -90,6 +100,18 @@ public class VoClient {
                         if (projectileUpdate != null) {
                             updateProjectilePositions(projectileUpdate);
                             projectileUpdate = null;
+                        }
+                        if (!projectilesCreatedSet.isEmpty()) {
+                            for (ProjectileCreated msg : projectilesCreatedSet) {
+                                createProjectile(msg);
+                                projectilesCreatedSet.remove(msg);
+                            }
+                        }
+                        if (!projectileDestroyedSet.isEmpty()) {
+                            for (ProjectileDestroyed msg : projectileDestroyedSet) {
+                                destroyProjectile(msg);
+                                projectileDestroyedSet.remove(msg);
+                            }
                         }
                     }
                 });
@@ -148,6 +170,26 @@ public class VoClient {
         }
     }
 
+    /**
+     * Create a new projectile.
+     * @param msg Projectile created message.
+     */
+    private void createProjectile(ProjectileCreated msg) {
+        parent.gameState.createProjectile(msg);
+    }
+
+    /**
+     * Destroy a projectile.
+     * @param msg Projectile destroyed message.
+     */
+    private void destroyProjectile(ProjectileDestroyed msg) {
+        parent.gameState.destroyProjectile(msg);
+    }
+
+    /**
+     * Update the positions of the projectiles.
+     * @param msg Update message.
+     */
     private void updateProjectilePositions(ProjectilePositions msg) {
         parent.gameState.updateProjectiles(msg);
     }

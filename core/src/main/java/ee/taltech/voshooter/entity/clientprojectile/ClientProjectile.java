@@ -4,25 +4,39 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import ee.taltech.voshooter.entity.Entity;
-import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
+import java.util.AbstractMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class ClientProjectile extends Entity implements Drawable {
+
+    private static final Map<Projectile.Type, String> SPRITE_MAP = Stream.of(
+            new AbstractMap.SimpleEntry<>(Projectile.Type.ROCKET, "textures/projectiles/rocketProjectile.png"))
+            .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
     private final int id;
     private final Projectile.Type type;
     private final Sprite sprite;
     private final float spriteScale = -0.5f;
 
-    public ClientProjectile(ProjectilePositionUpdate msg) {
+    /**
+     * Constructor.
+     * @param msg Update message.
+     */
+    public ClientProjectile(ProjectileCreated msg) {
         super(msg.pos, msg.vel);
         this.id = msg.id;
-        this.type = Projectile.Type.ROCKET;
-        this.sprite = new Sprite(new Texture("textures/projectiles/rocketProjectile.png"));
+        this.type = msg.type;
+        this.sprite = new Sprite(new Texture(SPRITE_MAP.getOrDefault(type, "textures/projectiles/rocketProjectile.png")));
         this.sprite.scale(spriteScale);
         this.sprite.setCenterX(getPosition().x);
         this.sprite.setCenterY(getPosition().y);
+        System.out.println(position);
     }
 
     /**

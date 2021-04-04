@@ -24,6 +24,8 @@ import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
@@ -246,20 +248,43 @@ public class Game extends Thread {
     }
 
     private void clearUnusedProjectiles() {
-        projectiles.removeIf(p -> p.getBody() == null);
+        for (Projectile projectile : projectiles) {
+            if (projectile.getBody() == null) {
+                ProjectileDestroyed msg = new ProjectileDestroyed(projectile.getId());
+
+                for (VoConnection c : connectionInputs.keySet()) {
+                    c.sendTCP(msg);
+                }
+                projectiles.remove(projectile);
+            }
+        }
     }
 
     private void sendProjectileUpdates() {
         ProjectilePositions u = new ProjectilePositions();
-        u.updates = projectiles.stream().map(Projectile::getUpdate).collect(Collectors.toList());
+        u.updates = projectiles.stream().map(Projectile::getUpdate).collect(Collectors.toSet());
 
         for (VoConnection c : connectionInputs.keySet()) {
             c.sendTCP(u);
         }
     }
 
+    /**
+     * Add projectile to projectiles list. Send projectileCreated message.
+     * @param p Projectile created.
+     */
     public void addProjectile(Projectile p) {
        projectiles.add(p);
+
+       final ProjectileCreated msg = new ProjectileCreated(
+               p.getType(),
+               PixelToSimulation.toPixels(p.getPosition()),
+               PixelToSimulation.toPixels(p.getBody().getLinearVelocity()),
+               p.getId());
+
+       for (VoConnection c : connectionInputs.keySet()) {
+           c.sendTCP(msg);
+       }
     }
 
     /**

@@ -12,6 +12,12 @@ public class ProjectilePositionUpdate {
     public ProjectilePositionUpdate() {
     }
 
+    /**
+     * Message to update the postion of projectiles.
+     * @param id Id of the projectile.
+     * @param pos Position.
+     * @param vel Velocity.
+     */
     public ProjectilePositionUpdate(int id, Vector2 pos, Vector2 vel) {
         this.id = id;
         this.pos = pos;

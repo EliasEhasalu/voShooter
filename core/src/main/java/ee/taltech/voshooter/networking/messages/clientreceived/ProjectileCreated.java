@@ -5,10 +5,12 @@ import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 public class ProjectileCreated {
 
+    public int id;
     public Vector2 pos;
     public Vector2 vel;
     public Projectile.Type type;
 
+    /** Constructor. */
     public ProjectileCreated() {
     }
 
@@ -16,10 +18,13 @@ public class ProjectileCreated {
      * Constructor.
      * @param type The type of projectile.
      * @param pos The position of the projectile.
+     * @param vel The direction of the projectile.
+     * @param id The id of the projectile.
      */
-    public ProjectileCreated(Projectile.Type type, Vector2 pos, Vector2 vel) {
+    public ProjectileCreated(Projectile.Type type, Vector2 pos, Vector2 vel, int id) {
         this.type = type;
         this.pos = pos;
         this.vel = vel;
+        this.id = id;
     }
 }
