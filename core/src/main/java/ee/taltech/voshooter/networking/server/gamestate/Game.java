@@ -51,8 +51,6 @@ public class Game extends Thread {
     public static final double TICK_RATE_IN_HZ = 64.0;
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
-    public static final float DRAG_CONSTANT = 0.9f;
-
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new ConcurrentHashMap<>();
     private final Array<Body> bodies = new Array<>();
 
@@ -165,7 +163,7 @@ public class Game extends Thread {
         // Set the body field on the player.
         p.setBody(body);
         body.setUserData(p);
-        body.setLinearDamping(0.1f);
+        body.setLinearDamping(1.5f);
 
         // Set the player object on the connection.
         c.player = p;
