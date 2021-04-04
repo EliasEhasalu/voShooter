@@ -6,7 +6,8 @@ import ee.taltech.voshooter.networking.messages.Player;
 public class Rocket extends Projectile {
 
     private static final float SPEED = 20f;
-    private static final float EXPLOSION_RADIUS = 1f;
+    private static final float EXPLOSION_RADIUS = 10f;
+    private static final float EXPLOSION_FORCE = 1000f;
     private static final float LIFE_TIME = 2f;
 
     public Rocket(Player owner, Vector2 pos, Vector2 dir) {
@@ -15,9 +16,12 @@ public class Rocket extends Projectile {
 
     @Override
     public void handleCollision(Object o) {
-        if (!(o == owner)) {
-//             explode();
-        }
+        if (!(o == owner)) destroy();
+    }
+
+    @Override
+    protected void uponDestroy() {
+        explode();
     }
 
     private void explode() {
@@ -25,10 +29,8 @@ public class Rocket extends Projectile {
 
         for (Player p : owner.getGame().getPlayers()) {
             if (Vector2.dst(currPos.x, currPos.y, p.getPos().x, p.getPos().y) < EXPLOSION_RADIUS) {
-                p.getBody().applyLinearImpulse(p.getPos().sub(currPos), p.getPos(), true);
+                p.getBody().applyLinearImpulse(p.getPos().cpy().sub(currPos).scl(EXPLOSION_FORCE), p.getPos(), true);
             }
         }
-
-        owner.getGame().getWorld().destroyBody(body);
     }
 }

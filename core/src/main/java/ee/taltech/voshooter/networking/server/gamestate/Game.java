@@ -171,6 +171,9 @@ public class Game extends Thread {
     private void tick() {
         connectionInputs.forEach(this::handleInputs);
         connectionInputs.keySet().forEach(c -> c.player.update());
+        entityManagerHub.update();
+
+        handleCustomCollisions();
 
         // Update the world.
         world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);
@@ -181,7 +184,7 @@ public class Game extends Thread {
 
     private void sendUpdatesToPlayers() {
         sendPlayerPoseUpdates();
-        entityManagerHub.update();
+        entityManagerHub.sendUpdates();
     }
 
     private void handleCustomCollisions() {
@@ -189,10 +192,10 @@ public class Game extends Thread {
             Body b1 = c.getFixtureA().getBody();
             Body b2 = c.getFixtureB().getBody();
             if (b1.getUserData() instanceof Projectile) {
-//                ((Projectile) b1.getUserData()).handleCollision(b2.getUserData());
+                ((Projectile) b1.getUserData()).handleCollision(b2.getUserData());
             }
             if (b2.getUserData() instanceof Projectile) {
-//                ((Projectile) b2.getUserData()).handleCollision(b1.getUserData());
+                ((Projectile) b2.getUserData()).handleCollision(b1.getUserData());
             }
         }
     }

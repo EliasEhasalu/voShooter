@@ -15,6 +15,7 @@ public abstract class Projectile {
 
     protected int id;
     private float lifeTime;
+    private boolean isDestroyed = false;
 
     protected Body body;
     protected Player owner;
@@ -47,13 +48,22 @@ public abstract class Projectile {
 
     public abstract void handleCollision(Object o);
 
+    protected abstract void uponDestroy();
+
     public void destroy() {
+        isDestroyed = true;
+        uponDestroy();
+
         owner.getGame().getWorld().destroyBody(body);
     };
 
     public void update() {
         lifeTime -= (1 / Game.TICK_RATE_IN_HZ);
         if (lifeTimeIsOver()) destroy();
+    }
+
+    public boolean isDestroyed() {
+        return (lifeTimeIsOver() || isDestroyed);
     }
 
     public boolean lifeTimeIsOver() {

@@ -28,31 +28,10 @@ public class ProjectileManager extends EntityManager {
     public void update() {
         updateProjectiles();
         removeProjectiles();
-        sendProjectileUpdates();
-    }
-
-    private void updateProjectiles() {
-        projectiles.forEach(Projectile::update);
-    }
-
-    private void removeProjectiles() {
-        projectiles.forEach(p -> {
-            if (p.lifeTimeIsOver()) {
-                destroyedProjectileUpdates.add(new ProjectileDestroyed(p.getId()));
-                projectiles.remove(p);
-            }
-        });
     }
 
     @Override
-    public void add(Object projectile) {
-        Projectile p = (Projectile) projectile;
-
-        projectiles.add(p);
-        createdProjectileUpdates.add((ProjectileCreated) p.getUpdate());
-    }
-
-    private void sendProjectileUpdates() {
+    public void sendUpdates() {
         ProjectilePositions update = new ProjectilePositions();
 
         update.updates = projectiles.stream()
@@ -67,5 +46,26 @@ public class ProjectileManager extends EntityManager {
 
         createdProjectileUpdates.clear();
         destroyedProjectileUpdates.clear();
+    }
+
+    private void updateProjectiles() {
+        projectiles.forEach(Projectile::update);
+    }
+
+    private void removeProjectiles() {
+        projectiles.forEach(p -> {
+            if (p.isDestroyed()) {
+                destroyedProjectileUpdates.add(new ProjectileDestroyed(p.getId()));
+                projectiles.remove(p);
+            }
+        });
+    }
+
+    @Override
+    public void add(Object projectile) {
+        Projectile p = (Projectile) projectile;
+
+        projectiles.add(p);
+        createdProjectileUpdates.add((ProjectileCreated) p.getUpdate());
     }
 }

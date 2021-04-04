@@ -15,5 +15,7 @@ public abstract class EntityManager {
 
     public abstract void update();
 
+    public abstract void sendUpdates();
+
     public abstract void add(Object p);
 }

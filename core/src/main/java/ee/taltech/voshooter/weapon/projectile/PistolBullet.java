@@ -16,4 +16,8 @@ public class PistolBullet extends Projectile {
     @Override
     public void handleCollision(Object o) {
     }
+
+    @Override
+    protected void uponDestroy() {
+    }
 }

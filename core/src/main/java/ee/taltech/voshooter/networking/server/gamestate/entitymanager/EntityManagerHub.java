@@ -27,4 +27,8 @@ public class EntityManagerHub {
     public void update() {
         entityManagers.values().forEach(EntityManager::update);
     }
+
+    public void sendUpdates() {
+        entityManagers.values().forEach(EntityManager::sendUpdates);
+    }
 }
