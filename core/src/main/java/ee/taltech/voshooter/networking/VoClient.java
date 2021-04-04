@@ -1,15 +1,11 @@
 package ee.taltech.voshooter.networking;
 
 
-import java.io.IOException;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
-
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.networking.messages.User;
@@ -19,6 +15,10 @@ import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+
+import java.io.IOException;
+import java.util.List;
 
 
 public class VoClient {
@@ -45,6 +45,7 @@ public class VoClient {
         client.addListener(new ThreadedListener(new Listener() {
             private VoShooter.Screen screenToChangeTo;
             private GameStarted gameStart;
+            private ProjectilePositions projectileUpdate;
 
             @Override
             public void connected(Connection connection) {
@@ -67,6 +68,8 @@ public class VoClient {
                     updatePlayerPositions((PlayerPositionUpdate) message);
                 } else if (message instanceof PlayerViewUpdate) {
                     updatePlayerViewDirections((PlayerViewUpdate) message);
+                } else if (message instanceof ProjectilePositions) {
+                   projectileUpdate = (ProjectilePositions) message;
                 } else if (message instanceof NoSuchLobby) {
                     parent.setCodeCorrect(false);
                     parent.setLobbyCode(((NoSuchLobby) message).lobbyCode);
@@ -83,6 +86,10 @@ public class VoClient {
                         if (gameStart != null) {
                             createPlayerObjects(gameStart);
                             gameStart = null;
+                        }
+                        if (projectileUpdate != null) {
+                            updateProjectilePositions(projectileUpdate);
+                            projectileUpdate = null;
                         }
                     }
                 });
@@ -139,5 +146,9 @@ public class VoClient {
                 p.getSprite().setRotation(msg.viewDirection.angleDeg());
             }
         }
+    }
+
+    private void updateProjectilePositions(ProjectilePositions msg) {
+        parent.gameState.updateProjectiles(msg);
     }
 }

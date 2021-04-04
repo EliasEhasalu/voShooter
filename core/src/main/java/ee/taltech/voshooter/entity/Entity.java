@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Entity {
 
     protected Vector2 position;
+    protected Vector2 velocity;
 
     /**
      * Construct this entity.
@@ -14,10 +15,19 @@ public class Entity {
         this.position = position;
     }
 
+    public Entity(Vector2 position, Vector2 velocity) {
+        this.position = position;
+        this.velocity = velocity;
+    }
+
     /**
      * @return The position object tied to this entity.
      */
     public Vector2 getPosition() {
-        return position;
+        return position.cpy();
+    }
+
+    public Vector2 getVelocity() {
+        return velocity.cpy();
     }
 }
