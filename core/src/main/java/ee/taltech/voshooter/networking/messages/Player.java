@@ -81,7 +81,7 @@ public class Player {
      * Shoot the current weapon.
      */
     public void shoot() {
-       // TODO
+       currentWeapon.fire();
     }
 
     /**
