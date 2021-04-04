@@ -192,27 +192,19 @@ public class Game extends Thread {
 
         // Handle each player's inputs.
         connectionInputs.forEach(this::handleInputs);
-
-        // Update players' velocities.
-        connectionInputs.keySet().forEach(c -> {
-            c.player.update();
-        });
-
-        projectiles.forEach(Projectile::update);
-
-        handleCustomCollisions();
+        connectionInputs.keySet().forEach(c -> c.player.update());
 
         // Update the world.
         world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);
 
+        sendUpdatesToPlayers();
         // Forget all inputs received since last tick.
+        clearPlayerInputs();
+    }
+
+    private void sendUpdatesToPlayers() {
         sendPlayerPoseUpdates();
         sendProjectileUpdates();
-        clearPlayerInputs();
-        for (Projectile p : projectiles) {
-            System.out.printf("%d - %s", p.getId(), p.getPosition().toString());
-        }
-        System.out.printf("%n");
     }
 
     private void handleCustomCollisions() {
