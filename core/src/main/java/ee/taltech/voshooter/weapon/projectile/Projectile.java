@@ -2,8 +2,6 @@ package ee.taltech.voshooter.weapon.projectile;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Shape;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
 import ee.taltech.voshooter.networking.server.gamestate.collision.PixelToSimulation;
@@ -30,25 +28,15 @@ public abstract class Projectile {
      * @param owner The player who shot the projectile.
      * @param pos The position of the projectile.
      * @param vel The velocity of the projectile.
-     * @param rad The radius of the collision circle for the projectile.
      */
-    public Projectile(Projectile.Type type, Player owner, Vector2 pos, Vector2 vel, float rad) {
+    public Projectile(Projectile.Type type, Player owner, Vector2 pos, Vector2 vel) {
         this.vel = vel;
         this.type = type;
         this.owner = owner;
         this.id = ID_GENERATOR++;
 
-        Shape shape = ShapeFactory.getCircle(pos, rad);
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        body = owner.getGame().getWorld().createBody(bodyDef);
-        body.createFixture(shape, 300_000f);
-        body.setTransform(owner.getPos(), vel.angleDeg());
-
-        shape.dispose();
-
-        body.setUserData(this);  // Have the body remember this rocket object.
+        this.body = ShapeFactory.getRocket(owner.getGame().getWorld(), pos, vel);
+        this.body.setUserData(this);  // Have the body remember this rocket object.
     }
 
     public abstract void handleCollision(Object o);

@@ -14,9 +14,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -141,34 +138,14 @@ public class Game extends Thread {
      */
     private void createPlayer(VoConnection c) {
         Player p = new Player(this, c.user.id, c.user.getName());
+        Body body = ShapeFactory.getPlayer(world, getSpawnPoint());
 
-        // Create a body definition.
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody;
-        def.position.set(getSpawnPoint());
-
-        // Create the body and set its bounding box.
-        // Add the body to the world.
-        Body body = world.createBody(def);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.5f, 0.5f);
-
-        // Set its physical properties.
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 10f;
-
-        Fixture fixture = body.createFixture(fixtureDef);
-
-        // Set the body field on the player.
         p.setBody(body);
         body.setUserData(p);
-        body.setLinearDamping(1.5f);
 
         // Set the player object on the connection.
         c.player = p;
         c.player.initialPos = body.getPosition();
-        shape.dispose();
     }
 
     /**
