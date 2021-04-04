@@ -1,23 +1,16 @@
 package ee.taltech.voshooter.networking.messages.clientreceived;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
-
 public class ProjectileDestroyed {
 
-    private final Sprite sprite;
+    public int id;
 
-    /**
-     * Constructor.
-     * @param sprite The sprite to destroy.
-     */
-    public ProjectileDestroyed(Sprite sprite) {
-        this.sprite = sprite;
+    public ProjectileDestroyed() {
     }
 
     /**
-     * @return The sprite to destroy.
+     * Constructor.
      */
-    public Sprite getSprite() {
-        return sprite;
+    public ProjectileDestroyed(int id) {
+        this.id = id;
     }
 }

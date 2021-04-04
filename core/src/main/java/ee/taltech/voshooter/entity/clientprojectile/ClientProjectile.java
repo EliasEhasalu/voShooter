@@ -18,7 +18,7 @@ public class ClientProjectile extends Entity implements Drawable {
     public ClientProjectile(ProjectilePositionUpdate msg) {
         super(msg.pos, msg.vel);
         this.id = msg.id;
-        this.type = msg.type;
+        this.type = Projectile.Type.ROCKET;
         this.sprite = new Sprite(new Texture("textures/projectiles/rocketProjectile.png"));
         this.sprite.scale(spriteScale);
         this.sprite.setCenterX(getPosition().x);

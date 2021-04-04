@@ -76,11 +76,11 @@ public abstract class Projectile {
     }
 
     public ProjectilePositionUpdate getUpdate() {
-       ProjectilePositionUpdate u =  new ProjectilePositionUpdate(
-               getId(), getType(), PixelToSimulation.toPixels(body.getPosition()),
-               PixelToSimulation.toPixels(vel), isNew);
-       isNew = false;
-       return u;
+        return new ProjectilePositionUpdate(
+                getId(),
+                PixelToSimulation.toPixels(body.getPosition()),
+                PixelToSimulation.toPixels(vel)
+        );
     }
 
     /** @return The position of the projectile in world space. */
