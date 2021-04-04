@@ -13,9 +13,13 @@ import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+
+import java.io.IOException;
+import java.util.List;
 
 import java.io.IOException;
 import java.util.List;
@@ -73,6 +77,8 @@ public class VoClient {
                 } else if (message instanceof NoSuchLobby) {
                     parent.setCodeCorrect(false);
                     parent.setLobbyCode(((NoSuchLobby) message).lobbyCode);
+                } else if (message instanceof PlayerHealthUpdate) {
+                    updatePlayerHealth((PlayerHealthUpdate) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -132,6 +138,18 @@ public class VoClient {
         for (ClientPlayer p : parent.gameState.players) {
             if (p.getId() == msg.id) {
                 p.setPos(msg.pos);
+            }
+        }
+    }
+
+    /**
+     * Update players' health.
+     * @param msg The message containing info about player health.
+     */
+    private void updatePlayerHealth(PlayerHealthUpdate msg) {
+        for (ClientPlayer p : parent.gameState.players) {
+            if (p.getId() == msg.id) {
+                p.setHealth(msg.health);
             }
         }
     }
