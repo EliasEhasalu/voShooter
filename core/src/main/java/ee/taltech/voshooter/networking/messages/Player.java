@@ -103,14 +103,6 @@ public class Player {
     }
 
     /**
-     * @param dragFactor The factor to reduce this entity's velocity vector by.
-     */
-    @Override
-    public void drag(float dragFactor) {
-        body.setLinearVelocity(body.getLinearVelocity().scl(dragFactor));
-    }
-
-    /**
      * @return A string representation.
      */
     public String toString() {
