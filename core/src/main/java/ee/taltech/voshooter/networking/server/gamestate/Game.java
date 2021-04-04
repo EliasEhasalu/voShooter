@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
@@ -60,7 +61,8 @@ public class Game extends Thread {
     public Game(int gameMode) {
 
         if (gameMode == 1) {
-            currentMap = new HijackedTmxLoader(new MyFileHandleResolver()).load("./core/assets/tileset/voShooterMap.tmx");
+            currentMap = new HijackedTmxLoader(new MyFileHandleResolver())
+                    .load("./core/assets/tileset/voShooterMap.tmx");
         }
 
         generateTerrain();
@@ -203,14 +205,24 @@ public class Game extends Thread {
      */
     private void handleInputs(VoConnection c, Set<PlayerAction> actions) {
         actions.forEach(a -> {
-                if (a instanceof MovePlayer) {
-                    c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
-                } else if (a instanceof Shoot) {
-                    c.getPlayer().shoot();
-                } else if (a instanceof MouseCoords) {
-                    c.getPlayer().setViewDirection((MouseCoords) a);
+                if (c.getPlayer().getHealth() > 0) {
+                    if (a instanceof MovePlayer) {
+                        c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
+                    } else if (a instanceof Shoot) {
+                        c.getPlayer().shoot();
+                    } else if (a instanceof MouseCoords) {
+                        c.getPlayer().setViewDirection((MouseCoords) a);
+                    }
                 }
         });
+    }
+
+    /**
+     * Respawn given player.
+     * @param c the connection that needs to be respawned.
+     */
+    public void handleRespawn(VoConnection c) {
+        c.getPlayer().respawn(getSpawnPoint(), 0f);
     }
 
     /**
@@ -236,6 +248,7 @@ public class Game extends Thread {
             for (Player p : players) {
                 c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
                 c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
+                c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
             }
         }
     }

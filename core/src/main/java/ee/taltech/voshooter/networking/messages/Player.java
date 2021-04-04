@@ -13,8 +13,10 @@ public class Player implements Draggable {
 
     private long id;
     private String name;
+    private Integer health;
     public Vector2 initialPos;
 
+    public static final Integer MAX_HEALTH = 100;
     private transient Body body;
 
     private final Vector2 playerAcc = new Vector2(0f, 0f);
@@ -31,6 +33,7 @@ public class Player implements Draggable {
     public Player(long id, String name) {
         this.id = id;
         this.name = name;
+        this.health = MAX_HEALTH;
     }
 
     /**
@@ -69,6 +72,24 @@ public class Player implements Draggable {
      */
     public void shoot() {
        // TODO
+    }
+
+    /**
+     * Take damage from bullets or other things.
+     * @param amount of damage to take.
+     */
+    public void takeDamage(int amount) {
+        health -= amount;
+    }
+
+    /**
+     * Respawn the player.
+     * @param pos the player will respawn at.
+     * @param angle the player will be facing.
+     */
+    public void respawn(Vector2 pos, float angle) {
+        health = MAX_HEALTH;
+        body.setTransform(pos, angle);
     }
 
     /**
@@ -112,6 +133,13 @@ public class Player implements Draggable {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * @return This player's health.
+     */
+    public Integer getHealth() {
+        return health;
     }
 
     /**

@@ -31,6 +31,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerRespawn;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
@@ -43,13 +44,17 @@ public class MainScreen implements Screen {
 
     private final VoShooter parent;
     private final Stage stage;
+    private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     public VoShooter.Screen shouldChangeScreen;
     private BitmapFont font;
     private boolean pauseMenuActive;
-    private TextButton exitButton;
+    private boolean respawnMenuActive;
+    private final TextButton exitButton = new TextButton("Exit", skin);
+    private final TextButton exitButton2 = new TextButton("Exit", skin);
     private TextButton resumeButton;
-    private TextButton settingsButton;
-    private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+    private TextButton respawnButton;
+    private final TextButton settingsButton = new TextButton("Settings", skin);
+    private final TextButton settingsButton2 = new TextButton("Settings", skin);
     OrthographicCamera camera;
     TiledMap tiledMap;
     TiledMapRenderer tiledMapRenderer;
@@ -61,7 +66,7 @@ public class MainScreen implements Screen {
     private final Texture healthEmpty = new Texture("textures/hud/background/healthBarEmpty.png");
     private final Texture healthFull = new Texture("textures/hud/background/healthBarFull.png");
     private Texture selectedGun = handgun;
-    private float healthFraction = 0.75f;
+    private float healthFraction = 1.00f;
     private int currentAmmo = 16;
     private int maxAmmo = 20;
 
@@ -109,7 +114,7 @@ public class MainScreen implements Screen {
         Gdx.gl.glClearColor(0.25882354f, 0.25882354f, 0.90588236f, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (!pauseMenuActive) {
+        if (!pauseMenuActive && !respawnMenuActive) {
             // Send player inputs to server every render loop.
             handlePlayerInputs();
             moveCameraToPlayer();
@@ -117,6 +122,10 @@ public class MainScreen implements Screen {
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
+        healthFraction = parent.gameState.userPlayer.getHealth() / 100f;
+        if (healthFraction <= 0) {
+            setRespawnTableVisibility(true);
+        }
 
         // And draw over it again.
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap menu FPS to 64.
@@ -126,7 +135,9 @@ public class MainScreen implements Screen {
         stage.getBatch().setProjectionMatrix(camera.combined);
         stage.getBatch().begin();
         for (Drawable drawable : parent.gameState.getDrawables()) {
-            drawable.getSprite().draw(stage.getBatch());
+            if (drawable.isVisible()) {
+                drawable.getSprite().draw(stage.getBatch());
+            }
             if (drawable instanceof ClientPlayer) {
                 font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
                         drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
@@ -205,23 +216,30 @@ public class MainScreen implements Screen {
      * Create the buttons for the menu and add functionality to them.
      */
     private void createMenuButtons() {
-        // A Skin object defines the theme for menu objects.
-        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
-
         // Add a table which will contain menu items to the stage.
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
+        Table table2 = new Table();
+        table2.setFillParent(true);
+        stage.addActor(table2);
 
         // Create the objects in the scene.
         resumeButton = new TextButton("Resume", skin);
-        settingsButton = new TextButton("Settings", skin);
-        exitButton = new TextButton("Exit", skin);
+        respawnButton = new TextButton("Respawn", skin);
         if (!pauseMenuActive) {
             setPauseTableVisibility(false);
         }
+        if (!respawnMenuActive) {
+            setRespawnTableVisibility(false);
+        }
 
         // Add the buttons to the table.
+        table2.add(respawnButton).fillX();
+        table2.row().padTop(10);
+        table2.add(settingsButton2).fillX();
+        table2.row().padTop(10);
+        table2.add(exitButton2).fillX();
         table.add(resumeButton).fillX();
         table.row().padTop(10);
         table.add(settingsButton).fillX();
@@ -232,8 +250,10 @@ public class MainScreen implements Screen {
         stage.addListener(new InputListener() {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.ESCAPE) {
+                if (keycode == Input.Keys.ESCAPE && !respawnMenuActive) {
                     setPauseTableVisibility(!resumeButton.isVisible());
+                } else if (keycode == Input.Keys.P && !pauseMenuActive) {
+                    setRespawnTableVisibility(!respawnButton.isVisible());
                 }
                 return true;
             }
@@ -243,6 +263,14 @@ public class MainScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 setPauseTableVisibility(false);
+            }
+        });
+
+        respawnButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.getClient().sendTCP(new PlayerRespawn());
+                setRespawnTableVisibility(false);
             }
         });
 
@@ -271,6 +299,17 @@ public class MainScreen implements Screen {
         settingsButton.setVisible(visibility);
         exitButton.setVisible(visibility);
         pauseMenuActive = visibility;
+    }
+
+    /**
+     * Set the respawn table visibility.
+     * @param visibility to set to
+     */
+    private void setRespawnTableVisibility(boolean visibility) {
+        respawnButton.setVisible(visibility);
+        settingsButton2.setVisible(visibility);
+        exitButton2.setVisible(visibility);
+        respawnMenuActive = visibility;
     }
 
     /**
