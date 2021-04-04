@@ -108,8 +108,8 @@ public final class ShapeFactory {
         def.position.set(pos);
 
         Body b = world.createBody(def);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.25f, 0.25f);
+        CircleShape shape = new CircleShape();
+        shape.setRadius(0.3f);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
