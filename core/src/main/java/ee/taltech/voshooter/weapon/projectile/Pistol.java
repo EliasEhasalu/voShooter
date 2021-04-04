@@ -22,7 +22,7 @@ public class Pistol extends ProjectileWeapon {
                     wielder.getViewDirection().cpy().nor().scl(0.1f)
             );
 
-            wielder.getGame().addProjectile(p);
+            wielder.getGame().getEntityManagerHub().add(p);
         }
     }
 }

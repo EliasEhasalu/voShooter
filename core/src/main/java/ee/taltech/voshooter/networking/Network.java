@@ -16,6 +16,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
@@ -90,5 +91,6 @@ public final class Network {
         kryo.register(ProjectilePositionUpdate.class);
         kryo.register(Projectile.Type.class);
         kryo.register(ProjectilePositions.class);
+        kryo.register(ProjectileCreated.class);
     }
 }

@@ -22,7 +22,6 @@ import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
-import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
@@ -32,6 +31,7 @@ import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.collision.HijackedTmxLoader;
 import ee.taltech.voshooter.networking.server.gamestate.collision.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.ShapeFactory;
+import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.io.File;
@@ -54,6 +54,7 @@ public class Game extends Thread {
 
     private TiledMap currentMap;
     private final World world;
+    private final EntityManagerHub entityManagerHub;
     private final Set<Projectile> projectiles = new HashSet<>();
 
     /**
@@ -70,6 +71,7 @@ public class Game extends Thread {
         }
 
         generateTerrain();
+        this.entityManagerHub = new EntityManagerHub(world, this);
     }
 
     public static class MyFileHandleResolver implements FileHandleResolver {
@@ -167,8 +169,6 @@ public class Game extends Thread {
 
     /** Main game logic. */
     private void tick() {
-        clearUnusedProjectiles();
-
         connectionInputs.forEach(this::handleInputs);
         connectionInputs.keySet().forEach(c -> c.player.update());
 
@@ -176,13 +176,12 @@ public class Game extends Thread {
         world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);
 
         sendUpdatesToPlayers();
-        // Forget all inputs received since last tick.
         clearPlayerInputs();
     }
 
     private void sendUpdatesToPlayers() {
         sendPlayerPoseUpdates();
-        sendProjectileUpdates();
+        entityManagerHub.update();
     }
 
     private void handleCustomCollisions() {
@@ -215,23 +214,6 @@ public class Game extends Thread {
                     }
                 }
         });
-    }
-
-    private void clearUnusedProjectiles() {
-        projectiles.removeIf(p -> p.getBody() == null);
-    }
-
-    private void sendProjectileUpdates() {
-        ProjectilePositions u = new ProjectilePositions();
-        u.updates = projectiles.stream().map(Projectile::getUpdate).collect(Collectors.toList());
-
-        for (VoConnection c : connectionInputs.keySet()) {
-            c.sendTCP(u);
-        }
-    }
-
-    public void addProjectile(Projectile p) {
-       projectiles.add(p);
     }
 
     /**
@@ -313,5 +295,13 @@ public class Game extends Thread {
     /** Close the game simulation. */
     public void shutDown() {
         running = false;
+    }
+
+    public Set<VoConnection> getConnections() {
+        return connectionInputs.keySet();
+    }
+
+    public EntityManagerHub getEntityManagerHub() {
+        return entityManagerHub;
     }
 }

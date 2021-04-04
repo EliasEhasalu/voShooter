@@ -23,7 +23,7 @@ public class RocketLauncher extends ProjectileWeapon {
                     wielder.getViewDirection().cpy().nor()
             );
 
-            wielder.getGame().addProjectile(p);
+            wielder.getGame().getEntityManagerHub().add(p);
         }
     }
 }

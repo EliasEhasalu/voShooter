@@ -3,7 +3,9 @@ package ee.taltech.voshooter.weapon.projectile;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
+import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.ShapeFactory;
 
@@ -12,6 +14,8 @@ public abstract class Projectile {
     private static int ID_GENERATOR = 0;
 
     protected int id;
+    private float lifeTime;
+
     protected Body body;
     protected Player owner;
     protected Projectile.Type type;
@@ -30,10 +34,11 @@ public abstract class Projectile {
      * @param pos The position of the projectile.
      * @param vel The velocity of the projectile.
      */
-    public Projectile(Projectile.Type type, Player owner, Vector2 pos, Vector2 vel) {
+    public Projectile(Projectile.Type type, Player owner, Vector2 pos, Vector2 vel, float lifeTime) {
         this.vel = vel;
         this.type = type;
         this.owner = owner;
+        this.lifeTime = lifeTime;
         this.id = ID_GENERATOR++;
 
         this.body = ShapeFactory.getRocket(owner.getGame().getWorld(), pos, vel);
@@ -41,6 +46,19 @@ public abstract class Projectile {
     }
 
     public abstract void handleCollision(Object o);
+
+    public void destroy() {
+        owner.getGame().getWorld().destroyBody(body);
+    };
+
+    public void update() {
+        lifeTime -= (1 / Game.TICK_RATE_IN_HZ);
+        if (lifeTimeIsOver()) destroy();
+    }
+
+    public boolean lifeTimeIsOver() {
+        return lifeTime <= 0;
+    }
 
     /** @return The body object of the projectile. */
     public Body getBody() {
@@ -57,7 +75,18 @@ public abstract class Projectile {
         return id;
     }
 
-    public ProjectilePositionUpdate getUpdate() {
+    public Object getUpdate() {
+        if (isNew) {
+            isNew = false;
+
+            return new ProjectileCreated(
+                    getType(),
+                    getPosition(),
+                    getVelocity(),
+                    getId()
+            );
+        }
+
         return new ProjectilePositionUpdate(
                 getId(),
                 PixelToSimulation.toPixels(body.getPosition()),
@@ -68,5 +97,9 @@ public abstract class Projectile {
     /** @return The position of the projectile in world space. */
     public Vector2 getPosition() {
        return body.getPosition().cpy();
+    }
+
+    private Vector2 getVelocity() {
+        return body.getLinearVelocity().cpy();
     }
 }

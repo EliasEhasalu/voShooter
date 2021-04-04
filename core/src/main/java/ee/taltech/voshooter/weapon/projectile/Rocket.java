@@ -7,9 +7,10 @@ public class Rocket extends Projectile {
 
     private static final float SPEED = 20f;
     private static final float EXPLOSION_RADIUS = 1f;
+    private static final float LIFE_TIME = 2f;
 
     public Rocket(Player owner, Vector2 pos, Vector2 dir) {
-        super(Type.ROCKET, owner, pos, dir.setLength(SPEED));
+        super(Type.ROCKET, owner, pos, dir.setLength(SPEED), LIFE_TIME);
     }
 
     @Override
