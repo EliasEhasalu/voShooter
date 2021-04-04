@@ -5,8 +5,11 @@ import com.badlogic.gdx.math.Vector2;
 
 public class ProjectileUpdate {
 
-    private final Sprite sprite;
-    private final Vector2 pos;
+    public Sprite sprite;
+    public Vector2 pos;
+
+    public ProjectileUpdate() {
+    }
 
     /**
      * Constructor.
