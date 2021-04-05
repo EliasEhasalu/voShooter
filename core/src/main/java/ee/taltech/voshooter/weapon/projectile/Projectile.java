@@ -6,7 +6,6 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
-import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 
@@ -63,7 +62,6 @@ public abstract class Projectile {
         if (collidedWith != null) handleCollision(collidedWith);
         setCollidedWith(null);
 
-        lifeTime -= (1 / Game.TICK_RATE_IN_HZ);
         if (lifeTimeIsOver()) destroy();
     }
 
