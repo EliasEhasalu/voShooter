@@ -96,16 +96,16 @@ public abstract class Projectile {
 
             return new ProjectileCreated(
                     getType(),
-                    getPosition(),
-                    getVelocity(),
+                    PixelToSimulation.toPixels(getPosition()),
+                    PixelToSimulation.toPixels(getVelocity()),
                     getId()
             );
         }
 
         return new ProjectilePositionUpdate(
                 getId(),
-                PixelToSimulation.toPixels(body.getPosition()),
-                PixelToSimulation.toPixels(vel)
+                PixelToSimulation.toPixels(getPosition()),
+                PixelToSimulation.toPixels(getVelocity())
         );
     }
 
