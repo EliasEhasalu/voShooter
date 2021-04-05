@@ -1,7 +1,5 @@
 package ee.taltech.voshooter.networking.server.gamestate;
 
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -13,29 +11,26 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
-import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.server.VoConnection;
-import ee.taltech.voshooter.networking.server.gamestate.collision.HijackedTmxLoader;
-import ee.taltech.voshooter.networking.server.gamestate.collision.PixelToSimulation;
-import ee.taltech.voshooter.networking.server.gamestate.collision.ShapeFactory;
+import ee.taltech.voshooter.networking.server.gamestate.collision.CollisionHandler;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.HijackedTmxLoader;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.MyFileHandleResolver;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
-import ee.taltech.voshooter.weapon.projectile.Projectile;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,78 +46,22 @@ public class Game extends Thread {
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new ConcurrentHashMap<>();
-    private final Array<Body> bodies = new Array<>();
 
     private TiledMap currentMap;
-    private final World world;
-    private final EntityManagerHub entityManagerHub;
-    private final Set<Projectile> projectiles = new HashSet<>();
+    private final World world = new World(new Vector2(0, 0), false);
+
+    private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this);
+    private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
 
     /**
      * Construct the game.
      * @param gameMode The game mode for the game.
      */
     public Game(int gameMode) {
-        world = new World(new Vector2(0, 0), false);
-        world.getBodies(bodies);
-
-        if (gameMode == 1) {
-            currentMap = new HijackedTmxLoader(new MyFileHandleResolver())
-                    .load("./core/assets/tileset/voShooterMap.tmx");
-        }
-
+        setCurrentMap(gameMode);
         generateTerrain();
-        this.entityManagerHub = new EntityManagerHub(world, this);
-    }
 
-    public static class MyFileHandleResolver implements FileHandleResolver {
-        /**
-         * Get the file handle.
-         * @param fileName The name of the file.
-         * @return The file handle.
-         */
-        @Override
-        public FileHandle resolve(String fileName) {
-            return new FileHandle(new File(fileName));
-        }
-    }
-
-    /**
-     * Add the collidable objects from the tiled map to the world object.
-     */
-    private void generateTerrain() {
-        MapObjects objects;
-
-        for (MapLayer l : currentMap.getLayers()) {
-            if (l.getName().equals("WallsObjects")) {
-                objects = l.getObjects();
-                for (MapObject object : objects) {
-                    Shape shape;
-
-                    if (object instanceof RectangleMapObject) {
-                        shape = ShapeFactory.getRectangle((RectangleMapObject) object);
-                    } else if (object instanceof PolygonMapObject) {
-                        shape = ShapeFactory.getPolygon((PolygonMapObject) object);
-                    } else if (object instanceof PolylineMapObject) {
-                        shape = ShapeFactory.getPolyline((PolylineMapObject) object);
-                    } else if (object instanceof CircleMapObject) {
-                        shape = ShapeFactory.getCircle((CircleMapObject) object);
-                    } else {
-                        continue;
-                    }
-
-                    BodyDef bodyDef = new BodyDef();
-                    bodyDef.type = BodyDef.BodyType.StaticBody;
-                    Body body = world.createBody(bodyDef);
-                    body.createFixture(shape, 1);
-
-                    shape.dispose();
-                }
-
-                break;
-            }
-        }
-
+        world.setContactListener(collisionHandler);
     }
 
     /**
@@ -172,9 +111,8 @@ public class Game extends Thread {
     private void tick() {
         connectionInputs.forEach(this::handleInputs);
         connectionInputs.keySet().forEach(c -> c.player.update());
-        entityManagerHub.update();
 
-        handleCustomCollisions();
+        entityManagerHub.update();
 
         // Update the world.
         world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);
@@ -186,19 +124,6 @@ public class Game extends Thread {
     private void sendUpdatesToPlayers() {
         sendPlayerPoseUpdates();
         entityManagerHub.sendUpdates();
-    }
-
-    private void handleCustomCollisions() {
-        for (Contact c : world.getContactList()) {
-            Body b1 = c.getFixtureA().getBody();
-            Body b2 = c.getFixtureB().getBody();
-            if (b1.getUserData() instanceof Projectile) {
-                ((Projectile) b1.getUserData()).handleCollision(b2.getUserData());
-            }
-            if (b2.getUserData() instanceof Projectile) {
-                ((Projectile) b2.getUserData()).handleCollision(b1.getUserData());
-            }
-        }
     }
 
     /**
@@ -218,25 +143,6 @@ public class Game extends Thread {
                 }
             }
         });
-    }
-
-    /**
-     * Add projectile to projectiles list. Send projectileCreated message.
-     * @param p Projectile created.
-     */
-    public void addProjectile(Projectile p) {
-        projectiles.add(p);
-
-        final ProjectileCreated msg = new ProjectileCreated(
-                p.getType(),
-                PixelToSimulation.toPixels(p.getPosition()),
-                PixelToSimulation.toPixels(p.getBody().getLinearVelocity()),
-                p.getId()
-        );
-
-        for (VoConnection c : connectionInputs.keySet()) {
-            c.sendTCP(msg);
-        }
     }
 
     /**
@@ -298,6 +204,11 @@ public class Game extends Thread {
         }
     }
 
+    /** Close the game simulation. */
+    public void shutDown() {
+        running = false;
+    }
+
     /**
      * @return A list of player objects in this game.
      */
@@ -311,20 +222,54 @@ public class Game extends Thread {
         return world;
     }
 
-    public Array<Body> getBodies() {
-        return bodies;
-    }
-
-    /** Close the game simulation. */
-    public void shutDown() {
-        running = false;
-    }
-
     public Set<VoConnection> getConnections() {
         return connectionInputs.keySet();
     }
 
     public EntityManagerHub getEntityManagerHub() {
         return entityManagerHub;
+    }
+
+    private void setCurrentMap(int gameMode) {
+        if (gameMode == 1) {
+            currentMap = new HijackedTmxLoader(new MyFileHandleResolver())
+                    .load("./core/assets/tileset/voShooterMap.tmx");
+        }
+    }
+
+    /**
+     * Add the collidable objects from the tiled map to the world object.
+     */
+    private void generateTerrain() {
+        MapObjects objects;
+
+        for (MapLayer l : currentMap.getLayers()) {
+            if (l.getName().equals("WallsObjects")) {
+                objects = l.getObjects();
+                for (MapObject object : objects) {
+                    Shape shape;
+
+                    if (object instanceof RectangleMapObject) {
+                        shape = ShapeFactory.getRectangle((RectangleMapObject) object);
+                    } else if (object instanceof PolygonMapObject) {
+                        shape = ShapeFactory.getPolygon((PolygonMapObject) object);
+                    } else if (object instanceof PolylineMapObject) {
+                        shape = ShapeFactory.getPolyline((PolylineMapObject) object);
+                    } else if (object instanceof CircleMapObject) {
+                        shape = ShapeFactory.getCircle((CircleMapObject) object);
+                    } else {
+                        continue;
+                    }
+
+                    BodyDef bodyDef = new BodyDef();
+                    bodyDef.type = BodyDef.BodyType.StaticBody;
+                    Body body = world.createBody(bodyDef);
+                    body.createFixture(shape, 1);
+
+                    shape.dispose();
+                }
+                break;
+            }
+        }
     }
 }

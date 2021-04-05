@@ -1,4 +1,4 @@
-package ee.taltech.voshooter.networking.server.gamestate.collision;
+package ee.taltech.voshooter.networking.server.gamestate.collision.utils;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;

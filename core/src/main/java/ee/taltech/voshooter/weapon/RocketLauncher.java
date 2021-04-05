@@ -6,7 +6,7 @@ import ee.taltech.voshooter.weapon.projectile.Rocket;
 
 public class RocketLauncher extends ProjectileWeapon {
 
-    private static final float COOL_DOWN = 1.5f;
+    private static final float COOL_DOWN = 0.1f;
 
     public RocketLauncher(Player wielder) {
         super(wielder, COOL_DOWN);
