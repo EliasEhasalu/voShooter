@@ -36,7 +36,7 @@ public class ProjectileManager extends EntityManager {
 
         update.updates = projectiles.stream()
                 .map(p -> (ProjectilePositionUpdate) p.getUpdate())
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
         for (VoConnection c : game.getConnections()) {
             c.sendTCP(update);

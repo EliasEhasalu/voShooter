@@ -23,8 +23,6 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdat
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
-import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
-import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
@@ -210,39 +208,16 @@ public class Game extends Thread {
      */
     private void handleInputs(VoConnection c, Set<PlayerAction> actions) {
         actions.forEach(a -> {
-                if (c.getPlayer().getHealth() > 0) {
-                    if (a instanceof MovePlayer) {
-                        c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
-                    } else if (a instanceof Shoot) {
-                        c.getPlayer().shoot();
-                    } else if (a instanceof MouseCoords) {
-                        c.getPlayer().setViewDirection((MouseCoords) a);
-                    }
+            if (c.getPlayer().getHealth() > 0) {
+                if (a instanceof MovePlayer) {
+                    c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
+                } else if (a instanceof Shoot) {
+                    c.getPlayer().shoot();
+                } else if (a instanceof MouseCoords) {
+                    c.getPlayer().setViewDirection((MouseCoords) a);
                 }
-        });
-    }
-
-<<<<<<< core/src/main/java/ee/taltech/voshooter/networking/server/gamestate/Game.java
-    private void clearUnusedProjectiles() {
-        for (Projectile projectile : projectiles) {
-            if (projectile.getBody() == null) {
-                ProjectileDestroyed msg = new ProjectileDestroyed(projectile.getId());
-
-                for (VoConnection c : connectionInputs.keySet()) {
-                    c.sendTCP(msg);
-                }
-                projectiles.remove(projectile);
             }
-        }
-    }
-
-    private void sendProjectileUpdates() {
-        ProjectilePositions u = new ProjectilePositions();
-        u.updates = projectiles.stream().map(Projectile::getUpdate).collect(Collectors.toSet());
-
-        for (VoConnection c : connectionInputs.keySet()) {
-            c.sendTCP(u);
-        }
+        });
     }
 
     /**
@@ -250,25 +225,26 @@ public class Game extends Thread {
      * @param p Projectile created.
      */
     public void addProjectile(Projectile p) {
-       projectiles.add(p);
+        projectiles.add(p);
 
-       final ProjectileCreated msg = new ProjectileCreated(
-               p.getType(),
-               PixelToSimulation.toPixels(p.getPosition()),
-               PixelToSimulation.toPixels(p.getBody().getLinearVelocity()),
-               p.getId());
+        final ProjectileCreated msg = new ProjectileCreated(
+                p.getType(),
+                PixelToSimulation.toPixels(p.getPosition()),
+                PixelToSimulation.toPixels(p.getBody().getLinearVelocity()),
+                p.getId()
+        );
 
-       for (VoConnection c : connectionInputs.keySet()) {
-           c.sendTCP(msg);
-       }
-=======
+        for (VoConnection c : connectionInputs.keySet()) {
+            c.sendTCP(msg);
+        }
+    }
+
     /**
      * Respawn given player.
      * @param c the connection that needs to be respawned.
      */
     public void handleRespawn(VoConnection c) {
         c.getPlayer().respawn(getSpawnPoint(), 0f);
->>>>>>> core/src/main/java/ee/taltech/voshooter/networking/server/gamestate/Game.java
     }
 
     /**
