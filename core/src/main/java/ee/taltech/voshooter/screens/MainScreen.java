@@ -305,6 +305,23 @@ public class MainScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                parent.gameState.clearDrawables();
+                parent.changeScreen(VoShooter.Screen.MENU);
+            }
+        });
+
+        settingsButton2.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.setCameFromGame(true);
+                parent.changeScreen(VoShooter.Screen.PREFERENCES);
+            }
+        });
+
+        exitButton2.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.gameState.clearDrawables();
                 parent.changeScreen(VoShooter.Screen.MENU);
             }
         });

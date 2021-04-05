@@ -117,6 +117,14 @@ public class GameState {
     }
 
     /**
+     * Clear all drawable entities.
+     */
+    public void clearDrawables() {
+        drawableEntities.clear();
+        players.clear();
+    }
+
+    /**
      * @return Set of projectiles on the client.
      */
     public Set<ClientProjectile> getProjectiles() {
