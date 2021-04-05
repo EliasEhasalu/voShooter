@@ -43,6 +43,7 @@ import java.util.List;
 
 public class MainScreen implements Screen {
 
+    public static final float MINIMAP_ZOOM = 20f;
     private final VoShooter parent;
     private final Stage stage;
     private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
@@ -56,9 +57,18 @@ public class MainScreen implements Screen {
     private TextButton respawnButton;
     private final TextButton settingsButton = new TextButton("Settings", skin);
     private final TextButton settingsButton2 = new TextButton("Settings", skin);
-    OrthographicCamera camera;
-    TiledMap tiledMap;
-    TiledMapRenderer tiledMapRenderer;
+    private OrthographicCamera camera;
+    private OrthographicCamera minimapCamera;
+    private TiledMap tiledMap;
+    private TiledMapRenderer tiledMapRenderer;
+    private TiledMapRenderer miniMapRenderer;
+    private final SpriteBatch minimapBatch = new SpriteBatch();
+    private final Texture minimapPlayer = new Texture("textures/playerIcon.png");
+    public static final float MINIMAP_RATIO = 16f / 9f;
+    public static final int MINIMAP_HEIGHT = 100;
+    public static final int MINIMAP_WIDTH = (int) (MINIMAP_HEIGHT * MINIMAP_RATIO);
+    public static final int MARKER_SIZE = 20;
+    public static final float MINIMAP_SCALE = 0.22f;
 
     private final SpriteBatch hudBatch = new SpriteBatch();
     private final Texture selectedGunBackground
@@ -102,6 +112,11 @@ public class MainScreen implements Screen {
         // Have it handle player's input.
         Gdx.input.setInputProcessor(stage);
         stage.clear();
+
+        miniMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, MINIMAP_SCALE);
+        minimapCamera = new OrthographicCamera(MINIMAP_WIDTH, MINIMAP_HEIGHT);
+        minimapCamera.zoom = MINIMAP_ZOOM;
+        minimapCamera.setToOrtho(false, MINIMAP_WIDTH, MINIMAP_HEIGHT);
 
         createMenuButtons();
     }
@@ -150,12 +165,10 @@ public class MainScreen implements Screen {
             p.getSprite().setRotation(p.getVelocity().angleDeg());
             p.getSprite().draw(stage.getBatch());
         }
-
         stage.getBatch().end();
 
-        hudBatch.begin();
+        drawMiniMap();
         drawHUD();
-        hudBatch.end();
     }
 
     /**
@@ -323,6 +336,7 @@ public class MainScreen implements Screen {
      * Draw the HUD in the render cycle.
      */
     private void drawHUD() {
+        hudBatch.begin();
         hudBatch.draw(selectedGunBackground, 64, 64);
         hudBatch.draw(selectedGun, 64, 64);
 
@@ -331,6 +345,26 @@ public class MainScreen implements Screen {
                 Math.round(healthFull.getWidth() * healthFraction), healthFull.getHeight());
 
         font.draw(hudBatch, String.format("%d/%d", currentAmmo, maxAmmo), 138, 80);
+        hudBatch.end();
+    }
+
+    /**
+     * Draw the minimap in the render cycle.
+     */
+    private void drawMiniMap() {
+        minimapCamera.update();
+        minimapCamera.position.x = Gdx.graphics.getHeight() * 1.8f;
+        minimapCamera.position.y = -Gdx.graphics.getWidth() * 0.29f;
+        miniMapRenderer.setView(minimapCamera);
+        miniMapRenderer.render();
+        minimapBatch.setProjectionMatrix(minimapCamera.combined);
+        minimapBatch.begin();
+        ClientPlayer player = parent.gameState.userPlayer;
+        Vector2 pos = player.getPosition();
+        minimapBatch.draw(minimapPlayer,
+                pos.x * MINIMAP_SCALE - MARKER_SIZE / 2f, pos.y * MINIMAP_SCALE - MARKER_SIZE / 2f,
+                MARKER_SIZE, MARKER_SIZE);
+        minimapBatch.end();
     }
 
     /**
