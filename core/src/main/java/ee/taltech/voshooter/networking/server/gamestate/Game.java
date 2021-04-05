@@ -22,6 +22,9 @@ import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
@@ -219,12 +222,53 @@ public class Game extends Thread {
         });
     }
 
+<<<<<<< core/src/main/java/ee/taltech/voshooter/networking/server/gamestate/Game.java
+    private void clearUnusedProjectiles() {
+        for (Projectile projectile : projectiles) {
+            if (projectile.getBody() == null) {
+                ProjectileDestroyed msg = new ProjectileDestroyed(projectile.getId());
+
+                for (VoConnection c : connectionInputs.keySet()) {
+                    c.sendTCP(msg);
+                }
+                projectiles.remove(projectile);
+            }
+        }
+    }
+
+    private void sendProjectileUpdates() {
+        ProjectilePositions u = new ProjectilePositions();
+        u.updates = projectiles.stream().map(Projectile::getUpdate).collect(Collectors.toSet());
+
+        for (VoConnection c : connectionInputs.keySet()) {
+            c.sendTCP(u);
+        }
+    }
+
+    /**
+     * Add projectile to projectiles list. Send projectileCreated message.
+     * @param p Projectile created.
+     */
+    public void addProjectile(Projectile p) {
+       projectiles.add(p);
+
+       final ProjectileCreated msg = new ProjectileCreated(
+               p.getType(),
+               PixelToSimulation.toPixels(p.getPosition()),
+               PixelToSimulation.toPixels(p.getBody().getLinearVelocity()),
+               p.getId());
+
+       for (VoConnection c : connectionInputs.keySet()) {
+           c.sendTCP(msg);
+       }
+=======
     /**
      * Respawn given player.
      * @param c the connection that needs to be respawned.
      */
     public void handleRespawn(VoConnection c) {
         c.getPlayer().respawn(getSpawnPoint(), 0f);
+>>>>>>> core/src/main/java/ee/taltech/voshooter/networking/server/gamestate/Game.java
     }
 
     /**

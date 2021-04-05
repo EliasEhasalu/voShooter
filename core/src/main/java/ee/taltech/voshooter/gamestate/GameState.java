@@ -5,6 +5,8 @@ import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
@@ -82,10 +84,35 @@ public class GameState {
         }
     }
 
+    /**
+     * Create a new projectile.
+     * @param msg Update message.
+     */
+    public void createProjectile(ProjectileCreated msg) {
+        projectiles.add(new ClientProjectile(msg));
+    }
+
+    /**
+     * Destroy a projectile with a id.
+     * @param msg Update message.
+     */
+    public void destroyProjectile(ProjectileDestroyed msg) {
+        projectiles.removeIf(p -> p.getId() == msg.id);
+    }
+
+    /**
+     * Update the positions of the projectiles.
+     * @param msg The update message.
+     */
     public void updateProjectiles(ProjectilePositions msg) {
-        projectiles.clear();
         for (ProjectilePositionUpdate u : msg.updates) {
-           projectiles.add(new ClientProjectile(u));
+            for (ClientProjectile p : projectiles) {
+                if (p.getId() == u.id) {
+                    p.setPos(u.pos);
+                    p.setVel(u.vel);
+                    break;
+                }
+            }
         }
     }
 

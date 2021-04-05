@@ -34,7 +34,9 @@ import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class Network {
 
@@ -59,6 +61,8 @@ public final class Network {
         // Register all classes transported over the connection.
         kryo.register(String[].class);
         kryo.register(List.class);
+        kryo.register(Set.class);
+        kryo.register(HashSet.class);
         kryo.register(String.class);
         kryo.register(ArrayList.class);
         kryo.register(boolean.class);
@@ -89,7 +93,9 @@ public final class Network {
         kryo.register(StartGame.class);
         kryo.register(GameStarted.class);
         kryo.register(Game.class);
+        kryo.register(ProjectileCreated.class);
         kryo.register(ProjectilePositionUpdate.class);
+        kryo.register(ProjectileDestroyed.class);
         kryo.register(Projectile.Type.class);
         kryo.register(ProjectilePositions.class);
         kryo.register(ProjectileCreated.class);

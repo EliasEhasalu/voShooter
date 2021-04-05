@@ -1,15 +1,20 @@
 package ee.taltech.voshooter.networking.messages.clientreceived;
 
-import java.util.List;
+import java.util.Set;
 
 public class ProjectilePositions {
 
-    public List<ProjectilePositionUpdate> updates;
+    public Set<ProjectilePositionUpdate> updates;
 
+    /** Constructor. */
     public ProjectilePositions() {
     }
 
-    public ProjectilePositions(List<ProjectilePositionUpdate> updates) {
+    /**
+     * Construct a message containing a list of projectile position update messages.
+     * @param updates List of update messages.
+     */
+    public ProjectilePositions(Set<ProjectilePositionUpdate> updates) {
         this.updates = updates;
     }
 }
