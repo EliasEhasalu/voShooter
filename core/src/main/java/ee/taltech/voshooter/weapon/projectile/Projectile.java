@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
+import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 
@@ -54,19 +55,18 @@ public abstract class Projectile {
     public void destroy() {
         isDestroyed = true;
         uponDestroy();
-
-        owner.getGame().getWorld().destroyBody(body);
     };
 
     public void update() {
         if (collidedWith != null) handleCollision(collidedWith);
         setCollidedWith(null);
 
+        lifeTime -= (1 / Game.TICK_RATE_IN_HZ);
         if (lifeTimeIsOver()) destroy();
     }
 
     public boolean isDestroyed() {
-        return (lifeTimeIsOver() || isDestroyed);
+        return isDestroyed;
     }
 
     public boolean lifeTimeIsOver() {

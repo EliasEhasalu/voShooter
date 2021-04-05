@@ -57,6 +57,7 @@ public class ProjectileManager extends EntityManager {
         projectiles.forEach(p -> {
             if (p.isDestroyed()) {
                 destroyedProjectileUpdates.add(new ProjectileDestroyed(p.getId()));
+                world.destroyBody(p.getBody());
                 projectiles.remove(p);
             }
         });
