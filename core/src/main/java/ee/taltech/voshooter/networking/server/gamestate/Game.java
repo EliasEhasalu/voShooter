@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.geometry.Pos;
@@ -46,6 +47,10 @@ public class Game extends Thread {
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new ConcurrentHashMap<>();
+
+    static {
+        World.setVelocityThreshold(0.1f);
+    }
 
     private TiledMap currentMap;
     private final World world = new World(new Vector2(0, 0), false);
@@ -263,7 +268,9 @@ public class Game extends Thread {
                     BodyDef bodyDef = new BodyDef();
                     bodyDef.type = BodyDef.BodyType.StaticBody;
                     Body body = world.createBody(bodyDef);
-                    body.createFixture(shape, 1);
+                    Fixture f = body.createFixture(shape, 1);
+                    f.setFriction(0f);
+                    f.setRestitution(1f);
 
                     shape.dispose();
                 }

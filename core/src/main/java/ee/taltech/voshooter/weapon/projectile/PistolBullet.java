@@ -22,8 +22,8 @@ public class PistolBullet extends Projectile {
                 && (!(fix.getBody().getUserData() instanceof Projectile))
         ) {
             if (fix.getBody().getUserData() instanceof Player) {
-               Player p = (Player) fix.getBody().getUserData();
-               p.takeDamage(DAMAGE);
+                Player p = (Player) fix.getBody().getUserData();
+                p.takeDamage(DAMAGE);
             }
             destroy();
         }

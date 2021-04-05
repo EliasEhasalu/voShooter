@@ -150,7 +150,7 @@ public final class ShapeFactory {
 
         Fixture fixture = b.createFixture(fixtureDef);
 
-        b.setLinearVelocity(vel);
+        b.applyLinearImpulse(vel.cpy().nor(), b.getPosition(), true);
         return b;
     }
 
