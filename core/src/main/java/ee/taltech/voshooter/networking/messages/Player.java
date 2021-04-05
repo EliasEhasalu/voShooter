@@ -6,7 +6,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
-import ee.taltech.voshooter.weapon.projectileweapon.RocketLauncher;
+import ee.taltech.voshooter.weapon.projectileweapon.Shotgun;
 
 public class Player {
 
@@ -41,7 +41,7 @@ public class Player {
         this.name = name;
         this.health = MAX_HEALTH;
 
-        if (id == 0) this.currentWeapon = new RocketLauncher(this);
+        if (id == 1) this.currentWeapon = new Shotgun(this);
     }
 
     /**

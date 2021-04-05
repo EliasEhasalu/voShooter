@@ -117,9 +117,9 @@ public class Game extends Thread {
         connectionInputs.forEach(this::handleInputs);
         connectionInputs.keySet().forEach(c -> c.player.update());
 
-        world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);
-
         entityManagerHub.update();
+
+        world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);
 
         sendUpdatesToPlayers();
         clearPlayerInputs();

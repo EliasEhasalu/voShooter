@@ -132,6 +132,7 @@ public final class ShapeFactory {
         Fixture fixture = b.createFixture(fixtureDef);
 
         b.setLinearVelocity(vel);
+        shape.dispose();
         return b;
     }
 
@@ -151,6 +152,7 @@ public final class ShapeFactory {
         Fixture fixture = b.createFixture(fixtureDef);
 
         b.applyLinearImpulse(vel.cpy().nor(), b.getPosition(), true);
+        shape.dispose();
         return b;
     }
 
@@ -174,6 +176,7 @@ public final class ShapeFactory {
         Fixture fixture = body.createFixture(fixtureDef);
         body.setLinearDamping(6f);
 
+        shape.dispose();
         return body;
     }
 }

@@ -121,4 +121,8 @@ public abstract class Projectile {
     public void setCollidedWith(Fixture fix) {
         collidedWith = fix;
     }
+
+    protected void reduceLifeTime(float amount) {
+        lifeTime -= amount;
+    }
 }
