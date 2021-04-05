@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -23,6 +24,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
@@ -43,6 +46,7 @@ import java.util.List;
 
 public class MainScreen implements Screen {
 
+    public static final float MINIMAP_ZOOM = 20f;
     private final VoShooter parent;
     private final Stage stage;
     private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
@@ -61,14 +65,17 @@ public class MainScreen implements Screen {
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
     private TiledMapRenderer miniMapRenderer;
+    private final SpriteBatch minimapBatch = new SpriteBatch();
+    public static final float MINIMAP_RATIO = 16f / 9f;
+    public static final int MINIMAP_HEIGHT = 100;
+    public static final int MINIMAP_WIDTH = (int) (MINIMAP_HEIGHT * MINIMAP_RATIO);
+    private Viewport minimapViewPort;
     public static final int MARKER_SIZE = 50;
     public static final int MINIMAP_LEFT = 0;
     public static final int MINIMAP_RIGHT = 200;
     public static final int MINIMAP_TOP = 480;
     public static final int MINIMAP_BOTTOM = 280;
-    public static final float MINIMAP_SCALE = 0.25f;
-    public static final int MINIMAP_HEIGHT = 100;
-    public static final int MINIMAP_WIDTH = 100;
+    public static final float MINIMAP_SCALE = 0.22f;
 
     private final SpriteBatch hudBatch = new SpriteBatch();
     private final Texture selectedGunBackground
@@ -104,7 +111,6 @@ public class MainScreen implements Screen {
         camera.update();
         tiledMap = new TmxMapLoader().load("tileset/voShooterMap.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-        miniMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, MINIMAP_SCALE);
         font = new BitmapFont(Gdx.files.internal("bitmapFont/commodore.fnt"),
                 Gdx.files.internal("bitmapFont/commodore.png"), false);
         font.getData().setScale(0.6f);
@@ -113,10 +119,16 @@ public class MainScreen implements Screen {
         // Have it handle player's input.
         Gdx.input.setInputProcessor(stage);
         stage.clear();
+        System.out.println(MINIMAP_RATIO);
+        System.out.println(MINIMAP_HEIGHT);
+        System.out.println(MINIMAP_WIDTH);
 
+        miniMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, MINIMAP_SCALE);
         minimapCamera = new OrthographicCamera(MINIMAP_WIDTH, MINIMAP_HEIGHT);
-        minimapCamera.zoom = 20f;
+        minimapCamera.zoom = MINIMAP_ZOOM;
         minimapCamera.setToOrtho(false, MINIMAP_WIDTH, MINIMAP_HEIGHT);
+        minimapBatch.setProjectionMatrix(minimapCamera.projection);
+        minimapViewPort = new StretchViewport(MINIMAP_WIDTH, MINIMAP_HEIGHT, minimapCamera);
 
         createMenuButtons();
     }
@@ -167,10 +179,16 @@ public class MainScreen implements Screen {
         stage.getBatch().end();
 
         minimapCamera.update();
-        minimapCamera.position.x = Gdx.graphics.getHeight() / 2f;
-        minimapCamera.position.y = -Gdx.graphics.getWidth() / 2f;
+        minimapCamera.position.x = Gdx.graphics.getHeight() * 1.8f;
+        minimapCamera.position.y = -Gdx.graphics.getWidth() * 0.29f;
         miniMapRenderer.setView(minimapCamera);
         miniMapRenderer.render();
+        minimapBatch.begin();
+        ClientPlayer player = parent.gameState.userPlayer;
+        Sprite playerSprite = player.getSprite();
+        Vector2 pos = player.getPosition();
+        minimapBatch.draw(playerSprite, pos.x, pos.y);
+        minimapBatch.end();
 
         hudBatch.begin();
         drawHUD();
