@@ -14,14 +14,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
@@ -36,6 +34,7 @@ import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.collision.HijackedTmxLoader;
 import ee.taltech.voshooter.networking.server.gamestate.collision.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.ShapeFactory;
+import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.io.File;
@@ -58,6 +57,7 @@ public class Game extends Thread {
 
     private TiledMap currentMap;
     private final World world;
+    private final EntityManagerHub entityManagerHub;
     private final Set<Projectile> projectiles = new HashSet<>();
 
     /**
@@ -69,10 +69,12 @@ public class Game extends Thread {
         world.getBodies(bodies);
 
         if (gameMode == 1) {
-            currentMap = new HijackedTmxLoader(new MyFileHandleResolver()).load("./core/assets/tileset/voShooterMap.tmx");
+            currentMap = new HijackedTmxLoader(new MyFileHandleResolver())
+                    .load("./core/assets/tileset/voShooterMap.tmx");
         }
 
         generateTerrain();
+        this.entityManagerHub = new EntityManagerHub(world, this);
     }
 
     public static class MyFileHandleResolver implements FileHandleResolver {
@@ -143,34 +145,14 @@ public class Game extends Thread {
      */
     private void createPlayer(VoConnection c) {
         Player p = new Player(this, c.user.id, c.user.getName());
+        Body body = ShapeFactory.getPlayer(world, getSpawnPoint());
 
-        // Create a body definition.
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody;
-        def.position.set(getSpawnPoint());
-
-        // Create the body and set its bounding box.
-        // Add the body to the world.
-        Body body = world.createBody(def);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.5f, 0.5f);
-
-        // Set its physical properties.
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 10f;
-
-        Fixture fixture = body.createFixture(fixtureDef);
-
-        // Set the body field on the player.
         p.setBody(body);
         body.setUserData(p);
-        body.setLinearDamping(1.5f);
 
         // Set the player object on the connection.
         c.player = p;
         c.player.initialPos = body.getPosition();
-        shape.dispose();
     }
 
     /**
@@ -190,31 +172,22 @@ public class Game extends Thread {
 
     /** Main game logic. */
     private void tick() {
-        clearUnusedProjectiles();
-
-        // Handle each player's inputs.
         connectionInputs.forEach(this::handleInputs);
-
-        // Update players' velocities.
-        connectionInputs.keySet().forEach(c -> {
-            c.player.update();
-        });
-
-        projectiles.forEach(Projectile::update);
+        connectionInputs.keySet().forEach(c -> c.player.update());
+        entityManagerHub.update();
 
         handleCustomCollisions();
 
         // Update the world.
         world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);
 
-        // Forget all inputs received since last tick.
-        sendPlayerPoseUpdates();
-        sendProjectileUpdates();
+        sendUpdatesToPlayers();
         clearPlayerInputs();
-        for (Projectile p : projectiles) {
-            System.out.printf("%d - %s", p.getId(), p.getPosition().toString());
-        }
-        System.out.printf("%n");
+    }
+
+    private void sendUpdatesToPlayers() {
+        sendPlayerPoseUpdates();
+        entityManagerHub.sendUpdates();
     }
 
     private void handleCustomCollisions() {
@@ -222,10 +195,10 @@ public class Game extends Thread {
             Body b1 = c.getFixtureA().getBody();
             Body b2 = c.getFixtureB().getBody();
             if (b1.getUserData() instanceof Projectile) {
-//                ((Projectile) b1.getUserData()).handleCollision(b2.getUserData());
+                ((Projectile) b1.getUserData()).handleCollision(b2.getUserData());
             }
             if (b2.getUserData() instanceof Projectile) {
-//                ((Projectile) b2.getUserData()).handleCollision(b1.getUserData());
+                ((Projectile) b2.getUserData()).handleCollision(b1.getUserData());
             }
         }
     }
@@ -237,16 +210,19 @@ public class Game extends Thread {
      */
     private void handleInputs(VoConnection c, Set<PlayerAction> actions) {
         actions.forEach(a -> {
-                if (a instanceof MovePlayer) {
-                    c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
-                } else if (a instanceof Shoot) {
-                    c.getPlayer().shoot();
-                } else if (a instanceof MouseCoords) {
-                    c.getPlayer().setViewDirection((MouseCoords) a);
+                if (c.getPlayer().getHealth() > 0) {
+                    if (a instanceof MovePlayer) {
+                        c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
+                    } else if (a instanceof Shoot) {
+                        c.getPlayer().shoot();
+                    } else if (a instanceof MouseCoords) {
+                        c.getPlayer().setViewDirection((MouseCoords) a);
+                    }
                 }
         });
     }
 
+<<<<<<< core/src/main/java/ee/taltech/voshooter/networking/server/gamestate/Game.java
     private void clearUnusedProjectiles() {
         for (Projectile projectile : projectiles) {
             if (projectile.getBody() == null) {
@@ -285,6 +261,14 @@ public class Game extends Thread {
        for (VoConnection c : connectionInputs.keySet()) {
            c.sendTCP(msg);
        }
+=======
+    /**
+     * Respawn given player.
+     * @param c the connection that needs to be respawned.
+     */
+    public void handleRespawn(VoConnection c) {
+        c.getPlayer().respawn(getSpawnPoint(), 0f);
+>>>>>>> core/src/main/java/ee/taltech/voshooter/networking/server/gamestate/Game.java
     }
 
     /**
@@ -306,6 +290,7 @@ public class Game extends Thread {
             for (Player p : getPlayers()) {
                 c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
                 c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
+                c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
             }
         }
     }
@@ -357,5 +342,13 @@ public class Game extends Thread {
     /** Close the game simulation. */
     public void shutDown() {
         running = false;
+    }
+
+    public Set<VoConnection> getConnections() {
+        return connectionInputs.keySet();
+    }
+
+    public EntityManagerHub getEntityManagerHub() {
+        return entityManagerHub;
     }
 }

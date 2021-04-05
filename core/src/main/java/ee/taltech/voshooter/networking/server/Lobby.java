@@ -7,19 +7,21 @@ import ee.taltech.voshooter.networking.server.gamestate.Game;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Lobby {
 
     public static final int MINIMUM_PLAYERS = 2;
 
-    private int maxUsers;
-    private int gameMode;
-    private String lobbyCode;
+    private final int maxUsers;
+    private final int gameMode;
+    private final String lobbyCode;
     private VoConnection host;
 
     private Game game;
-    private List<VoConnection> connections = new ArrayList<>();
+    private final Set<VoConnection> connections = ConcurrentHashMap.newKeySet();
 
     /**
      * @param maxUsers The maximum amount of users that can be in this lobby.
@@ -68,7 +70,7 @@ public class Lobby {
         connections.add(connection);
         connection.user.currentLobby = getLobbyCode();
 
-        System.out.println(String.format("added ID %d to lobby %s", connection.user.id, lobbyCode));
+        System.out.printf("added ID %d to lobby %s%n", connection.user.id, lobbyCode);
         sendLobbyUpdates();
         return true;
     }
@@ -86,10 +88,10 @@ public class Lobby {
 
             // If host left, assign someone else as host.
             if (getHost().user == connection.user && !connections.isEmpty()) {
-                setHost(connections.get(0));
+                setHost(connections.iterator().next());
             }
 
-            System.out.println(String.format("removed %s from lobby %s", connection.user.name, lobbyCode));
+            System.out.printf("removed %s from lobby %s%n", connection.user.name, lobbyCode);
             sendLobbyUpdates();
             return true;
         }
@@ -146,7 +148,7 @@ public class Lobby {
 
     /** @return A list of this lobby's users. */
     protected List<VoConnection> getConnections() {
-        return connections;
+        return new ArrayList<>(connections);
     }
 
     /** @return The game object in this lobby. */

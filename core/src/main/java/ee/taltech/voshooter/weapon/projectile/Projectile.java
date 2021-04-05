@@ -2,10 +2,10 @@ package ee.taltech.voshooter.weapon.projectile;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Shape;
 import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
+import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.ShapeFactory;
 
@@ -14,6 +14,9 @@ public abstract class Projectile {
     private static int ID_GENERATOR = 0;
 
     protected int id;
+    private float lifeTime;
+    private boolean isDestroyed = false;
+
     protected Body body;
     protected Player owner;
     protected Projectile.Type type;
@@ -21,7 +24,8 @@ public abstract class Projectile {
     protected Vector2 vel;
 
     public enum Type {
-        ROCKET
+        ROCKET,
+        PISTOL_BULLET
     }
 
     /**
@@ -30,34 +34,40 @@ public abstract class Projectile {
      * @param owner The player who shot the projectile.
      * @param pos The position of the projectile.
      * @param vel The velocity of the projectile.
-     * @param rad The radius of the collision circle for the projectile.
      */
-    public Projectile(Projectile.Type type, Player owner, Vector2 pos, Vector2 vel, float rad) {
+    public Projectile(Projectile.Type type, Player owner, Vector2 pos, Vector2 vel, float lifeTime) {
         this.vel = vel;
         this.type = type;
         this.owner = owner;
+        this.lifeTime = lifeTime;
         this.id = ID_GENERATOR++;
 
-        Shape shape = ShapeFactory.getCircle(pos, rad);
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        body = owner.getGame().getWorld().createBody(bodyDef);
-        body.createFixture(shape, 300_000f);
-        body.setTransform(owner.getPos(), vel.angleDeg());
-
-        shape.dispose();
-
-        body.setUserData(this);  // Have the body remember this rocket object.
+        this.body = ShapeFactory.getRocket(owner.getGame().getWorld(), pos, vel);
+        this.body.setUserData(this);  // Have the body remember this rocket object.
     }
 
     public abstract void handleCollision(Object o);
 
+    protected abstract void uponDestroy();
+
+    public void destroy() {
+        isDestroyed = true;
+        uponDestroy();
+
+        owner.getGame().getWorld().destroyBody(body);
+    };
+
     public void update() {
-//        body.applyLinearImpulse(vel, body.getPosition(), true);
-//        if (body.getLinearVelocity().len() > 0.01f) {
-//            body.getLinearVelocity().limit(0.01f);
-//        }
+        lifeTime -= (1 / Game.TICK_RATE_IN_HZ);
+        if (lifeTimeIsOver()) destroy();
+    }
+
+    public boolean isDestroyed() {
+        return (lifeTimeIsOver() || isDestroyed);
+    }
+
+    public boolean lifeTimeIsOver() {
+        return lifeTime <= 0;
     }
 
     /** @return The body object of the projectile. */
@@ -75,7 +85,18 @@ public abstract class Projectile {
         return id;
     }
 
-    public ProjectilePositionUpdate getUpdate() {
+    public Object getUpdate() {
+        if (isNew) {
+            isNew = false;
+
+            return new ProjectileCreated(
+                    getType(),
+                    getPosition(),
+                    getVelocity(),
+                    getId()
+            );
+        }
+
         return new ProjectilePositionUpdate(
                 getId(),
                 PixelToSimulation.toPixels(body.getPosition()),
@@ -86,5 +107,9 @@ public abstract class Projectile {
     /** @return The position of the projectile in world space. */
     public Vector2 getPosition() {
        return body.getPosition().cpy();
+    }
+
+    private Vector2 getVelocity() {
+        return body.getLinearVelocity().cpy();
     }
 }

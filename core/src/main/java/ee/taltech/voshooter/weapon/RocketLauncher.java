@@ -6,7 +6,7 @@ import ee.taltech.voshooter.weapon.projectile.Rocket;
 
 public class RocketLauncher extends ProjectileWeapon {
 
-    private static final float COOL_DOWN = 1;
+    private static final float COOL_DOWN = 1.5f;
 
     public RocketLauncher(Player wielder) {
         super(wielder, COOL_DOWN);
@@ -19,11 +19,11 @@ public class RocketLauncher extends ProjectileWeapon {
 
             Projectile p = new Rocket(
                     wielder,
-                    wielder.getPos().cpy(),
-                    wielder.getViewDirection().cpy().nor().scl(0.1f)
+                    wielder.getPos().cpy().add(wielder.getViewDirection().cpy().setLength(0.2f)),
+                    wielder.getViewDirection().cpy().nor()
             );
 
-            wielder.getGame().addProjectile(p);
+            wielder.getGame().getEntityManagerHub().add(p);
         }
     }
 }
