@@ -6,6 +6,7 @@ import ee.taltech.voshooter.networking.messages.Player;
 
 public class Rocket extends Projectile {
 
+    public static final float RADIUS = 0.3f;
     private static final float SPEED = 20f;
     private static final float EXPLOSION_RADIUS = 10f;
     private static final float EXPLOSION_FORCE = 200f;
@@ -17,7 +18,12 @@ public class Rocket extends Projectile {
 
     @Override
     public void handleCollision(Fixture fix) {
-        if (!(fix.getBody().getUserData() == owner)) destroy();
+        if (
+                !(fix.getBody().getUserData() == owner)
+                && (!(fix.getBody().getUserData() instanceof Projectile))
+        ) {
+            destroy();
+        }
     }
 
     @Override

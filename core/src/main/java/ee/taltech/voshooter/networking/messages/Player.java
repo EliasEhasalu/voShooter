@@ -4,14 +4,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
-import ee.taltech.voshooter.weapon.RocketLauncher;
 import ee.taltech.voshooter.weapon.Weapon;
-import ee.taltech.voshooter.weapon.projectile.Pistol;
+import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
+import ee.taltech.voshooter.weapon.projectileweapon.RocketLauncher;
 
 public class Player {
 
-    private transient float basePlayerAcceleration = (float) (1000f / Game.TICK_RATE_IN_HZ);
-    private final transient float MAX_PLAYER_VELOCITY = 9f;
+    private transient float basePlayerAcceleration = (float) (800f / Game.TICK_RATE_IN_HZ);
+    private final transient float MAX_PLAYER_VELOCITY = 10f;
 
     private transient Game game;
 
@@ -22,7 +22,7 @@ public class Player {
 
     public static final Integer MAX_HEALTH = 100;
     private transient Body body;
-    private transient Weapon currentWeapon = new RocketLauncher(this);
+    private transient Weapon currentWeapon = new Pistol(this);
 
     private final Vector2 playerAcc = new Vector2(0f, 0f);
     private Vector2 viewDirection = new Vector2(0f, 0f);
@@ -41,7 +41,7 @@ public class Player {
         this.name = name;
         this.health = MAX_HEALTH;
 
-        if (id == 0) this.currentWeapon = new Pistol(this);
+        if (id == 0) this.currentWeapon = new RocketLauncher(this);
     }
 
     /**

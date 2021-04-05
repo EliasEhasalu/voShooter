@@ -17,6 +17,9 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import ee.taltech.voshooter.weapon.projectile.PistolBullet;
+import ee.taltech.voshooter.weapon.projectile.Projectile;
+import ee.taltech.voshooter.weapon.projectile.Rocket;
 
 public final class ShapeFactory {
 
@@ -102,6 +105,17 @@ public final class ShapeFactory {
         return circleShape;
     }
 
+    public static Body getProjectileBody(Projectile.Type type, World world, Vector2 pos, Vector2 vel) {
+        switch (type) {
+            case ROCKET:
+                return getRocket(world, pos, vel);
+            case PISTOL_BULLET:
+                return getPistolBullet(world, pos, vel);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
     public static Body getRocket(World world, Vector2 pos, Vector2 vel) {
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.DynamicBody;
@@ -109,11 +123,30 @@ public final class ShapeFactory {
 
         Body b = world.createBody(def);
         CircleShape shape = new CircleShape();
-        shape.setRadius(0.3f);
+        shape.setRadius(Rocket.RADIUS);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 10f;
+
+        Fixture fixture = b.createFixture(fixtureDef);
+
+        b.setLinearVelocity(vel);
+        return b;
+    }
+
+    public static Body getPistolBullet(World world, Vector2 pos, Vector2 vel) {
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.DynamicBody;
+        def.position.set(pos);
+
+        Body b = world.createBody(def);
+        CircleShape shape = new CircleShape();
+        shape.setRadius(PistolBullet.RADIUS);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 5f;
 
         Fixture fixture = b.createFixture(fixtureDef);
 
@@ -139,7 +172,7 @@ public final class ShapeFactory {
         fixtureDef.density = 10f;
 
         Fixture fixture = body.createFixture(fixtureDef);
-        body.setLinearDamping(1.5f);
+        body.setLinearDamping(6f);
 
         return body;
     }

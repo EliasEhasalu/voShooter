@@ -70,7 +70,7 @@ public class Game extends Thread {
      */
     public void addConnection(VoConnection connection) {
         // Track the connection.
-        connectionInputs.computeIfAbsent(connection, k -> new HashSet<>());
+        connectionInputs.computeIfAbsent(connection, k -> ConcurrentHashMap.newKeySet());
 
         // Create a player object with a physics body which will be tracked in the world.
         createPlayer(connection);

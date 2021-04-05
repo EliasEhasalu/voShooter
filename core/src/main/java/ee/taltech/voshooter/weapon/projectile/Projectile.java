@@ -44,7 +44,7 @@ public abstract class Projectile {
         this.lifeTime = lifeTime;
         this.id = ID_GENERATOR++;
 
-        this.body = ShapeFactory.getRocket(owner.getGame().getWorld(), pos, vel);
+        this.body = ShapeFactory.getProjectileBody(type, owner.getGame().getWorld(), pos, vel);
         this.body.setUserData(this);  // Have the body remember this rocket object.
     }
 

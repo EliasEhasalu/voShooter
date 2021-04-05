@@ -1,6 +1,7 @@
-package ee.taltech.voshooter.weapon;
+package ee.taltech.voshooter.weapon.projectileweapon;
 
 import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public abstract class ProjectileWeapon extends Weapon {
     /**

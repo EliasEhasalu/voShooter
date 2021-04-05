@@ -6,16 +6,27 @@ import ee.taltech.voshooter.networking.messages.Player;
 
 public class PistolBullet extends Projectile {
 
-    private static final float RAD = 0.1f;
-    private static final float SPEED = 11f;
+    public static final float RADIUS = 0.05f;
+    private static final float SPEED = 40f;
     private static final float LIFE_TIME = 2f;
+    private static final int DAMAGE = 15;
 
     public PistolBullet(Player owner, Vector2 pos, Vector2 dir) {
-        super(Type.PISTOL_BULLET, owner, pos, dir.scl(SPEED), LIFE_TIME);
+        super(Type.PISTOL_BULLET, owner, pos, dir.setLength(SPEED), LIFE_TIME);
     }
 
     @Override
     public void handleCollision(Fixture fix) {
+        if (
+                !(fix.getBody().getUserData() == owner)
+                && (!(fix.getBody().getUserData() instanceof Projectile))
+        ) {
+            if (fix.getBody().getUserData() instanceof Player) {
+               Player p = (Player) fix.getBody().getUserData();
+               p.takeDamage(DAMAGE);
+            }
+            destroy();
+        }
     }
 
     @Override
