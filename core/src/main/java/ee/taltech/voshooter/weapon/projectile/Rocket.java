@@ -1,6 +1,7 @@
 package ee.taltech.voshooter.weapon.projectile;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import ee.taltech.voshooter.networking.messages.Player;
 
 public class Rocket extends Projectile {
@@ -15,8 +16,8 @@ public class Rocket extends Projectile {
     }
 
     @Override
-    public void handleCollision(Object o) {
-        if (!(o == owner)) destroy();
+    public void handleCollision(Fixture fix) {
+        if (!(fix.getBody().getUserData() == owner)) destroy();
     }
 
     @Override

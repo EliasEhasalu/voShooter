@@ -1,4 +1,4 @@
-package ee.taltech.voshooter.networking.server.gamestate.collision;
+package ee.taltech.voshooter.networking.server.gamestate.collision.utils;
 
 import com.badlogic.gdx.maps.objects.CircleMapObject;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
@@ -131,7 +131,7 @@ public final class ShapeFactory {
         // Add the body to the world.
         Body body = world.createBody(def);
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.5f, 0.5f);
+        shape.setAsBox(0.4f, 0.4f);
 
         // Set its physical properties.
         FixtureDef fixtureDef = new FixtureDef();

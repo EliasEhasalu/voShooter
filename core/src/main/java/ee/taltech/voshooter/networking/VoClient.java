@@ -21,12 +21,9 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroy
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class VoClient {
@@ -53,8 +50,8 @@ public class VoClient {
         client.addListener(new ThreadedListener(new Listener() {
             private VoShooter.Screen screenToChangeTo;
             private GameStarted gameStart;
-            private Set<ProjectileCreated> projectilesCreatedSet = new HashSet<>();
-            private Set<ProjectileDestroyed> projectileDestroyedSet = new HashSet<>();
+            private Set<ProjectileCreated> projectilesCreatedSet = ConcurrentHashMap.newKeySet();
+            private Set<ProjectileDestroyed> projectileDestroyedSet = ConcurrentHashMap.newKeySet();
             private ProjectilePositions projectileUpdate;
 
             @Override

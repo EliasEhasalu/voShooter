@@ -2,12 +2,13 @@ package ee.taltech.voshooter.weapon.projectile;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
-import ee.taltech.voshooter.networking.server.gamestate.collision.PixelToSimulation;
-import ee.taltech.voshooter.networking.server.gamestate.collision.ShapeFactory;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 
 public abstract class Projectile {
 
@@ -16,6 +17,7 @@ public abstract class Projectile {
     protected int id;
     private float lifeTime;
     private boolean isDestroyed = false;
+    private Fixture collidedWith = null;
 
     protected Body body;
     protected Player owner;
@@ -46,7 +48,7 @@ public abstract class Projectile {
         this.body.setUserData(this);  // Have the body remember this rocket object.
     }
 
-    public abstract void handleCollision(Object o);
+    public abstract void handleCollision(Fixture fix);
 
     protected abstract void uponDestroy();
 
@@ -58,6 +60,9 @@ public abstract class Projectile {
     };
 
     public void update() {
+        if (collidedWith != null) handleCollision(collidedWith);
+        setCollidedWith(null);
+
         lifeTime -= (1 / Game.TICK_RATE_IN_HZ);
         if (lifeTimeIsOver()) destroy();
     }
@@ -111,5 +116,9 @@ public abstract class Projectile {
 
     private Vector2 getVelocity() {
         return body.getLinearVelocity().cpy();
+    }
+
+    public void setCollidedWith(Fixture fix) {
+        collidedWith = fix;
     }
 }

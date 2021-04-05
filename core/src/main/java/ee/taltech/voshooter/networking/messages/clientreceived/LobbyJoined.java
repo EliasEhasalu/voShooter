@@ -1,8 +1,8 @@
 package ee.taltech.voshooter.networking.messages.clientreceived;
 
-import java.util.List;
-
 import ee.taltech.voshooter.networking.messages.User;
+
+import java.util.List;
 
 /**
  * This class specifies the state of the lobby at the time of entering it.
@@ -21,7 +21,7 @@ public class LobbyJoined {
     }
 
     /**
-     * @param gameMode The gamemode of the created lobby.
+     * @param gameMode The game mode of the created lobby.
      * @param maxPlayers The maximum amount of players in the created lobby.
      * @param lobbyCode The lobby code of the lobby created.
      * @param users List of users in this lobby.
