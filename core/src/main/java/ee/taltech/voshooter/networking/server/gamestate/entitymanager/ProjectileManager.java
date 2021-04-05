@@ -35,6 +35,7 @@ public class ProjectileManager extends EntityManager {
         ProjectilePositions update = new ProjectilePositions();
 
         update.updates = projectiles.stream()
+                .filter(p -> !(p.isDestroyed()))
                 .map(p -> (ProjectilePositionUpdate) p.getUpdate())
                 .collect(Collectors.toSet());
 

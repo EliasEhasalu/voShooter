@@ -8,7 +8,7 @@ public class Rocket extends Projectile {
 
     private static final float SPEED = 20f;
     private static final float EXPLOSION_RADIUS = 10f;
-    private static final float EXPLOSION_FORCE = 1000f;
+    private static final float EXPLOSION_FORCE = 200f;
     private static final float LIFE_TIME = 2f;
 
     public Rocket(Player owner, Vector2 pos, Vector2 dir) {
