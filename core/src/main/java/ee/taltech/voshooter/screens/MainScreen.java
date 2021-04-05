@@ -56,9 +56,19 @@ public class MainScreen implements Screen {
     private TextButton respawnButton;
     private final TextButton settingsButton = new TextButton("Settings", skin);
     private final TextButton settingsButton2 = new TextButton("Settings", skin);
-    OrthographicCamera camera;
-    TiledMap tiledMap;
-    TiledMapRenderer tiledMapRenderer;
+    private OrthographicCamera camera;
+    private OrthographicCamera minimapCamera;
+    private TiledMap tiledMap;
+    private TiledMapRenderer tiledMapRenderer;
+    private TiledMapRenderer miniMapRenderer;
+    public static final int MARKER_SIZE = 50;
+    public static final int MINIMAP_LEFT = 0;
+    public static final int MINIMAP_RIGHT = 200;
+    public static final int MINIMAP_TOP = 480;
+    public static final int MINIMAP_BOTTOM = 280;
+    public static final float MINIMAP_SCALE = 0.25f;
+    public static final int MINIMAP_HEIGHT = 100;
+    public static final int MINIMAP_WIDTH = 100;
 
     private final SpriteBatch hudBatch = new SpriteBatch();
     private final Texture selectedGunBackground
@@ -94,6 +104,7 @@ public class MainScreen implements Screen {
         camera.update();
         tiledMap = new TmxMapLoader().load("tileset/voShooterMap.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        miniMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, MINIMAP_SCALE);
         font = new BitmapFont(Gdx.files.internal("bitmapFont/commodore.fnt"),
                 Gdx.files.internal("bitmapFont/commodore.png"), false);
         font.getData().setScale(0.6f);
@@ -102,6 +113,10 @@ public class MainScreen implements Screen {
         // Have it handle player's input.
         Gdx.input.setInputProcessor(stage);
         stage.clear();
+
+        minimapCamera = new OrthographicCamera(MINIMAP_WIDTH, MINIMAP_HEIGHT);
+        minimapCamera.zoom = 20f;
+        minimapCamera.setToOrtho(false, MINIMAP_WIDTH, MINIMAP_HEIGHT);
 
         createMenuButtons();
     }
@@ -149,8 +164,13 @@ public class MainScreen implements Screen {
         for (ClientProjectile p : parent.gameState.getProjectiles()) {
             p.getSprite().draw(stage.getBatch());
         }
-
         stage.getBatch().end();
+
+        minimapCamera.update();
+        minimapCamera.position.x = Gdx.graphics.getHeight() / 2f;
+        minimapCamera.position.y = -Gdx.graphics.getWidth() / 2f;
+        miniMapRenderer.setView(minimapCamera);
+        miniMapRenderer.render();
 
         hudBatch.begin();
         drawHUD();
