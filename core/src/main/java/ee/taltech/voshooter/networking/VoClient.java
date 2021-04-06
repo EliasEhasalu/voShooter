@@ -33,7 +33,7 @@ public class VoClient {
     public VoShooter parent;
     public Client client;
 
-    private static final String HOST_ADDRESS = "193.40.255.29";
+    private static final String HOST_ADDRESS = "localhost";
     private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
 
     /**
