@@ -18,6 +18,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
@@ -92,6 +93,8 @@ public class VoClient {
                     handlePlayerDeath((PlayerDeath) message);
                 } else if (message instanceof PlayerDead) {
                     updatePlayerDead((PlayerDead) message);
+                } else if (message instanceof PlayerStatistics) {
+                    updatePlayerStatistics((PlayerStatistics) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -196,6 +199,19 @@ public class VoClient {
         for (ClientPlayer p : parent.gameState.players) {
             if (p.getId() == msg.id) {
                 p.setHealth(msg.health);
+            }
+        }
+    }
+
+    /**
+     * Update players' statistics.
+     * @param msg The message containing info about the player.
+     */
+    private void updatePlayerStatistics(PlayerStatistics msg) {
+        for (ClientPlayer p : parent.gameState.players) {
+            if (p.getId() == msg.id) {
+                p.setDeaths(msg.deaths);
+                p.setKills(msg.kills);
             }
         }
     }

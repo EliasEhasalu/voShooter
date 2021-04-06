@@ -24,6 +24,13 @@ public class ShotgunPellet extends Bullet {
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
                 p.takeDamage(DAMAGE);
+                if (p.deathTick) {
+                    if (this.owner.equals(p)) {
+                        this.owner.removeKill();
+                    } else {
+                        this.owner.addKill();
+                    }
+                }
                 destroy();
             }
         }

@@ -22,6 +22,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
@@ -188,6 +189,7 @@ public class Game extends Thread {
                 c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
                 c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
                 c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
+                c.sendTCP(new PlayerStatistics(p.getId(), p.getDeaths(), p.getKills()));
                 if (p.deathTick) {
                     c.sendTCP(new PlayerDeath());
                     p.deathTick = false;

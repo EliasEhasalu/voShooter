@@ -18,6 +18,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
@@ -79,6 +80,7 @@ public final class Network {
         kryo.register(PlayerHealthUpdate.class);
         kryo.register(PlayerDeath.class);
         kryo.register(PlayerDead.class);
+        kryo.register(PlayerStatistics.class);
         kryo.register(ChangeWeapon.class);
         kryo.register(ActionType.class);
 
