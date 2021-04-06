@@ -1,10 +1,13 @@
 package ee.taltech.voshooter.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -17,16 +20,15 @@ import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 
-import static ee.taltech.voshooter.VoShooter.Screen.MENU;
-
 import java.io.IOException;
+
+import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
 public class CreateGameScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
     private int playerCount = 4;
-    private int gamemode = 1;
     public VoShooter.Screen shouldChangeScreen;
     private Table popUpTable;
 
@@ -106,6 +108,23 @@ public class CreateGameScreen implements Screen {
         table.add(back).left();
         table.add(createGame);
 
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ENTER) {
+                    if (popUpTable.isVisible()) {
+                        closePopUp.toggle();
+                    } else if (stage.getKeyboardFocus() == playerNameField) {
+                        createGame.toggle();
+                    }
+                }
+                if (keycode == Input.Keys.ESCAPE && !popUpTable.isVisible()) {
+                    back.toggle();
+                }
+                return true;
+            }
+        });
+
         back.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
@@ -166,10 +185,8 @@ public class CreateGameScreen implements Screen {
                         && playerNameField.getText().length() >= 4) {
                     try {
                         parent.createNetworkClient();
-
                         parent.gameState.clientUser.setName(playerNameField.getText());
                         parent.gameState.clientUser.setHost(true);
-
                         parent.getClient().sendTCP(new SetUsername(playerNameField.getText()));
                         parent.getClient().sendTCP(new CreateLobby(1, playerCount));
                     } catch (IOException e) {

@@ -23,7 +23,11 @@ public class Renderer {
      * Draw all objects allocated to this renderer.
      */
     public void draw() {
-        for (Drawable d : gameState.getDrawables()) d.getSprite().draw(batch);
+        for (Drawable d : gameState.getDrawables()) {
+            if (d.isVisible()) {
+                d.getSprite().draw(batch);
+            }
+        }
     }
 
     /**

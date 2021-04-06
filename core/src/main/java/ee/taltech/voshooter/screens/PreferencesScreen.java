@@ -1,10 +1,13 @@
 package ee.taltech.voshooter.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -13,7 +16,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
 public class PreferencesScreen implements Screen {
 
@@ -21,6 +26,10 @@ public class PreferencesScreen implements Screen {
     private Stage stage;
     private Label volumeMusicIndicator;
     private Label volumeSoundIndicator;
+    private Slider volumeMusicSlider;
+    private Slider volumeSoundSlider;
+    private TextButton goToChangeControls;
+    private TextButton returnToPreviousScreen;
 
     /**
      * Construct the preferences screen. Pass in a reference to the orchestrator.
@@ -49,16 +58,21 @@ public class PreferencesScreen implements Screen {
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         // Create the settings objects for our stage.
-        final Slider volumeMusicSlider = new Slider(0, 100, 5, false, skin);
-        final Slider volumeSoundSlider = new Slider(0, 100, 5, false, skin);
-        final TextButton returnToMenuScreen = new TextButton("Main menu", skin);
+        volumeMusicSlider = new Slider(0.0f, 1.0f, 0.05f, false, skin);
+        volumeSoundSlider = new Slider(0.0f, 1.0f, 0.05f, false, skin);
+        if (parent.isCameFromGame()) {
+            returnToPreviousScreen = new TextButton("Back to game", skin);
+        } else {
+            returnToPreviousScreen = new TextButton("Main menu", skin);
+        }
+        goToChangeControls = new TextButton("Change controls", skin);
 
         final Label titleLabel = new Label("Settings", skin);
         final Label volumeMusicLabel = new Label("Music volume", skin);
         final Label volumeSoundLabel = new Label("Sound volume", skin);
 
-        volumeMusicIndicator = new Label(String.valueOf(volumeMusicSlider.getValue()), skin);
-        volumeSoundIndicator = new Label(String.valueOf(volumeSoundSlider.getValue()), skin);
+        volumeMusicIndicator = new Label(String.valueOf(Math.round(AppPreferences.getMusicVolume() * 100)), skin);
+        volumeSoundIndicator = new Label(String.valueOf(Math.round(AppPreferences.getSoundVolume() * 100)), skin);
 
         // Add the sliders and labels to the table.
         table.add(titleLabel).fillX().uniformX().pad(0, 0, 20, 0).bottom().right();
@@ -73,31 +87,56 @@ public class PreferencesScreen implements Screen {
         table.add(volumeSoundSlider).fillX().uniformX();
         table.add(volumeSoundIndicator).fillX().uniformX();
 
-        table.row();
-        table.add(returnToMenuScreen).fillX().uniformX().bottom().right();
+        table.row().pad(0, 0, 0, 30);
+        table.add(returnToPreviousScreen).fillX().uniformX().bottom().right();
+        table.add(goToChangeControls).fillX().uniformX().bottom().right();
 
         table.pack();
 
         // Slider and button functionality.
-        volumeMusicSlider.setValue(parent.getPreferences().getMusicVolume());
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    returnToPreviousScreen.toggle();
+                } else if (keycode == Input.Keys.ENTER) {
+                    goToChangeControls.toggle();
+                }
+                return true;
+            }
+        });
+
+        volumeMusicSlider.setValue(AppPreferences.getMusicVolume());
         volumeMusicSlider.addListener(event -> {
-            parent.getPreferences().setMusicVolume(volumeMusicSlider.getValue());
-            volumeMusicIndicator.setText(String.valueOf(volumeMusicSlider.getValue()));
+            AppPreferences.setMusicVolume(volumeMusicSlider.getValue());
+            volumeMusicIndicator.setText(String.valueOf(Math.round(AppPreferences.getMusicVolume() * 100)));
             return false;
         });
 
-        volumeSoundSlider.setValue(parent.getPreferences().getSoundVolume());
+        volumeSoundSlider.setValue(AppPreferences.getSoundVolume());
         volumeSoundSlider.addListener(event -> {
-            parent.getPreferences().setSoundVolume(volumeSoundSlider.getValue());
-            volumeSoundIndicator.setText(String.valueOf(volumeSoundSlider.getValue()));
+            AppPreferences.setSoundVolume(volumeSoundSlider.getValue());
+            volumeSoundIndicator.setText(String.valueOf(Math.round(AppPreferences.getSoundVolume() * 100)));
             return false;
         });
 
-        returnToMenuScreen.addListener(new ChangeListener() {
+        returnToPreviousScreen.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 stage.clear();
-                parent.changeScreen(VoShooter.Screen.MENU);
+                VoShooter.Screen screenToGoTo = VoShooter.Screen.MENU;
+                if (parent.isCameFromGame()) {
+                    screenToGoTo = VoShooter.Screen.MAIN;
+                }
+                parent.changeScreen(screenToGoTo);
+            }
+        });
+
+        goToChangeControls.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                stage.clear();
+                parent.changeScreen(VoShooter.Screen.CHANGE_CONTROLS);
             }
         });
     }
@@ -113,6 +152,7 @@ public class PreferencesScreen implements Screen {
 
         // And draw over it again.
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));  // Cap menu FPS to 30.
+        MusicPlayer.setVolume(AppPreferences.getMusicVolume());
         stage.draw();
     }
 

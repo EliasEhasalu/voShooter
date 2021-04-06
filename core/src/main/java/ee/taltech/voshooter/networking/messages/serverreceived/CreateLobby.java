@@ -10,7 +10,7 @@ public class CreateLobby {
     }
 
     /**
-     * @param gameMode The gamemode of the lobby to be created.
+     * @param gameMode The game mode of the lobby to be created.
      * @param maxPlayers The maximum amount of players the newly created lobby can hold.
      */
     public CreateLobby(int gameMode, int maxPlayers) {

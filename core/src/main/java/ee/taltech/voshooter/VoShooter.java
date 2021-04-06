@@ -1,14 +1,11 @@
 package ee.taltech.voshooter;
 
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
 import com.badlogic.gdx.Game;
 import com.esotericsoftware.kryonet.Client;
-
 import ee.taltech.voshooter.gamestate.GameState;
 import ee.taltech.voshooter.networking.VoClient;
+import ee.taltech.voshooter.screens.ChangeControlsScreen;
 import ee.taltech.voshooter.screens.CreateGameScreen;
 import ee.taltech.voshooter.screens.JoinGameScreen;
 import ee.taltech.voshooter.screens.LoadingScreen;
@@ -17,16 +14,23 @@ import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.screens.MenuScreen;
 import ee.taltech.voshooter.screens.PreferencesScreen;
 
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 public class VoShooter extends Game {
 
     private LoadingScreen loadingScreen;
     private PreferencesScreen preferencesScreen;
     private MenuScreen menuScreen;
-    private MainScreen mainScreen;
+    public MainScreen mainScreen;
     private AppPreferences preferences;
+    private ChangeControlsScreen changeControlsScreen;
     public CreateGameScreen createGameScreen;
     public JoinGameScreen joinGameScreen;
     private LobbyScreen lobbyScreen;
+    private boolean codeCorrect;
+    private String lobbyCode;
+    private boolean cameFromGame;
     public VoClient client;
     public GameState gameState;
 
@@ -37,7 +41,8 @@ public class VoShooter extends Game {
         MAIN,
         CREATE_GAME,
         JOIN_GAME,
-        LOBBY
+        LOBBY,
+        CHANGE_CONTROLS
     }
 
     /**
@@ -84,6 +89,10 @@ public class VoShooter extends Game {
                 if (lobbyScreen == null) lobbyScreen = new LobbyScreen(this);
                 setScreen(lobbyScreen);
                 break;
+            case CHANGE_CONTROLS:
+                if (changeControlsScreen == null) changeControlsScreen = new ChangeControlsScreen(this);
+                setScreen(changeControlsScreen);
+                break;
             default:
                 // Noop.
         }
@@ -101,6 +110,50 @@ public class VoShooter extends Game {
      */
     public Client getClient() {
         return client.client;
+    }
+
+    /**
+     * Get the code correct boolean.
+     * @return boolean
+     */
+    public boolean isCodeCorrect() {
+        return codeCorrect;
+    }
+
+    /**
+     * Set a boolean if the code was incorrect.
+     * @param codeCorrect boolean
+     */
+    public void setCodeCorrect(boolean codeCorrect) {
+        this.codeCorrect = codeCorrect;
+    }
+
+    /**
+     * @return code of the attempted lobby.
+     */
+    public String getLobbyCode() {
+        return lobbyCode;
+    }
+
+    /**
+     * @param lobbyCode Code of the lobby.
+     */
+    public void setLobbyCode(String lobbyCode) {
+        this.lobbyCode = lobbyCode;
+    }
+
+    /**
+     * @return true if previous screen was main screen.
+     */
+    public boolean isCameFromGame() {
+        return cameFromGame;
+    }
+
+    /**
+     * @param cameFromGame set true if came from main screen.
+     */
+    public void setCameFromGame(boolean cameFromGame) {
+        this.cameFromGame = cameFromGame;
     }
 
     /**

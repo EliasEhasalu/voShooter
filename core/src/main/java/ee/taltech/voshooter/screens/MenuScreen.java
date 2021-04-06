@@ -1,9 +1,12 @@
 package ee.taltech.voshooter.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -11,7 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
 import static ee.taltech.voshooter.VoShooter.Screen.CREATE_GAME;
 import static ee.taltech.voshooter.VoShooter.Screen.JOIN_GAME;
@@ -63,6 +68,19 @@ public class MenuScreen implements Screen {
         table.row();
         table.add(exit).fillX().uniformX();
 
+        // Music.
+        MusicPlayer.setMusic("soundfx/bensound-evolution.mp3");
+        MusicPlayer.setVolume(AppPreferences.getMusicVolume());
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.NUM_1) joinGame.toggle();
+                else if (keycode == Input.Keys.NUM_2) createGame.toggle();
+                else if (keycode == Input.Keys.NUM_3) preferences.toggle();
+                return true;
+            }
+        });
 
         joinGame.addListener(new ChangeListener() {
             @Override

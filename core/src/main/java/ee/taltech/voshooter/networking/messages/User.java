@@ -6,6 +6,7 @@ public class User {
     public String currentLobby;
     public boolean host = false;
     public long id;
+    private String stuff;
 
     /**
      * Set whether this user object is a host or not.
@@ -32,7 +33,7 @@ public class User {
         this.name = name;
     }
 
-    /** @return String repr of this user. */
+    /** @return String representation of this user. */
     public String toString() {
         return name;
     }

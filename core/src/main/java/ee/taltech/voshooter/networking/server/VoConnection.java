@@ -7,6 +7,13 @@ import ee.taltech.voshooter.networking.messages.User;
 
 public class VoConnection extends Connection {
 
-    public User user;
-    public Player player;
+    public transient User user;
+    public transient Player player;
+
+    /**
+     * @return The player object associated with this connection.
+     */
+    public Player getPlayer() {
+       return player;
+    }
 }

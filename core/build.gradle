@@ -10,4 +10,8 @@ task run(dependsOn: classes, type: JavaExec) {
     ignoreExitValue = true
 }
 
+dependencies {
+    implementation 'org.jetbrains:annotations:20.1.0'
+}
+
 eclipse.project.name = appName + "-core"

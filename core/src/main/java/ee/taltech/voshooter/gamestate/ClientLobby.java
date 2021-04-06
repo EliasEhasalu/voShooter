@@ -1,16 +1,18 @@
 package ee.taltech.voshooter.gamestate;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientLobby {
 
     private int maxUsers = 4;
     private int gamemode = 0;
     private List<User> users = new ArrayList<>();
+    private List<Player> players = new ArrayList<>();
     private String lobbyCode;
 
     private GameState parent;
@@ -96,6 +98,13 @@ public class ClientLobby {
     }
 
     /**
+     * @return List of users in lobby.
+     */
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    /**
      * @return The code of the lobby.
      */
     public String getLobbyCode() {
@@ -107,6 +116,13 @@ public class ClientLobby {
      */
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    /**
+     * @param players Set the list of players.
+     */
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 
     /**
@@ -135,6 +151,7 @@ public class ClientLobby {
      * @param message The message with lobby info received from the server.
      */
     public void handleJoining(LobbyJoined message) {
+        parent.clientUser.id = message.id;
         if (message.host.id == parent.clientUser.id) {
             parent.clientUser.setHost(true);
         }

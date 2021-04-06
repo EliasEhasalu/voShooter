@@ -1,20 +1,9 @@
 package ee.taltech.voshooter.networking.server;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
-
 import ee.taltech.voshooter.networking.Network;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
@@ -23,19 +12,29 @@ import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
-import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class VoServer {
 
     Server server;
 
     private long playerId = 0;
-    private Random rand = new Random();
+    private final Random rand = new Random();
 
-    private Set<VoConnection> connections = new HashSet<>();
-    private Map<String, Lobby> lobbies = new HashMap<>();
+    private final Set<VoConnection> connections = new HashSet<>();
+    private final Map<String, Lobby> lobbies = new ConcurrentHashMap<>();
 
     /**
      * Construct the server.
@@ -98,10 +97,10 @@ public class VoServer {
         });
 
         server.addListener(
-        new RunMethodListener<MovePlayer>(MovePlayer.class) {
+        new RunMethodListener<PlayerInput>(PlayerInput.class) {
             @Override
-            public void run(VoConnection c, MovePlayer msg) {
-                handleMovePlayer(c, msg);
+            public void run(VoConnection c, PlayerInput msg) {
+                handlePlayerInput(c, msg);
             }
         });
 
@@ -123,7 +122,7 @@ public class VoServer {
         newLobby.addConnection(connection);
         newLobby.setHost(connection);
 
-        LobbyJoined res = new LobbyJoined(msg.gameMode, msg.maxPlayers, code, newLobby.getUsers(), user);
+        LobbyJoined res = new LobbyJoined(msg.gameMode, msg.maxPlayers, code, newLobby.getUsers(), user, user.id);
         connection.sendTCP(res);
     }
 
@@ -145,11 +144,11 @@ public class VoServer {
                 List<User> users = lobby.getUsers();
                 User host = lobby.getHost().user;
 
-                connection.sendTCP(new LobbyJoined(gameMode, maxPlayers, code, users, host));
+                connection.sendTCP(new LobbyJoined(gameMode, maxPlayers, code, users, host, connection.user.id));
                 lobby.addConnection(connection);
             }
         } else {
-            connection.sendTCP(new NoSuchLobby());
+            connection.sendTCP(new NoSuchLobby(code));
         }
     }
 
@@ -184,18 +183,20 @@ public class VoServer {
     }
 
     /**
-     * Handle MovePlayer messages.
+     * Handle PlayerInput messages.
      * @param c The connection.
-     * @param msg The MovePlayer message.
+     * @param msg The PlayerInput message.
      */
-    private void handleMovePlayer(VoConnection c, MovePlayer msg) {
+    private void handlePlayerInput(VoConnection c, PlayerInput msg) {
+        // If the a lobby exists, pass the PlayerInput message to
+        // that lobby's Game object. Physics / game logic will be handled there.
         Optional<Lobby> optLobby = getUserLobby(c.user);
 
         if (optLobby.isPresent()) {
             Lobby lobby = optLobby.get();
 
             if (lobby.getGame() != null) {
-                lobby.getGame().addUpdate(msg.keyPresses);
+                lobby.getGame().addPlayerInput(c, msg);
             }
         }
     }
@@ -218,7 +219,7 @@ public class VoServer {
             connection.user = new User();
             connection.user.id = playerId++;
         }
-        if (!connections.contains(connection)) connections.add(connection);
+        connections.add(connection);
     }
 
     /**
@@ -227,7 +228,7 @@ public class VoServer {
      */
     private void handleDisconnects(VoConnection connection) {
        if (connection != null) {
-           if (connections.contains(connection)) connections.remove(connection);
+           connections.remove(connection);
            if (connection.user != null && connection.user.currentLobby != null) {
                Lobby lobby = lobbies.get(connection.user.currentLobby);
                lobby.removeConnection(connection);
@@ -246,7 +247,6 @@ public class VoServer {
     private boolean verifyUsername(String username) {
         return (
             !username.trim().equals("")
-            && username != null
             && username.length() >= 4
             && username.length() <= 12
         );
@@ -302,15 +302,6 @@ public class VoServer {
             break;
         }
         return attempt;
-    }
-
-    /** Close the server upon request. */
-    public void close() {
-        try {
-            server.dispose();
-        } catch (IOException e) {
-            //.
-        }
     }
 
     /**

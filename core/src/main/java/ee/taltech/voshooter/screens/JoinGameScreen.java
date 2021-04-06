@@ -3,9 +3,12 @@ package ee.taltech.voshooter.screens;
 import java.io.IOException;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -62,7 +65,6 @@ public class JoinGameScreen implements Screen {
         table.setVisible(true);
         stage.addActor(table);
 
-
         // Table for no connection pop-up.
         popUpTable = new Table();
         stage.addActor(popUpTable);
@@ -74,7 +76,6 @@ public class JoinGameScreen implements Screen {
         popUpTable.row().pad(10, 0, 0, 0);
         popUpTable.add(closePopUp);
 
-
         join = new TextButton("Join lobby", skin);
         TextButton back = new TextButton("Back", skin);
 
@@ -82,6 +83,7 @@ public class JoinGameScreen implements Screen {
         Table nameTable = new Table();
         Label enterName = new Label("Enter your username: ", skin);
         TextField playerName = new TextField("", skin);
+        stage.setKeyboardFocus(playerName);
         playerName.setMaxLength(12);
         nameLengthCheck = new Label("Too short", skin);
         nameLengthCheck.setColor(255, 0, 0, 255);
@@ -112,11 +114,30 @@ public class JoinGameScreen implements Screen {
         gameCodeCheck.setAlignment(Align.center);
         table.row().pad(10, 0, 0, 0);
 
-        //
+        // Join game button
         table.add(join).fill().maxWidth(200);
         table.row().pad(10, 0, 0, 0);
         bottomTable.add(back).left().pad(0, 0, 0, 10).maxWidth(200);
         table.add(bottomTable).fill().maxWidth(200);
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ENTER) {
+                    if (popUpTable.isVisible()) {
+                        closePopUp.toggle();
+                    } else if (stage.getKeyboardFocus() == playerName) {
+                        stage.setKeyboardFocus(gameCode);
+                    } else if (stage.getKeyboardFocus() == gameCode) {
+                        join.toggle();
+                    }
+                }
+                if (keycode == Input.Keys.ESCAPE && !popUpTable.isVisible()) {
+                    back.toggle();
+                }
+                return true;
+            }
+        });
 
         // Add button functionality.
         join.addListener(new ChangeListener() {
@@ -130,6 +151,10 @@ public class JoinGameScreen implements Screen {
                         parent.createNetworkClient();
                         parent.getClient().sendTCP(new SetUsername(name));
                         parent.getClient().sendTCP(new JoinLobby(gameCode.getText().trim()));
+                        if (!parent.isCodeCorrect()) {
+                            gameCodeCheck.setText("No such lobby");
+                            gameCodeCheck.setColor(255, 0, 0, 255);
+                        }
                     } catch (IOException e) {
                         popUpTable.setVisible(true);
                         table.setVisible(false);
@@ -184,9 +209,15 @@ public class JoinGameScreen implements Screen {
                     gameCodeCheck.setColor(255, 0, 0, 255);
                     isCodeGood = false;
                 } else {
-                    gameCodeCheck.setText("Good code");
-                    gameCodeCheck.setColor(0, 255, 0, 255);
-                    isCodeGood = true;
+                    if (parent.getLobbyCode() == null || !gameCode.getText().toUpperCase().equals(parent.getLobbyCode())) {
+                        gameCodeCheck.setText("Good code");
+                        gameCodeCheck.setColor(0, 255, 0, 255);
+                        isCodeGood = true;
+                    } else {
+                        gameCodeCheck.setText("No such lobby");
+                        gameCodeCheck.setColor(255, 0, 0, 255);
+                        isCodeGood = false;
+                    }
                 }
             }
         });
