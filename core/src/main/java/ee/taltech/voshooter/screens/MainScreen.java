@@ -98,7 +98,7 @@ public class MainScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, width, height);
         camera.update();
-        tiledMap = new TmxMapLoader().load("tileset/voShooterMap.tmx");
+        tiledMap = new TmxMapLoader().load("tileset/vo_shooter_map.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         font = new BitmapFont(Gdx.files.internal("bitmapFont/commodore.fnt"),
                 Gdx.files.internal("bitmapFont/commodore.png"), false);
