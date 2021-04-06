@@ -35,6 +35,9 @@ public class ChangeControlsScreen implements Screen {
     private Label keyRight;
     private Label buttonLeft;
     private Label buttonRight;
+    private Label pistol;
+    private Label shotgun;
+    private Label rocketLauncher;
     private TextButton returnToPreferencesScreen;
     private Map.Entry<Label, TextButton> changeControlEntry;
 
@@ -155,6 +158,27 @@ public class ChangeControlsScreen implements Screen {
                 put(buttonRight,
                         new TextButton(AppPreferences.stringRepresentation(AppPreferences.getMouseRight()), skin));
             }
+            pistol = new Label("Pistol", skin);
+            if (AppPreferences.getNumberOneIsKey()) {
+                put(pistol, new TextButton(Input.Keys.toString(AppPreferences.getNumberOne()), skin));
+            } else {
+                put(pistol,
+                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberOne()), skin));
+            }
+            shotgun = new Label("Shotgun", skin);
+            if (AppPreferences.getNumberTwoIsKey()) {
+                put(shotgun, new TextButton(Input.Keys.toString(AppPreferences.getNumberTwo()), skin));
+            } else {
+                put(shotgun,
+                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberTwo()), skin));
+            }
+            rocketLauncher = new Label("Pistol", skin);
+            if (AppPreferences.getNumberThreeIsKey()) {
+                put(rocketLauncher, new TextButton(Input.Keys.toString(AppPreferences.getNumberThree()), skin));
+            } else {
+                put(rocketLauncher,
+                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberThree()), skin));
+            }
         }};
     }
 
@@ -218,6 +242,15 @@ public class ChangeControlsScreen implements Screen {
         } else if (key.equals(buttonRight)) {
             AppPreferences.setMouseRight(inputKey);
             AppPreferences.setButtonRightIsKey(true);
+        } else if (key.equals(pistol)) {
+            AppPreferences.setNumberOne(inputKey);
+            AppPreferences.setNumberOneIsKey(true);
+        } else if (key.equals(shotgun)) {
+            AppPreferences.setNumberTwo(inputKey);
+            AppPreferences.setNumberTwoIsKey(true);
+        } else if (key.equals(rocketLauncher)) {
+            AppPreferences.setNumberThree(inputKey);
+            AppPreferences.setNumberThreeIsKey(true);
         }
         changeControlEntry.getValue().setText(Input.Keys.toString(inputKey));
         setButtonsWhite();
@@ -248,6 +281,15 @@ public class ChangeControlsScreen implements Screen {
         } else if (key.equals(buttonRight)) {
             AppPreferences.setMouseRight(inputButton);
             AppPreferences.setButtonRightIsKey(false);
+        } else if (key.equals(pistol)) {
+            AppPreferences.setNumberOne(inputButton);
+            AppPreferences.setNumberOneIsKey(false);
+        } else if (key.equals(shotgun)) {
+            AppPreferences.setNumberTwo(inputButton);
+            AppPreferences.setNumberTwoIsKey(false);
+        } else if (key.equals(rocketLauncher)) {
+            AppPreferences.setNumberThree(inputButton);
+            AppPreferences.setNumberThreeIsKey(false);
         }
         changeControlEntry.getValue().setText(AppPreferences.stringRepresentation(inputButton));
         setButtonsWhite();
