@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GameState {
 
@@ -28,7 +29,7 @@ public class GameState {
     public ClientPlayer userPlayer;
     public List<PlayerAction> currentInputs = new ArrayList<>();
 
-    public List<ClientPlayer> players = new ArrayList<>();
+    public Set<ClientPlayer> players = ConcurrentHashMap.newKeySet();
     private final Set<ClientProjectile> projectiles = new HashSet<>();
 
     /**
@@ -41,7 +42,7 @@ public class GameState {
     /**
      * @return The list of players.
      */
-    public List<ClientPlayer> getPlayers() {
+    public Set<ClientPlayer> getPlayers() {
         return players;
     }
 
@@ -66,6 +67,27 @@ public class GameState {
 
             if (e instanceof ClientPlayer) {
                 players.add((ClientPlayer) e);
+            }
+        }
+    }
+
+    /**
+     * Update lobby entities.
+     * @param players currently in lobby.
+     */
+    public void updatePlayers(List<Player> players) {
+        for (ClientPlayer e : this.players) {
+            boolean userFound = false;
+            for (Player p : players) {
+                if (p.getId() == e.getId()) {
+                    userFound = true;
+                    break;
+                }
+            }
+            if (!userFound) {
+                entities.remove(e);
+                this.players.remove(e);
+                drawableEntities.remove(e);
             }
         }
     }
@@ -114,6 +136,16 @@ public class GameState {
                 }
             }
         }
+    }
+
+    /**
+     * Clear all drawable entities.
+     */
+    public void clearDrawables() {
+        drawableEntities.clear();
+        players.clear();
+        entities.clear();
+        projectiles.clear();
     }
 
     /**

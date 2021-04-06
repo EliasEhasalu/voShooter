@@ -28,6 +28,7 @@ import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
@@ -139,9 +140,6 @@ public class MainScreen implements Screen {
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
         healthFraction = parent.gameState.userPlayer.getHealth() / 100f;
-        if (healthFraction <= 0) {
-            setRespawnTableVisibility(true);
-        }
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap FPS to 64.
         stage.draw();
@@ -166,6 +164,10 @@ public class MainScreen implements Screen {
             p.getSprite().draw(stage.getBatch());
         }
         stage.getBatch().end();
+
+        if (healthFraction <= 0) {
+            setRespawnTableVisibility(true);
+        }
 
         drawMiniMap();
         drawHUD();
@@ -305,6 +307,25 @@ public class MainScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                parent.gameState.clearDrawables();
+                parent.getClient().sendTCP(new LeaveLobby());
+                parent.changeScreen(VoShooter.Screen.MENU);
+            }
+        });
+
+        settingsButton2.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.setCameFromGame(true);
+                parent.changeScreen(VoShooter.Screen.PREFERENCES);
+            }
+        });
+
+        exitButton2.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.gameState.clearDrawables();
+                parent.getClient().sendTCP(new LeaveLobby());
                 parent.changeScreen(VoShooter.Screen.MENU);
             }
         });
@@ -342,7 +363,7 @@ public class MainScreen implements Screen {
 
         hudBatch.draw(healthEmpty, 64, 128);
         hudBatch.draw(healthFull, 64, 128, 0, 0,
-                Math.round(healthFull.getWidth() * healthFraction), healthFull.getHeight());
+                Math.round(healthFull.getWidth() * Math.max(healthFraction, 0)), healthFull.getHeight());
 
         font.draw(hudBatch, String.format("%d/%d", currentAmmo, maxAmmo), 138, 80);
         hudBatch.end();

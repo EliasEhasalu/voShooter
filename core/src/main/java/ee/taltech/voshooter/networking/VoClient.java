@@ -8,6 +8,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
@@ -138,7 +139,12 @@ public class VoClient {
      */
     private void updateLobby(LobbyUserUpdate update) {
         List<User> users = update.users;
+        List<Player> players = update.players;
         parent.gameState.currentLobby.setUsers(users);
+        if (players != null) {
+            parent.gameState.currentLobby.setPlayers(players);
+            parent.gameState.updatePlayers(players);
+        }
     }
 
     /**
