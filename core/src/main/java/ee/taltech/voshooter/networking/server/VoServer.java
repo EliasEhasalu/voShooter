@@ -156,12 +156,15 @@ public class VoServer {
      * @param connection The connection.
      */
     private void handleLeaveLobby(VoConnection connection) {
-        Lobby lobby = lobbies.get(connection.user.currentLobby);
-        lobby.removeConnection(connection);
+        String currentLobby = connection.user.currentLobby;
+        if (currentLobby != null) {
+            Lobby lobby = lobbies.get(connection.user.currentLobby);
+            lobby.removeConnection(connection);
 
-        // Delete unused lobbies.
-        if (lobby.getPlayerCount() == 0) {
-            lobbies.remove(lobby.getLobbyCode());
+            // Delete unused lobbies.
+            if (lobby.getPlayerCount() == 0) {
+                lobbies.remove(lobby.getLobbyCode());
+            }
         }
     }
 

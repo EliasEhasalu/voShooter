@@ -145,13 +145,15 @@ public class ChangeControlsScreen implements Screen {
             if (AppPreferences.getButtonLeftIsKey()) {
                 put(buttonLeft, new TextButton(Input.Keys.toString(AppPreferences.getMouseLeft()), skin));
             } else {
-                put(buttonLeft, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getMouseLeft()), skin));
+                put(buttonLeft,
+                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getMouseLeft()), skin));
             }
             buttonRight = new Label("Aim", skin);
             if (AppPreferences.getButtonRightIsKey()) {
                 put(buttonRight, new TextButton(Input.Keys.toString(AppPreferences.getMouseRight()), skin));
             } else {
-                put(buttonRight, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getMouseRight()), skin));
+                put(buttonRight,
+                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getMouseRight()), skin));
             }
         }};
     }
@@ -176,6 +178,7 @@ public class ChangeControlsScreen implements Screen {
         Integer inputKey = SettingsInput.getInputKey();
         if (inputKey != null && inputKey == Input.Keys.ESCAPE) {
             returnToPreferencesScreen.toggle();
+            SettingsInput.removeInputKey();
         }
         if (changeControlEntry != null) {
             Integer inputButton = SettingsInput.getInputButton();

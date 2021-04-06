@@ -90,7 +90,7 @@ public class VoClient {
                 } else if (message instanceof PlayerHealthUpdate) {
                     updatePlayerHealth((PlayerHealthUpdate) message);
                 } else if (message instanceof PlayerDeath) {
-                    System.out.println("Hey");
+                    handlePlayerDeath((PlayerDeath) message);
                 } else if (message instanceof PlayerDead) {
                     updatePlayerDead((PlayerDead) message);
                 }
@@ -137,6 +137,10 @@ public class VoClient {
      */
     private void joinLobby(LobbyJoined msg) {
             parent.gameState.currentLobby.handleJoining(msg);
+    }
+
+    private void handlePlayerDeath(PlayerDeath msg) {
+        // TODO: method stub.
     }
 
     /**
