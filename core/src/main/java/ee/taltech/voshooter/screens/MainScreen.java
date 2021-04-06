@@ -63,6 +63,7 @@ public class MainScreen implements Screen {
     public static final float MINIMAP_RATIO = 16f / 9f;
     public static final int MINIMAP_HEIGHT = 100;
     public static final int MINIMAP_WIDTH = (int) (MINIMAP_HEIGHT * MINIMAP_RATIO);
+    public static final int MINIMAP_MARGIN = 50;
     public static final int MARKER_SIZE = 20;
     public static final float MINIMAP_SCALE = 0.22f;
 
@@ -113,7 +114,8 @@ public class MainScreen implements Screen {
         miniMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, MINIMAP_SCALE);
         minimapCamera = new OrthographicCamera(MINIMAP_WIDTH, MINIMAP_HEIGHT);
         minimapCamera.zoom = MINIMAP_ZOOM;
-        minimapCamera.setToOrtho(false, MINIMAP_WIDTH, MINIMAP_HEIGHT);
+        minimapCamera.setToOrtho(false, Gdx.graphics.getWidth() / 10f,
+                Gdx.graphics.getHeight() / 10f);
 
         createMenuButtons();
     }
@@ -132,8 +134,6 @@ public class MainScreen implements Screen {
             handlePlayerInputs();
             moveCameraToPlayer();
         }
-        camera.rotate(2);
-        minimapCamera.rotate(-2);
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
@@ -342,9 +342,9 @@ public class MainScreen implements Screen {
         hudBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         camera.setToOrtho(false, width, height);
 
-        minimapCamera.position.x = 0; // / 2f; //Gdx.graphics.getHeight() * 1.8f;
-        minimapCamera.position.y = 0; //-Gdx.graphics.getWidth() * 0.29f;
-        //minimapCamera.setToOrtho(false, MINIMAP_HEIGHT * (width / height), MINIMAP_HEIGHT);
+        minimapCamera.setToOrtho(false, width / 10f, height / 10f);
+        minimapCamera.position.x = width - MINIMAP_MARGIN;
+        minimapCamera.position.y = -height + (minimapCamera.viewportHeight / 100 * 1) + MINIMAP_MARGIN;
         minimapCamera.update();
     }
 
