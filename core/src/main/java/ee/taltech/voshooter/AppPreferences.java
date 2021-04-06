@@ -23,6 +23,7 @@ public class AppPreferences {
     private static final String PREF_NUMBER_1 = "number 1";
     private static final String PREF_NUMBER_2 = "number 2";
     private static final String PREF_NUMBER_3 = "number 3";
+    private static final String PREF_NUMBER_4 = "number 4";
     private static final String PREF_UP_KEY_IS_KEY = "up key is key";
     private static final String PREF_DOWN_IS_KEY = "down key is key";
     private static final String PREF_LEFT_IS_KEY = "left key is key";
@@ -32,6 +33,7 @@ public class AppPreferences {
     private static final String PREF_1_IS_KEY = "number 1 is key";
     private static final String PREF_2_IS_KEY = "number 2 is key";
     private static final String PREF_3_IS_KEY = "number 3 is key";
+    private static final String PREF_4_IS_KEY = "number 4 is key";
     private static final List<String> BUTTONS_LIST = Arrays.asList("Left Button", "Right Button", "Middle Button", "Back", "Forward");
 
     /** @return A preferences object containing the player's preferences */
@@ -229,6 +231,20 @@ public class AppPreferences {
         getPrefs().flush();
     }
 
+    /** @param key Set the key that triggers PREF_NUMBER_4 action. */
+    public static void setNumberFour(int key) {
+        getPrefs().putInteger(PREF_NUMBER_4, key);
+        // Write to disk.
+        getPrefs().flush();
+    }
+
+    /** @param isKey Set whether PREF_NUMBER_4 action is key. */
+    public static void setNumberFourIsKey(boolean isKey) {
+        getPrefs().putBoolean(PREF_4_IS_KEY, isKey);
+        // Write to disk.
+        getPrefs().flush();
+    }
+
 
     /** @return Key that triggers MOVE_UP action. */
     public static int getUpKey() {
@@ -318,6 +334,16 @@ public class AppPreferences {
     /** @return Whether NUMBER_3 action is key. */
     public static boolean getNumberThreeIsKey() {
         return getPrefs().getBoolean(PREF_3_IS_KEY, true);
+    }
+
+    /** @return Key that triggers NUMBER_4 action. */
+    public static int getNumberFour() {
+        return getPrefs().getInteger(PREF_NUMBER_4, Input.Keys.NUM_4);
+    }
+
+    /** @return Whether NUMBER_4 action is key. */
+    public static boolean getNumberFourIsKey() {
+        return getPrefs().getBoolean(PREF_4_IS_KEY, true);
     }
 
     /**

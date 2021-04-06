@@ -9,5 +9,6 @@ public enum ActionType {
     MOVE_DOWN,
     WEAPON_PISTOL,
     WEAPON_SHOTGUN,
-    WEAPON_RPG
+    WEAPON_RPG,
+    WEAPON_FLAMETHROWER
 }

@@ -11,10 +11,12 @@ public class StatusManager {
         BURNING
     }
 
+    private static final int HERTZ = ((int) Game.TICK_RATE_IN_HZ);
+
     private final Player parent;
-    private Map<Debuff, Float> debuffDurations = new HashMap<>();
-    private Map<Debuff, Float> maxDebuffDurations = new HashMap<Debuff, Float>() {{
-        put(Debuff.BURNING, 4f);
+    private Map<Debuff, Integer> debuffDurations = new HashMap<>();
+    private Map<Debuff, Integer> maxDebuffDurations = new HashMap<Debuff, Integer>() {{
+        put(Debuff.BURNING, 10 * HERTZ);
     }};
 
     public StatusManager(Player parent) {
@@ -22,29 +24,37 @@ public class StatusManager {
     }
 
     public void applyDebuff(Debuff debuff) {
+        System.out.println("APPLYING BURN");
         debuffDurations.put(debuff, maxDebuffDurations.get(debuff));
     }
 
-    public void tickDebuffs() {
+    public void update() {
         reduceDurations();
         applyEffects();
     }
 
     private void reduceDurations() {
-        debuffDurations.replaceAll(((k, v) -> v - (1 / ((float) Game.TICK_RATE_IN_HZ))));
-        for (Map.Entry<Debuff, Float> e : debuffDurations.entrySet()) {
+        debuffDurations.replaceAll(((k, v) -> v - 1));
+        for (Map.Entry<Debuff, Integer> e : debuffDurations.entrySet()) {
             if (e.getValue() <= 0) debuffDurations.remove(e.getKey());
         }
     }
 
     private void applyEffects() {
-        for (Map.Entry<Debuff, Float> e : debuffDurations.entrySet()) {
+        for (Map.Entry<Debuff, Integer> e : debuffDurations.entrySet()) {
             switch (e.getKey()) {
                 case BURNING:
-                    parent.takeDamage(1);
+                    burn(parent);
                 default:
                     // No op
             }
         }
+    }
+
+    private void burn(Player parent) {
+       final int FREQ = 32;
+       final int DAMAGE = 2;
+
+       if (debuffDurations.get(Debuff.BURNING) % FREQ == 0) parent.takeDamage(DAMAGE);
     }
 }

@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import ee.taltech.voshooter.weapon.projectile.Fireball;
 import ee.taltech.voshooter.weapon.projectile.PistolBullet;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 import ee.taltech.voshooter.weapon.projectile.Rocket;
@@ -111,9 +112,32 @@ public final class ShapeFactory {
                 return getRocket(world, pos, vel);
             case PISTOL_BULLET:
                 return getPistolBullet(world, pos, vel);
+            case FIREBALL:
+                return getFireball(world, pos, vel);
             default:
                 throw new IllegalArgumentException();
         }
+    }
+
+    public static Body getFireball(World world, Vector2 pos, Vector2 vel) {
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.DynamicBody;
+        def.position.set(pos);
+
+        Body b = world.createBody(def);
+        CircleShape shape = new CircleShape();
+        shape.setRadius(Fireball.RADIUS);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 10f;
+
+        Fixture fixture = b.createFixture(fixtureDef);
+        fixture.setSensor(true);  // Turn off collisions.
+
+        b.setLinearVelocity(vel);
+        shape.dispose();
+        return b;
     }
 
     public static Body getRocket(World world, Vector2 pos, Vector2 vel) {

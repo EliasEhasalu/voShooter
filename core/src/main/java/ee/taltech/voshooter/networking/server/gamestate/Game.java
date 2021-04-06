@@ -37,6 +37,7 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFac
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerSpawner;
 import ee.taltech.voshooter.weapon.Weapon;
+import ee.taltech.voshooter.weapon.projectileweapon.Flamethrower;
 import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
 import ee.taltech.voshooter.weapon.projectileweapon.RocketLauncher;
 import ee.taltech.voshooter.weapon.projectileweapon.Shotgun;
@@ -163,6 +164,8 @@ public class Game extends Thread {
                             weapon = new Shotgun(c.getPlayer());
                         } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_RPG) {
                             weapon = new RocketLauncher(c.getPlayer());
+                        } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_FLAMETHROWER) {
+                            weapon = new Flamethrower(c.getPlayer());
                         }
                         c.getPlayer().setWeapon(weapon);
                     }

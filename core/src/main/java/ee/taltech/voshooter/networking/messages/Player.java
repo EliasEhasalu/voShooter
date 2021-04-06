@@ -77,9 +77,8 @@ public class Player {
      * Update the player.
      */
     public void update() {
-        if (health <= 0) {
-            respawn();
-        }
+        if (health <= 0) respawn();
+        statusManager.update();
         currentWeapon.coolDown();
         move();
     }
