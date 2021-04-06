@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
@@ -173,6 +174,9 @@ public class Game extends Thread {
                 if (p.deathTick) {
                     c.sendTCP(new PlayerDeath());
                     p.deathTick = false;
+                }
+                if (p.getHealth() <= 0) {
+                    c.sendTCP(new PlayerDead(p.getRespawnTime()));
                 }
             }
         }

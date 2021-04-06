@@ -14,6 +14,8 @@ import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
@@ -87,6 +89,10 @@ public class VoClient {
                     parent.setLobbyCode(((NoSuchLobby) message).lobbyCode);
                 } else if (message instanceof PlayerHealthUpdate) {
                     updatePlayerHealth((PlayerHealthUpdate) message);
+                } else if (message instanceof PlayerDeath) {
+                    // TODO method.
+                } else if (message instanceof PlayerDead) {
+                    // TODO method.
                 }
 
                 // Define actions to be taken on the next cycle

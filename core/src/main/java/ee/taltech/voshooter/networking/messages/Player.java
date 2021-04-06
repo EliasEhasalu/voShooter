@@ -176,4 +176,11 @@ public class Player {
     public Body getBody() {
         return body;
     }
+
+    /**
+     * @return how much time is left until respawn.
+     */
+    public float getRespawnTime() {
+        return respawnTime;
+    }
 }
