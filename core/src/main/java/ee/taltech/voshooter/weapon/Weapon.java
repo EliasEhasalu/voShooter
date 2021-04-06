@@ -15,7 +15,7 @@ public abstract class Weapon {
     public Weapon(Player wielder, float coolDown) {
         this.wielder = wielder;
         this.coolDown = coolDown;
-        this.remainingCoolDown = 0f;
+        this.remainingCoolDown = coolDown;
     }
 
     public boolean canFire() {
