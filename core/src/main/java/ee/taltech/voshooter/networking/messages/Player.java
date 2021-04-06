@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
+import ee.taltech.voshooter.networking.server.gamestate.StatusManager;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
 import ee.taltech.voshooter.weapon.projectileweapon.Shotgun;
@@ -26,6 +27,7 @@ public class Player {
     public static final Integer MAX_HEALTH = 100;
     private transient Body body;
     private transient Weapon currentWeapon = new Pistol(this);
+    private transient StatusManager statusManager = new StatusManager(this);
 
     private final Vector2 playerAcc = new Vector2(0f, 0f);
     private Vector2 viewDirection = new Vector2(0f, 0f);
@@ -45,6 +47,10 @@ public class Player {
         this.health = MAX_HEALTH;
 
         if (id == 1) this.currentWeapon = new Shotgun(this);
+    }
+
+    public StatusManager getStatusManager() {
+        return statusManager;
     }
 
     /**

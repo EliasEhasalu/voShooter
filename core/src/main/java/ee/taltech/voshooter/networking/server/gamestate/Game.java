@@ -41,6 +41,7 @@ import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
 import ee.taltech.voshooter.weapon.projectileweapon.RocketLauncher;
 import ee.taltech.voshooter.weapon.projectileweapon.Shotgun;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -145,27 +146,30 @@ public class Game extends Thread {
      * @param actions The actions they wish to take.
      */
     private void handleInputs(VoConnection c, Set<PlayerAction> actions) {
-        actions.forEach(a -> {
-            if (c.getPlayer().getHealth() > 0) {
-                if (a instanceof MovePlayer) {
-                    c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
-                } else if (a instanceof Shoot) {
-                    c.getPlayer().shoot();
-                } else if (a instanceof MouseCoords) {
-                    c.getPlayer().setViewDirection((MouseCoords) a);
-                } else if (a instanceof ChangeWeapon) {
-                    Weapon weapon = null;
-                    if (((ChangeWeapon) a).weapon == ActionType.WEAPON_PISTOL) {
-                        weapon = new Pistol(c.getPlayer());
-                    } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_SHOTGUN) {
-                        weapon = new Shotgun(c.getPlayer());
-                    } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_RPG) {
-                        weapon = new RocketLauncher(c.getPlayer());
+        try {
+            actions.forEach(a -> {
+                if (c.getPlayer().getHealth() > 0) {
+                    if (a instanceof MovePlayer) {
+                        c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
+                    } else if (a instanceof Shoot) {
+                        c.getPlayer().shoot();
+                    } else if (a instanceof MouseCoords) {
+                        c.getPlayer().setViewDirection((MouseCoords) a);
+                    } else if (a instanceof ChangeWeapon) {
+                        Weapon weapon = null;
+                        if (((ChangeWeapon) a).weapon == ActionType.WEAPON_PISTOL) {
+                            weapon = new Pistol(c.getPlayer());
+                        } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_SHOTGUN) {
+                            weapon = new Shotgun(c.getPlayer());
+                        } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_RPG) {
+                            weapon = new RocketLauncher(c.getPlayer());
+                        }
+                        c.getPlayer().setWeapon(weapon);
                     }
-                    c.getPlayer().setWeapon(weapon);
                 }
-            }
-        });
+            });
+        } catch (ConcurrentModificationException ignored) {
+        }
     }
 
     /**
