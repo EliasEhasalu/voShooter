@@ -1,5 +1,8 @@
 package ee.taltech.voshooter.gamestate;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.math.Vector2;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
@@ -24,13 +27,15 @@ public class GameState {
     private final Set<Drawable> drawableEntities = new HashSet<>();
 
     public ClientLobby currentLobby = new ClientLobby(this);
-
     public User clientUser = new User();
     public ClientPlayer userPlayer;
     public List<PlayerAction> currentInputs = new ArrayList<>();
 
     public Set<ClientPlayer> players = ConcurrentHashMap.newKeySet();
     private final Set<ClientProjectile> projectiles = new HashSet<>();
+
+    private Set<ParticleEffect> particleEffects = new HashSet<>();
+    //private Set<ParticleEffect> loopingParticleEffects = new HashSet<>();
 
     /**
      * @return The list of drawable entities.
@@ -119,7 +124,13 @@ public class GameState {
      * @param msg Update message.
      */
     public void destroyProjectile(ProjectileDestroyed msg) {
-        projectiles.removeIf(p -> p.getId() == msg.id);
+        for (ClientProjectile p : projectiles) {
+            if (msg.id == p.getId()) {
+                projectiles.remove(p);
+            }
+            addParticleEffect(p.getPosition(), false, "particleeffects/projectile/simpleexplosion");
+        }
+        //projectiles.removeIf(p -> p.getId() == msg.id);
     }
 
     /**
@@ -154,4 +165,37 @@ public class GameState {
     public Set<ClientProjectile> getProjectiles() {
         return projectiles;
     }
+
+    /**
+     * Add a new particle effect.
+     * @param pos Position of the particle effect.
+     * @param looping If the particle is looping or not.
+     * @param path Path to the particle effect in assets.
+     */
+    public void addParticleEffect(Vector2 pos, boolean looping, String path) {
+        ParticleEffect pe = new ParticleEffect();
+        pe.load(Gdx.files.internal(path), Gdx.files.internal(""));
+        pe.setPosition(pos.x, pos.y);
+        pe.start();
+
+        particleEffects.add(pe);
+    }
+
+    /**
+     * Remove particle effects that have finished.
+     * @param pe Particle effect to remove.
+     */
+    public void particleEffectFinished(ParticleEffect pe) {
+        particleEffects.remove(pe);
+    }
+
+    /** @return Set of particle effects currently in the game. */
+    public Set<ParticleEffect> getParticleEffects() {
+        return particleEffects;
+    }
+
+    ///** @return Particle effects that loop. */
+    //public Set<ParticleEffect> getLoopingParticleEffects() {
+    //    return loopingParticleEffects;
+    //}
 }

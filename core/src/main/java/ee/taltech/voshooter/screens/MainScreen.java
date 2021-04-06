@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -143,31 +144,13 @@ public class MainScreen implements Screen {
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap FPS to 64.
         stage.draw();
 
+        // TODO: Move all of this to a renderer.
         stage.getBatch().setProjectionMatrix(camera.combined);
         stage.getBatch().begin();
-
-        // TODO: Move all of this to a renderer.
-        for (Drawable drawable : parent.gameState.getDrawables()) {
-            if (drawable.isVisible()) {
-                drawable.getSprite().draw(stage.getBatch());
-            }
-            if (drawable instanceof ClientPlayer) {
-                font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
-                        drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
-                        drawable.getPosition().y + 40);
-            }
-        }
-
-        for (ClientProjectile p : parent.gameState.getProjectiles()) {
-            p.getSprite().setRotation(p.getVelocity().angleDeg());
-            p.getSprite().draw(stage.getBatch());
-        }
-        ClientPlayer player = parent.gameState.userPlayer;
-        if (player.getHealth() <= 0) {
-            font.draw(stage.getBatch(),
-                    String.format("Respawning in %s seconds", (double) Math.round(player.respawnTimer * 10) / 10),
-                    player.getPosition().x, player.getPosition().y);
-        }
+        drawEntities();
+        drawProjectiles();
+        drawParticles();
+        drawRespawnTimer();
         stage.getBatch().end();
 
         drawMiniMap();
@@ -311,6 +294,44 @@ public class MainScreen implements Screen {
     }
 
     /**
+     * Draw all drawable entities to the screen.
+     */
+    private void drawEntities() {
+        for (Drawable drawable : parent.gameState.getDrawables()) {
+            if (drawable.isVisible()) {
+                drawable.getSprite().draw(stage.getBatch());
+            }
+            if (drawable instanceof ClientPlayer) {
+                font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
+                        drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
+                        drawable.getPosition().y + 40);
+            }
+        }
+    }
+
+    /**
+     * Draw the projectiles to the screen.
+     */
+    private void drawProjectiles() {
+        for (ClientProjectile p : parent.gameState.getProjectiles()) {
+            p.getSprite().setRotation(p.getVelocity().angleDeg());
+            p.getSprite().draw(stage.getBatch());
+        }
+    }
+
+    /**
+     * Draw the respawn timer.
+     */
+    private void drawRespawnTimer() {
+        ClientPlayer player = parent.gameState.userPlayer;
+        if (player.getHealth() <= 0) {
+            font.draw(stage.getBatch(),
+                    String.format("Respawning in %s seconds", (double) Math.round(player.respawnTimer * 10) / 10),
+                    player.getPosition().x, player.getPosition().y);
+        }
+    }
+
+    /**
      * Draw the HUD in the render cycle.
      */
     private void drawHUD() {
@@ -340,6 +361,19 @@ public class MainScreen implements Screen {
                 pos.x * MINIMAP_SCALE - MARKER_SIZE / 2f, pos.y * MINIMAP_SCALE - MARKER_SIZE / 2f,
                 MARKER_SIZE, MARKER_SIZE);
         minimapBatch.end();
+    }
+
+    /**
+     * Draw the particles to the sprite batch.
+     */
+    private void drawParticles() {
+        for (ParticleEffect pe : parent.gameState.getParticleEffects()) {
+            pe.update(Gdx.graphics.getDeltaTime());
+            pe.draw(stage.getBatch());
+            if (pe.isComplete()) {
+                parent.gameState.particleEffectFinished(pe);
+            }
+        }
     }
 
     /**
