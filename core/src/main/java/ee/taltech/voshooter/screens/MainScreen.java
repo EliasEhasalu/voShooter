@@ -64,6 +64,7 @@ public class MainScreen implements Screen {
     public static final float MINIMAP_RATIO = 16f / 9f;
     public static final int MINIMAP_HEIGHT = 100;
     public static final int MINIMAP_WIDTH = (int) (MINIMAP_HEIGHT * MINIMAP_RATIO);
+    public static final int MINIMAP_MARGIN = 50;
     public static final int MARKER_SIZE = 20;
     public static final float MINIMAP_SCALE = 0.22f;
 
@@ -98,6 +99,7 @@ public class MainScreen implements Screen {
         float height = Gdx.graphics.getHeight();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, width, height);
+        camera.zoom = 0.8f;
         camera.update();
         tiledMap = new TmxMapLoader().load("tileset/vo_shooter_map.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
@@ -113,7 +115,8 @@ public class MainScreen implements Screen {
         miniMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, MINIMAP_SCALE);
         minimapCamera = new OrthographicCamera(MINIMAP_WIDTH, MINIMAP_HEIGHT);
         minimapCamera.zoom = MINIMAP_ZOOM;
-        minimapCamera.setToOrtho(false, MINIMAP_WIDTH, MINIMAP_HEIGHT);
+        minimapCamera.setToOrtho(false, Gdx.graphics.getWidth() / 10f,
+                Gdx.graphics.getHeight() / 10f);
 
         createMenuButtons();
     }
@@ -327,9 +330,6 @@ public class MainScreen implements Screen {
      * Draw the minimap in the render cycle.
      */
     private void drawMiniMap() {
-        minimapCamera.update();
-        minimapCamera.position.x = Gdx.graphics.getHeight() * 1.8f;
-        minimapCamera.position.y = -Gdx.graphics.getWidth() * 0.29f;
         miniMapRenderer.setView(minimapCamera);
         miniMapRenderer.render();
         minimapBatch.setProjectionMatrix(minimapCamera.combined);
@@ -348,6 +348,13 @@ public class MainScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        hudBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+        camera.setToOrtho(false, width, height);
+
+        minimapCamera.setToOrtho(false, width / 10f, height / 10f);
+        minimapCamera.position.x = width - MINIMAP_MARGIN;
+        minimapCamera.position.y = -height + (450) + MINIMAP_MARGIN;
+        minimapCamera.update();
     }
 
     /**
