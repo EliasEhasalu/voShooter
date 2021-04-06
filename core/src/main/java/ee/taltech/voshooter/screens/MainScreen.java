@@ -344,7 +344,7 @@ public class MainScreen implements Screen {
 
         minimapCamera.setToOrtho(false, width / 10f, height / 10f);
         minimapCamera.position.x = width - MINIMAP_MARGIN;
-        minimapCamera.position.y = -height + (minimapCamera.viewportHeight / 100 * 1) + MINIMAP_MARGIN;
+        minimapCamera.position.y = -height + (450) + MINIMAP_MARGIN;
         minimapCamera.update();
     }
 
