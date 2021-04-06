@@ -33,7 +33,6 @@ import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
-import ee.taltech.voshooter.networking.messages.serverreceived.PlayerRespawn;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
@@ -51,13 +50,9 @@ public class MainScreen implements Screen {
     public VoShooter.Screen shouldChangeScreen;
     private BitmapFont font;
     private boolean pauseMenuActive;
-    private boolean respawnMenuActive;
     private final TextButton exitButton = new TextButton("Exit", skin);
-    private final TextButton exitButton2 = new TextButton("Exit", skin);
     private TextButton resumeButton;
-    private TextButton respawnButton;
     private final TextButton settingsButton = new TextButton("Settings", skin);
-    private final TextButton settingsButton2 = new TextButton("Settings", skin);
     private OrthographicCamera camera;
     private OrthographicCamera minimapCamera;
     private TiledMap tiledMap;
@@ -131,7 +126,7 @@ public class MainScreen implements Screen {
         Gdx.gl.glClearColor(0.25882354f, 0.25882354f, 0.90588236f, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (!pauseMenuActive && !respawnMenuActive) {
+        if (!pauseMenuActive) {
             // Send player inputs to server every render loop.
             handlePlayerInputs();
             moveCameraToPlayer();
@@ -164,10 +159,6 @@ public class MainScreen implements Screen {
             p.getSprite().draw(stage.getBatch());
         }
         stage.getBatch().end();
-
-        if (healthFraction <= 0) {
-            setRespawnTableVisibility(true);
-        }
 
         drawMiniMap();
         drawHUD();
@@ -242,26 +233,14 @@ public class MainScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
-        Table table2 = new Table();
-        table2.setFillParent(true);
-        stage.addActor(table2);
 
         // Create the objects in the scene.
         resumeButton = new TextButton("Resume", skin);
-        respawnButton = new TextButton("Respawn", skin);
         if (!pauseMenuActive) {
             setPauseTableVisibility(false);
         }
-        if (!respawnMenuActive) {
-            setRespawnTableVisibility(false);
-        }
 
         // Add the buttons to the table.
-        table2.add(respawnButton).fillX();
-        table2.row().padTop(10);
-        table2.add(settingsButton2).fillX();
-        table2.row().padTop(10);
-        table2.add(exitButton2).fillX();
         table.add(resumeButton).fillX();
         table.row().padTop(10);
         table.add(settingsButton).fillX();
@@ -272,10 +251,8 @@ public class MainScreen implements Screen {
         stage.addListener(new InputListener() {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.ESCAPE && !respawnMenuActive) {
+                if (keycode == Input.Keys.ESCAPE) {
                     setPauseTableVisibility(!resumeButton.isVisible());
-                } else if (keycode == Input.Keys.P && !pauseMenuActive) {
-                    setRespawnTableVisibility(!respawnButton.isVisible());
                 }
                 return true;
             }
@@ -285,14 +262,6 @@ public class MainScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 setPauseTableVisibility(false);
-            }
-        });
-
-        respawnButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.getClient().sendTCP(new PlayerRespawn());
-                setRespawnTableVisibility(false);
             }
         });
 
@@ -312,23 +281,6 @@ public class MainScreen implements Screen {
                 parent.changeScreen(VoShooter.Screen.MENU);
             }
         });
-
-        settingsButton2.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.setCameFromGame(true);
-                parent.changeScreen(VoShooter.Screen.PREFERENCES);
-            }
-        });
-
-        exitButton2.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.gameState.clearDrawables();
-                parent.getClient().sendTCP(new LeaveLobby());
-                parent.changeScreen(VoShooter.Screen.MENU);
-            }
-        });
     }
 
     /**
@@ -340,17 +292,6 @@ public class MainScreen implements Screen {
         settingsButton.setVisible(visibility);
         exitButton.setVisible(visibility);
         pauseMenuActive = visibility;
-    }
-
-    /**
-     * Set the respawn table visibility.
-     * @param visibility to set to
-     */
-    private void setRespawnTableVisibility(boolean visibility) {
-        respawnButton.setVisible(visibility);
-        settingsButton2.setVisible(visibility);
-        exitButton2.setVisible(visibility);
-        respawnMenuActive = visibility;
     }
 
     /**

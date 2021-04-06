@@ -19,6 +19,8 @@ public class Player {
     private String name;
     private Integer health;
     public Vector2 initialPos;
+    private float respawnTime = 5f;
+    private static final float RESPAWN_TIME = 5f;
 
     public static final Integer MAX_HEALTH = 100;
     private transient Body body;
@@ -65,6 +67,9 @@ public class Player {
     }
 
     public void update() {
+        if (health <= 0) {
+            respawn();
+        }
         currentWeapon.coolDown();
         move();
     }
@@ -97,12 +102,16 @@ public class Player {
 
     /**
      * Respawn the player.
-     * @param pos the player will respawn at.
-     * @param angle the player will be facing.
      */
-    public void respawn(Vector2 pos, float angle) {
-        health = MAX_HEALTH;
-        body.setTransform(pos, angle);
+    public void respawn() {
+        System.out.println(respawnTime);
+        if (respawnTime <= 0) {
+            health = MAX_HEALTH;
+            body.setTransform(game.getSpawnPoint(), 0f);
+            respawnTime = RESPAWN_TIME;
+        } else {
+            respawnTime -= (1 / Game.TICK_RATE_IN_HZ);
+        }
     }
 
     /**
