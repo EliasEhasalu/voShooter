@@ -1,5 +1,6 @@
 package ee.taltech.voshooter.networking.server;
 
+import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
@@ -37,8 +38,9 @@ public class Lobby {
     /** Send updates of people joining / leaving to this lobby's members. */
     private void sendLobbyUpdates() {
         List<User> users = getUsers();
+        List<Player> players = getPlayers();
         for (VoConnection con : connections) {
-            con.sendTCP(new LobbyUserUpdate(users));
+            con.sendTCP(new LobbyUserUpdate(users, players));
         }
     }
 
@@ -115,6 +117,13 @@ public class Lobby {
         return connections.stream()
             .map(con -> con.user)
             .collect(Collectors.toList());
+    }
+
+    /**
+     * @return A list of players in this lobby.
+     */
+    protected List<Player> getPlayers() {
+        return connections.stream().map(con -> con.player).collect(Collectors.toList());
     }
 
     /** @return The game mode. */

@@ -52,6 +52,10 @@ public class GameState {
        //.
     }
 
+    public void updateEntities(List<User> users) {
+        // TODO implement.
+    }
+
     /**
      * Add an entity to be tracked.
      * @param e The entity to be tracked.
@@ -67,6 +71,20 @@ public class GameState {
             if (e instanceof ClientPlayer) {
                 players.add((ClientPlayer) e);
             }
+        }
+    }
+
+    /**
+     * Remove entity from lobby.
+     * @param e The entity to remove.
+     */
+    public void removePlayer(Entity e) {
+        entities.remove(e);
+        if (e instanceof ClientPlayer) {
+            players.remove(e);
+        }
+        if (e instanceof Drawable) {
+            drawableEntities.remove(e);
         }
     }
 
@@ -122,6 +140,8 @@ public class GameState {
     public void clearDrawables() {
         drawableEntities.clear();
         players.clear();
+        entities.clear();
+        projectiles.clear();
     }
 
     /**

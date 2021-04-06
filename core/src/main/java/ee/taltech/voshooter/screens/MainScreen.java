@@ -139,9 +139,6 @@ public class MainScreen implements Screen {
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
         healthFraction = parent.gameState.userPlayer.getHealth() / 100f;
-        if (healthFraction <= 0) {
-            setRespawnTableVisibility(true);
-        }
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap FPS to 64.
         stage.draw();
@@ -166,6 +163,10 @@ public class MainScreen implements Screen {
             p.getSprite().draw(stage.getBatch());
         }
         stage.getBatch().end();
+
+        if (healthFraction <= 0) {
+            setRespawnTableVisibility(true);
+        }
 
         drawMiniMap();
         drawHUD();
