@@ -97,6 +97,7 @@ public class MainScreen implements Screen {
         float height = Gdx.graphics.getHeight();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, width, height);
+        camera.zoom = 0.8f;
         camera.update();
         tiledMap = new TmxMapLoader().load("tileset/voShooterMap.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
@@ -131,6 +132,8 @@ public class MainScreen implements Screen {
             handlePlayerInputs();
             moveCameraToPlayer();
         }
+        camera.rotate(2);
+        minimapCamera.rotate(-2);
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
@@ -318,9 +321,6 @@ public class MainScreen implements Screen {
      * Draw the minimap in the render cycle.
      */
     private void drawMiniMap() {
-        minimapCamera.update();
-        minimapCamera.position.x = Gdx.graphics.getHeight() * 1.8f;
-        minimapCamera.position.y = -Gdx.graphics.getWidth() * 0.29f;
         miniMapRenderer.setView(minimapCamera);
         miniMapRenderer.render();
         minimapBatch.setProjectionMatrix(minimapCamera.combined);
@@ -339,6 +339,13 @@ public class MainScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        hudBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+        camera.setToOrtho(false, width, height);
+
+        minimapCamera.position.x = 0; // / 2f; //Gdx.graphics.getHeight() * 1.8f;
+        minimapCamera.position.y = 0; //-Gdx.graphics.getWidth() * 0.29f;
+        //minimapCamera.setToOrtho(false, MINIMAP_HEIGHT * (width / height), MINIMAP_HEIGHT);
+        minimapCamera.update();
     }
 
     /**
