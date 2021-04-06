@@ -17,7 +17,6 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.controller.ActionType;
-import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
@@ -36,6 +35,7 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.Hijacked
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
+import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerSpawner;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
 import ee.taltech.voshooter.weapon.projectileweapon.RocketLauncher;
@@ -109,8 +109,8 @@ public class Game extends Thread {
     /**
      * @return A spawn point for a player.
      */
-    public Pos getSpawnPoint() {
-        return new Pos(4, 4);
+    public Vector2 getSpawnPoint() {
+        return PlayerSpawner.getSpawnPoint();
     }
 
     /**
