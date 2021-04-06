@@ -158,6 +158,12 @@ public class MainScreen implements Screen {
             p.getSprite().setRotation(p.getVelocity().angleDeg());
             p.getSprite().draw(stage.getBatch());
         }
+        ClientPlayer player = parent.gameState.userPlayer;
+        if (player.getHealth() <= 0) {
+            font.draw(stage.getBatch(),
+                    String.format("Respawning in %s seconds", (double) Math.round(player.respawnTimer * 10) / 10),
+                    player.getPosition().x, player.getPosition().y);
+        }
         stage.getBatch().end();
 
         drawMiniMap();

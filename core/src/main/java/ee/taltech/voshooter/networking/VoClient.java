@@ -90,9 +90,9 @@ public class VoClient {
                 } else if (message instanceof PlayerHealthUpdate) {
                     updatePlayerHealth((PlayerHealthUpdate) message);
                 } else if (message instanceof PlayerDeath) {
-                    // TODO method.
+                    System.out.println("Hey");
                 } else if (message instanceof PlayerDead) {
-                    // TODO method.
+                    updatePlayerDead((PlayerDead) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -169,6 +169,18 @@ public class VoClient {
         for (ClientPlayer p : parent.gameState.players) {
             if (p.getId() == msg.id) {
                 p.setPos(msg.pos);
+            }
+        }
+    }
+
+    /**
+     * Update player respawn timer.
+     * @param msg time until respawn.
+     */
+    private void updatePlayerDead(PlayerDead msg) {
+        for (ClientPlayer p : parent.gameState.players) {
+            if (p.getId() == msg.id) {
+                p.respawnTimer = msg.timeToRespawn;
             }
         }
     }
