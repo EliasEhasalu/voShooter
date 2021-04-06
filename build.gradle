@@ -74,21 +74,4 @@ project(":core") {
         implementation "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         implementation "com.esotericsoftware:kryonet:2.22.0-RC1"
     }
-
-    dependencies {
-        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.7.1'
-    }
-
-    test {
-        useJUnitPlatform()
-        finalizedBy jacocoTestReport
-    }
-
-    jacocoTestReport {
-        dependsOn test
-    }
-
-    jacoco {
-        toolVersion = "0.8.6"
-    }
 }
