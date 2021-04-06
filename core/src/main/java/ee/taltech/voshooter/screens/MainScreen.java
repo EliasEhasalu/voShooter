@@ -342,7 +342,7 @@ public class MainScreen implements Screen {
 
         hudBatch.draw(healthEmpty, 64, 128);
         hudBatch.draw(healthFull, 64, 128, 0, 0,
-                Math.round(healthFull.getWidth() * healthFraction), healthFull.getHeight());
+                Math.round(healthFull.getWidth() * Math.max(healthFraction, 0)), healthFull.getHeight());
 
         font.draw(hudBatch, String.format("%d/%d", currentAmmo, maxAmmo), 138, 80);
         hudBatch.end();
