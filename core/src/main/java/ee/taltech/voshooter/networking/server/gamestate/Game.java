@@ -176,7 +176,7 @@ public class Game extends Thread {
                     p.deathTick = false;
                 }
                 if (p.getHealth() <= 0) {
-                    c.sendTCP(new PlayerDead(p.getRespawnTime()));
+                    c.sendTCP(new PlayerDead(p.getId(), p.getRespawnTime()));
                 }
             }
         }

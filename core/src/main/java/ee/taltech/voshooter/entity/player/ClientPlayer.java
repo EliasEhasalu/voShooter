@@ -14,6 +14,7 @@ public class ClientPlayer extends Entity implements Drawable {
     private float spriteScale = -0.85f;
     private long id;
     private String name;
+    public float respawnTimer;
 
     /**
      * Construct player with specific sprite.
