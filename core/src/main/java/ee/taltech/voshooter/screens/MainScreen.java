@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -67,6 +68,7 @@ public class MainScreen implements Screen {
     public static final int MINIMAP_MARGIN = 50;
     public static final int MARKER_SIZE = 20;
     public static final float MINIMAP_SCALE = 0.22f;
+    private final Table table = new Table();
 
     private final SpriteBatch hudBatch = new SpriteBatch();
     private final Texture selectedGunBackground
@@ -112,6 +114,13 @@ public class MainScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         stage.clear();
 
+        stage.addActor(table);
+        table.setPosition(Gdx.graphics.getWidth() - 240, Gdx.graphics.getHeight() - 40);
+        table.padRight(20);
+        table.add(new Label("Player", skin)).padRight(20);
+        table.add(new Label("Kills", skin)).padRight(20);
+        table.add(new Label("Deaths", skin)).padRight(20);
+        table.add(new Label("KDR", skin)).padRight(20);
         miniMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, MINIMAP_SCALE);
         minimapCamera = new OrthographicCamera(MINIMAP_WIDTH, MINIMAP_HEIGHT);
         minimapCamera.zoom = MINIMAP_ZOOM;
@@ -145,6 +154,12 @@ public class MainScreen implements Screen {
 
         stage.getBatch().setProjectionMatrix(camera.combined);
         stage.getBatch().begin();
+        table.clear();
+        table.padRight(20);
+        table.add(new Label("Player", skin)).padRight(20);
+        table.add(new Label("Kills", skin)).padRight(20);
+        table.add(new Label("Deaths", skin)).padRight(20);
+        table.add(new Label("KDR", skin)).padRight(20);
 
         // TODO: Move all of this to a renderer.
         for (Drawable drawable : parent.gameState.getDrawables()) {
@@ -155,6 +170,7 @@ public class MainScreen implements Screen {
                 font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
                         drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
                         drawable.getPosition().y + 40);
+                drawStatisticsTable((ClientPlayer) drawable);
             }
         }
 
@@ -165,13 +181,30 @@ public class MainScreen implements Screen {
         ClientPlayer player = parent.gameState.userPlayer;
         if (player.getHealth() <= 0) {
             font.draw(stage.getBatch(),
-                    String.format("Respawning in %s seconds", (double) Math.round(player.respawnTimer * 10) / 10),
+                    String.format("%s seconds", (double) Math.round(player.respawnTimer * 10) / 10),
                     player.getPosition().x, player.getPosition().y);
         }
         stage.getBatch().end();
 
         drawMiniMap();
         drawHUD();
+    }
+
+    /**
+     * Draw the players statistics
+     * @param player
+     */
+    private void drawStatisticsTable(ClientPlayer player) {
+        table.row().padRight(20);
+        table.add(new Label(player.getName(), skin)).padRight(20);
+        table.add(new Label(String.valueOf(player.getKills()), skin)).padRight(20);
+        table.add(new Label(String.valueOf(player.getDeaths()), skin)).padRight(20);
+        if (player.getDeaths() > 0) {
+            table.add(new Label(String.valueOf(
+                    (double) Math.round((player.getKills() / (float) player.getDeaths()) * 100) / 100), skin));
+        } else {
+            table.add(new Label(String.valueOf(player.getKills()), skin));
+        }
     }
 
     /**
@@ -353,7 +386,8 @@ public class MainScreen implements Screen {
         stage.getViewport().update(width, height, true);
         hudBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         camera.setToOrtho(false, width, height);
-
+        table.setPosition(Gdx.graphics.getWidth() - 240, Gdx.graphics.getHeight() - 40);
+        table.padRight(20);
         minimapCamera.setToOrtho(false, width / 10f, height / 10f);
         minimapCamera.position.x = width - MINIMAP_MARGIN;
         minimapCamera.position.y = -height + (450) + MINIMAP_MARGIN;

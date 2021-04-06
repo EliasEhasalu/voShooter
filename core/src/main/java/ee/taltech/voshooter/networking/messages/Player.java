@@ -23,6 +23,8 @@ public class Player {
     private float respawnTime = 5f;
     private static final float RESPAWN_TIME = 5f;
     public boolean deathTick = false;
+    private int deaths;
+    private int kills;
 
     public static final Integer MAX_HEALTH = 100;
     private transient Body body;
@@ -106,9 +108,12 @@ public class Player {
      * @param amount of damage to take.
      */
     public void takeDamage(int amount) {
-        health -= amount;
-        if (health <= 0) {
-            deathTick = true;
+        if (health > 0) {
+            health -= amount;
+            if (health <= 0) {
+                deathTick = true;
+                deaths++;
+            }
         }
     }
 
@@ -180,6 +185,34 @@ public class Player {
 
     public Body getBody() {
         return body;
+    }
+
+    /**
+     * @return the amount of times player has died.
+     */
+    public int getDeaths() {
+        return deaths;
+    }
+
+    /**
+     * @return the amount of times this player has killed.
+     */
+    public int getKills() {
+        return kills;
+    }
+
+    /**
+     * Add a kill for this person.
+     */
+    public void addKill() {
+        this.kills++;
+    }
+
+    /**
+     * Remove a kill from this person.
+     */
+    public void removeKill() {
+        this.kills--;
     }
 
     /**
