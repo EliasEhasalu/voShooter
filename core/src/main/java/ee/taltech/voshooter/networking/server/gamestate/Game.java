@@ -100,7 +100,7 @@ public class Game extends Thread {
     /**
      * @return A spawn point for a player.
      */
-    private Pos getSpawnPoint() {
+    public Pos getSpawnPoint() {
         return new Pos(4, 4);
     }
 
@@ -147,14 +147,6 @@ public class Game extends Thread {
                 }
             }
         });
-    }
-
-    /**
-     * Respawn given player.
-     * @param c the connection that needs to be respawned.
-     */
-    public void handleRespawn(VoConnection c) {
-        c.getPlayer().respawn(getSpawnPoint(), 0f);
     }
 
     /**

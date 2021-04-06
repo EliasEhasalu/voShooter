@@ -13,7 +13,6 @@ import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
-import ee.taltech.voshooter.networking.messages.serverreceived.PlayerRespawn;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 
@@ -102,14 +101,6 @@ public class VoServer {
             @Override
             public void run(VoConnection c, PlayerInput msg) {
                 handlePlayerInput(c, msg);
-            }
-        });
-
-        server.addListener(
-        new RunMethodListener<PlayerRespawn>(PlayerRespawn.class) {
-            @Override
-            public void run(VoConnection c, PlayerRespawn msg) {
-                handleRespawn(c, msg);
             }
         });
 
@@ -206,21 +197,6 @@ public class VoServer {
 
             if (lobby.getGame() != null) {
                 lobby.getGame().addPlayerInput(c, msg);
-            }
-        }
-    }
-
-    /**
-     * Handle player respawning.
-     * @param c The connection.
-     * @param msg The Respawn message.
-     */
-    private void handleRespawn(VoConnection c, PlayerRespawn msg) {
-        Optional<Lobby> optLobby = getUserLobby(c.user);
-        if (optLobby.isPresent()) {
-            Lobby lobby = optLobby.get();
-            if (lobby.getGame() != null) {
-                lobby.getGame().handleRespawn(c);
             }
         }
     }
