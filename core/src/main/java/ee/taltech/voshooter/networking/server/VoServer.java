@@ -39,7 +39,7 @@ public class VoServer {
     /**
      * Construct the server.
      */
-    public VoServer() throws IOException {
+    public VoServer(int port) throws IOException {
         server = new Server() {
             @Override
             protected VoConnection newConnection() {
@@ -104,7 +104,7 @@ public class VoServer {
             }
         });
 
-        server.bind(Network.PORT);
+        server.bind(port);
         server.start();
     }
 
@@ -312,8 +312,10 @@ public class VoServer {
      * @param args CLI args.
      */
     public static void main(String[] args) throws IOException {
-        // Server is launched upon object instantiation.
+        int port = 5001;
+        if (args.length > 0) port = Integer.parseInt(args[0]);
+
         Log.set(Log.LEVEL_INFO);
-        new VoServer();
+        new VoServer(port);
     }
 }

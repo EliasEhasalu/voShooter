@@ -35,14 +35,13 @@ public class VoClient {
     public VoShooter parent;
     public Client client;
 
-    private static final String HOST_ADDRESS = "localhost";
     private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
 
     /**
      * Construct the client.
      * @param parent A reference to the orchestrator object.
      */
-    public VoClient(VoShooter parent) throws IOException {
+    public VoClient(VoShooter parent, String address, int port) throws IOException {
         this.parent = parent;
         client = new Client();
         client.start();
@@ -128,7 +127,7 @@ public class VoClient {
             }
         }));
 
-        client.connect(MILLISECONDS_BEFORE_TIMEOUT, HOST_ADDRESS, Network.PORT);
+        client.connect(MILLISECONDS_BEFORE_TIMEOUT, address, port);
     }
 
     /**

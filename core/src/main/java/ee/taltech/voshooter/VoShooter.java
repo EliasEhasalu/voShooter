@@ -34,6 +34,9 @@ public class VoShooter extends Game {
     public VoClient client;
     public GameState gameState;
 
+    public String HOST_ADDRESS = "193.40.255.29";
+    public int PORT_NUMBER = 5001;
+
     public enum Screen {
         LOADING,
         MENU,
@@ -43,6 +46,11 @@ public class VoShooter extends Game {
         JOIN_GAME,
         LOBBY,
         CHANGE_CONTROLS
+    }
+
+    public VoShooter(String[] args) {
+       if (args.length > 0) HOST_ADDRESS = args[0];
+       if (args.length > 1) PORT_NUMBER = Integer.parseInt(args[1]);
     }
 
     /**
@@ -161,7 +169,7 @@ public class VoShooter extends Game {
      * with the server.
      */
     public void createNetworkClient() throws IOException {
-        if (client == null) client = new VoClient(this);
+        if (client == null) client = new VoClient(this, HOST_ADDRESS, PORT_NUMBER);
         try {
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException ignored) { }
