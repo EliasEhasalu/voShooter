@@ -162,6 +162,7 @@ public class MainScreen implements Screen {
 
         if (parent.gameState.userPlayer.getHealth() <= 0) {
             System.out.println(parent.gameState.userPlayer.respawnTimer);
+            font.draw(stage.getBatch(), String.format("Respawning in: %d", parent.gameState.userPlayer.respawnTimer));
         }
 
         drawMiniMap();
