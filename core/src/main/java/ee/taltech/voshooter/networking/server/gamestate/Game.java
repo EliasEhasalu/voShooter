@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
+import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
@@ -23,6 +24,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
+import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
@@ -34,6 +36,10 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.Hijacked
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
+import ee.taltech.voshooter.weapon.Weapon;
+import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
+import ee.taltech.voshooter.weapon.projectileweapon.RocketLauncher;
+import ee.taltech.voshooter.weapon.projectileweapon.Shotgun;
 
 import java.util.HashSet;
 import java.util.List;
@@ -147,6 +153,16 @@ public class Game extends Thread {
                     c.getPlayer().shoot();
                 } else if (a instanceof MouseCoords) {
                     c.getPlayer().setViewDirection((MouseCoords) a);
+                } else if (a instanceof ChangeWeapon) {
+                    Weapon weapon = null;
+                    if (((ChangeWeapon) a).weapon == ActionType.WEAPON_PISTOL) {
+                        weapon = new Pistol(c.getPlayer());
+                    } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_SHOTGUN) {
+                        weapon = new Shotgun(c.getPlayer());
+                    } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_RPG) {
+                        weapon = new RocketLauncher(c.getPlayer());
+                    }
+                    c.getPlayer().setWeapon(weapon);
                 }
             }
         });
