@@ -28,6 +28,7 @@ import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
@@ -307,6 +308,7 @@ public class MainScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 parent.gameState.clearDrawables();
+                parent.getClient().sendTCP(new LeaveLobby());
                 parent.changeScreen(VoShooter.Screen.MENU);
             }
         });
@@ -323,6 +325,7 @@ public class MainScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 parent.gameState.clearDrawables();
+                parent.getClient().sendTCP(new LeaveLobby());
                 parent.changeScreen(VoShooter.Screen.MENU);
             }
         });

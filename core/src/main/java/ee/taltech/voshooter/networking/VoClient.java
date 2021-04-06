@@ -143,6 +143,7 @@ public class VoClient {
         parent.gameState.currentLobby.setUsers(users);
         if (players != null) {
             parent.gameState.currentLobby.setPlayers(players);
+            parent.gameState.updatePlayers(players);
         }
     }
 

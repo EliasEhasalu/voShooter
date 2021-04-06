@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GameState {
 
@@ -28,7 +29,7 @@ public class GameState {
     public ClientPlayer userPlayer;
     public List<PlayerAction> currentInputs = new ArrayList<>();
 
-    public List<ClientPlayer> players = new ArrayList<>();
+    public Set<ClientPlayer> players = ConcurrentHashMap.newKeySet();
     private final Set<ClientProjectile> projectiles = new HashSet<>();
 
     /**
@@ -41,7 +42,7 @@ public class GameState {
     /**
      * @return The list of players.
      */
-    public List<ClientPlayer> getPlayers() {
+    public Set<ClientPlayer> getPlayers() {
         return players;
     }
 
@@ -50,10 +51,6 @@ public class GameState {
      */
     public void tick() {
        //.
-    }
-
-    public void updateEntities(List<User> users) {
-        // TODO implement.
     }
 
     /**
@@ -75,16 +72,23 @@ public class GameState {
     }
 
     /**
-     * Remove entity from lobby.
-     * @param e The entity to remove.
+     * Update lobby entities.
+     * @param players currently in lobby.
      */
-    public void removePlayer(Entity e) {
-        entities.remove(e);
-        if (e instanceof ClientPlayer) {
-            players.remove(e);
-        }
-        if (e instanceof Drawable) {
-            drawableEntities.remove(e);
+    public void updatePlayers(List<Player> players) {
+        for (ClientPlayer e : this.players) {
+            boolean userFound = false;
+            for (Player p : players) {
+                if (p.getId() == e.getId()) {
+                    userFound = true;
+                    break;
+                }
+            }
+            if (!userFound) {
+                entities.remove(e);
+                this.players.remove(e);
+                drawableEntities.remove(e);
+            }
         }
     }
 

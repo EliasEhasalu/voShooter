@@ -83,6 +83,7 @@ public class Lobby {
      * @return If the user was removed.
      */
     protected boolean removeConnection(VoConnection connection) {
+        System.out.println(connections);
         if (connections.contains(connection)) {
             connections.remove(connection);
             connection.user.currentLobby = null;
@@ -95,6 +96,7 @@ public class Lobby {
 
             System.out.printf("removed %s from lobby %s%n", connection.user.name, lobbyCode);
             sendLobbyUpdates();
+            System.out.println(connections);
             return true;
         }
         return false;
