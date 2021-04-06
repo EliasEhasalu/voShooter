@@ -28,6 +28,7 @@ import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
@@ -199,10 +200,18 @@ public class MainScreen implements Screen {
                 case MOUSE_LEFT:
                     inputsToSend.add(new Shoot());
                     break;
+                case WEAPON_PISTOL:
+                    inputsToSend.add(new ChangeWeapon(ActionType.WEAPON_PISTOL));
+                    break;
+                case WEAPON_SHOTGUN:
+                    inputsToSend.add(new ChangeWeapon(ActionType.WEAPON_SHOTGUN));
+                    break;
+                case WEAPON_RPG:
+                    inputsToSend.add(new ChangeWeapon(ActionType.WEAPON_RPG));
+                    break;
                 default:
                     break;
             }
-
         }
 
         // Send all inputs this frame to server.

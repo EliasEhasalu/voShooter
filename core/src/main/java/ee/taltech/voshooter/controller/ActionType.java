@@ -6,5 +6,8 @@ public enum ActionType {
     MOVE_LEFT,
     MOVE_RIGHT,
     MOVE_UP,
-    MOVE_DOWN
+    MOVE_DOWN,
+    WEAPON_PISTOL,
+    WEAPON_SHOTGUN,
+    WEAPON_RPG
 }

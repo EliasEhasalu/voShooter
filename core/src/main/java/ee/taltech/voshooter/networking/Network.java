@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
+import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.User;
@@ -22,6 +23,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
@@ -79,6 +81,8 @@ public final class Network {
         kryo.register(PlayerHealthUpdate.class);
         kryo.register(PlayerDeath.class);
         kryo.register(PlayerDead.class);
+        kryo.register(ChangeWeapon.class);
+        kryo.register(ActionType.class);
 
         kryo.register(Shoot.class);
         kryo.register(MovePlayer.class);

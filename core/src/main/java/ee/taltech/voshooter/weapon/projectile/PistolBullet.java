@@ -9,7 +9,7 @@ public class PistolBullet extends Bullet {
     public static final float RADIUS = 0.05f;
     private static final float SPEED = 40f;
     private static final float LIFE_TIME = 2f;
-    private static final int DAMAGE = 15;
+    private static final int DAMAGE = 20;
 
     public PistolBullet(Player owner, Vector2 pos, Vector2 dir) {
         super(Type.PISTOL_BULLET, owner, pos, dir.setLength(SPEED), LIFE_TIME);
