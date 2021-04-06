@@ -127,7 +127,7 @@ public class MainScreen implements Screen {
     @Override
     public void render(float delta) {
         // Refresh the graphics renderer every cycle.
-        Gdx.gl.glClearColor(0.25882354f, 0.25882354f, 0.90588236f, 1);
+        Gdx.gl.glClearColor(0.0862745f, 0.0862745f, 0.0862745f, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         if (!pauseMenuActive && !respawnMenuActive) {
@@ -228,8 +228,6 @@ public class MainScreen implements Screen {
         float yTranslate = vecFromCamera.y / 15;
 
         camera.translate(xTranslate, yTranslate);
-
-        // camera.position.set(playerPos.getX(), playerPos.getY(), camera.position.z);
     }
 
     /**
