@@ -21,6 +21,7 @@ public class Player {
     public Vector2 initialPos;
     private float respawnTime = 5f;
     private static final float RESPAWN_TIME = 5f;
+    public boolean deathTick = false;
 
     public static final Integer MAX_HEALTH = 100;
     private transient Body body;
@@ -66,6 +67,9 @@ public class Player {
         playerAcc.limit(basePlayerAcceleration);
     }
 
+    /**
+     * Update the player.
+     */
     public void update() {
         if (health <= 0) {
             respawn();
@@ -98,13 +102,15 @@ public class Player {
      */
     public void takeDamage(int amount) {
         health -= amount;
+        if (health <= 0) {
+            deathTick = true;
+        }
     }
 
     /**
      * Respawn the player.
      */
     public void respawn() {
-        System.out.println(respawnTime);
         if (respawnTime <= 0) {
             health = MAX_HEALTH;
             body.setTransform(game.getSpawnPoint(), 0f);
@@ -169,5 +175,12 @@ public class Player {
 
     public Body getBody() {
         return body;
+    }
+
+    /**
+     * @return how much time is left until respawn.
+     */
+    public float getRespawnTime() {
+        return respawnTime;
     }
 }
