@@ -183,4 +183,11 @@ public class Player {
     public float getRespawnTime() {
         return respawnTime;
     }
+
+    /**
+     * @param weapon to give the player.
+     */
+    public void setWeapon(Weapon weapon) {
+        currentWeapon = weapon;
+    }
 }

@@ -31,6 +31,18 @@ public class GameController {
                 || (Gdx.input.isButtonPressed(AppPreferences.getDownKey()) && !AppPreferences.getDownKeyIsKey())) {
             actionsPerformed.add(ActionType.MOVE_DOWN);
         }
+        if ((Gdx.input.isKeyPressed(AppPreferences.getNumberOne()) && AppPreferences.getNumberOneIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getNumberOne()) && !AppPreferences.getNumberOneIsKey())) {
+            actionsPerformed.add(ActionType.WEAPON_PISTOL);
+        }
+        if ((Gdx.input.isKeyPressed(AppPreferences.getNumberTwo()) && AppPreferences.getNumberTwoIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getNumberTwo()) && !AppPreferences.getNumberTwoIsKey())) {
+            actionsPerformed.add(ActionType.WEAPON_SHOTGUN);
+        }
+        if ((Gdx.input.isKeyPressed(AppPreferences.getNumberThree()) && AppPreferences.getNumberThreeIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getNumberThree()) && !AppPreferences.getNumberThreeIsKey())) {
+            actionsPerformed.add(ActionType.WEAPON_RPG);
+        }
         // Mouse buttons
         if ((Gdx.input.isKeyPressed(AppPreferences.getMouseLeft()) && AppPreferences.getButtonLeftIsKey())
                 || (Gdx.input.isButtonPressed(AppPreferences.getMouseLeft()) && !AppPreferences.getButtonLeftIsKey())) {

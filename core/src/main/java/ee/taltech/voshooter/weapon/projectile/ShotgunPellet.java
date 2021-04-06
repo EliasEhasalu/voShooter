@@ -6,7 +6,7 @@ import ee.taltech.voshooter.networking.messages.Player;
 
 public class ShotgunPellet extends Bullet {
 
-    private static final int DAMAGE = 20;
+    private static final int DAMAGE = 15;
     private static final float BOUNCE_COST = 0.05f;
     private static final float LIFE_TIME = 0.5f;
 
