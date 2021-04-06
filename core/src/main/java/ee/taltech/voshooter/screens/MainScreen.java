@@ -160,6 +160,10 @@ public class MainScreen implements Screen {
         }
         stage.getBatch().end();
 
+        if (parent.gameState.userPlayer.getHealth() <= 0) {
+            System.out.println(parent.gameState.userPlayer.respawnTimer);
+        }
+
         drawMiniMap();
         drawHUD();
     }
