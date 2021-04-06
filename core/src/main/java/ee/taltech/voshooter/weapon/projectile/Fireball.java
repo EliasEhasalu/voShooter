@@ -7,10 +7,10 @@ import ee.taltech.voshooter.networking.server.gamestate.StatusManager;
 
 public class Fireball extends Bullet {
 
-    public static final float RADIUS = 0.2f;
+    public static final float RADIUS = 0.5f;
     private static final float SPEED = 10f;
     private static final float LIFE_TIME = 0.7f;
-    private static final int DAMAGE = 2;
+    private static final int DAMAGE = 5;
 
     /**
      * Construct the projectile.

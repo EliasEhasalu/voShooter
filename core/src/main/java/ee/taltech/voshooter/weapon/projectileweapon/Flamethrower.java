@@ -9,8 +9,8 @@ import java.util.Random;
 
 public class Flamethrower extends ProjectileWeapon {
 
-    private static final int FLAME_COUNT = 9;
-    private static final float COOL_DOWN = 0.1f;
+    private static final int FLAME_COUNT = 5;
+    private static final float COOL_DOWN = 0.3f;
     private static final float CONE_ANGLE = 60f;
     private static final float FIREBALL_SPAWN_DISTANCE_VARIANCE = 2 * Fireball.RADIUS;
     private final Random rand = new Random();
