@@ -20,9 +20,9 @@ import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 
-import static ee.taltech.voshooter.VoShooter.Screen.MENU;
-
 import java.io.IOException;
+
+import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
 public class CreateGameScreen implements Screen {
 
@@ -185,10 +185,8 @@ public class CreateGameScreen implements Screen {
                         && playerNameField.getText().length() >= 4) {
                     try {
                         parent.createNetworkClient();
-
                         parent.gameState.clientUser.setName(playerNameField.getText());
                         parent.gameState.clientUser.setHost(true);
-
                         parent.getClient().sendTCP(new SetUsername(playerNameField.getText()));
                         parent.getClient().sendTCP(new CreateLobby(1, playerCount));
                     } catch (IOException e) {
