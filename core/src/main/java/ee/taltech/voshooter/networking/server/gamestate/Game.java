@@ -1,5 +1,7 @@
 package ee.taltech.voshooter.networking.server.gamestate;
 
+import com.badlogic.gdx.Files;
+import com.badlogic.gdx.backends.headless.HeadlessFileHandle;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -29,7 +31,6 @@ import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.collision.CollisionHandler;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.HijackedTmxLoader;
-import ee.taltech.voshooter.networking.server.gamestate.collision.utils.MyFileHandleResolver;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
@@ -237,8 +238,8 @@ public class Game extends Thread {
 
     private void setCurrentMap(int gameMode) {
         if (gameMode == 1) {
-            currentMap = new HijackedTmxLoader(new MyFileHandleResolver())
-                    .load("./core/assets/tileset/voShooterMap.tmx");
+            currentMap = new HijackedTmxLoader(fileName -> new HeadlessFileHandle(fileName, Files.FileType.Classpath))
+                    .load("tileset/vo_shooter_map.tmx");
         }
     }
 
