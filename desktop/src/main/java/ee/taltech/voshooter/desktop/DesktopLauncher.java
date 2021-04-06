@@ -15,6 +15,6 @@ public class DesktopLauncher {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.width = 1600;
         config.height = 900;
-        new LwjglApplication(new VoShooter(), config);
+        new LwjglApplication(new VoShooter(args), config);
     }
 }
