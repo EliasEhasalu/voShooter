@@ -40,7 +40,7 @@ import java.util.Set;
 
 public final class Network {
 
-    public static final int PORT = 54569;
+    public static final int PORT = 5001;
 
     // These IDs are used to register objects in ObjectSpaces.
     public static final short REMOTE = 1;
