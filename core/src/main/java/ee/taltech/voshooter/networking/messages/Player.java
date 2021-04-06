@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
+import ee.taltech.voshooter.networking.server.gamestate.StatusManager;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
 import ee.taltech.voshooter.weapon.projectileweapon.Shotgun;
@@ -22,10 +23,13 @@ public class Player {
     private float respawnTime = 5f;
     private static final float RESPAWN_TIME = 5f;
     public boolean deathTick = false;
+    private int deaths;
+    private int kills;
 
     public static final Integer MAX_HEALTH = 100;
     private transient Body body;
     private transient Weapon currentWeapon = new Pistol(this);
+    private transient StatusManager statusManager = new StatusManager(this);
 
     private final Vector2 playerAcc = new Vector2(0f, 0f);
     private Vector2 viewDirection = new Vector2(0f, 0f);
@@ -45,6 +49,10 @@ public class Player {
         this.health = MAX_HEALTH;
 
         if (id == 1) this.currentWeapon = new Shotgun(this);
+    }
+
+    public StatusManager getStatusManager() {
+        return statusManager;
     }
 
     /**
@@ -71,9 +79,8 @@ public class Player {
      * Update the player.
      */
     public void update() {
-        if (health <= 0) {
-            respawn();
-        }
+        if (health <= 0) respawn();
+        statusManager.update();
         currentWeapon.coolDown();
         move();
     }
@@ -101,9 +108,12 @@ public class Player {
      * @param amount of damage to take.
      */
     public void takeDamage(int amount) {
-        health -= amount;
-        if (health <= 0) {
-            deathTick = true;
+        if (health > 0) {
+            health -= amount;
+            if (health <= 0) {
+                deathTick = true;
+                deaths++;
+            }
         }
     }
 
@@ -175,6 +185,34 @@ public class Player {
 
     public Body getBody() {
         return body;
+    }
+
+    /**
+     * @return the amount of times player has died.
+     */
+    public int getDeaths() {
+        return deaths;
+    }
+
+    /**
+     * @return the amount of times this player has killed.
+     */
+    public int getKills() {
+        return kills;
+    }
+
+    /**
+     * Add a kill for this person.
+     */
+    public void addKill() {
+        this.kills++;
+    }
+
+    /**
+     * Remove a kill from this person.
+     */
+    public void removeKill() {
+        this.kills--;
     }
 
     /**

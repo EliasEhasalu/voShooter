@@ -22,6 +22,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
@@ -37,10 +38,12 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFac
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerSpawner;
 import ee.taltech.voshooter.weapon.Weapon;
+import ee.taltech.voshooter.weapon.projectileweapon.Flamethrower;
 import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
 import ee.taltech.voshooter.weapon.projectileweapon.RocketLauncher;
 import ee.taltech.voshooter.weapon.projectileweapon.Shotgun;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -145,27 +148,32 @@ public class Game extends Thread {
      * @param actions The actions they wish to take.
      */
     private void handleInputs(VoConnection c, Set<PlayerAction> actions) {
-        actions.forEach(a -> {
-            if (c.getPlayer().getHealth() > 0) {
-                if (a instanceof MovePlayer) {
-                    c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
-                } else if (a instanceof Shoot) {
-                    c.getPlayer().shoot();
-                } else if (a instanceof MouseCoords) {
-                    c.getPlayer().setViewDirection((MouseCoords) a);
-                } else if (a instanceof ChangeWeapon) {
-                    Weapon weapon = null;
-                    if (((ChangeWeapon) a).weapon == ActionType.WEAPON_PISTOL) {
-                        weapon = new Pistol(c.getPlayer());
-                    } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_SHOTGUN) {
-                        weapon = new Shotgun(c.getPlayer());
-                    } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_RPG) {
-                        weapon = new RocketLauncher(c.getPlayer());
+        try {
+            actions.forEach(a -> {
+                if (c.getPlayer().getHealth() > 0) {
+                    if (a instanceof MovePlayer) {
+                        c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
+                    } else if (a instanceof Shoot) {
+                        c.getPlayer().shoot();
+                    } else if (a instanceof MouseCoords) {
+                        c.getPlayer().setViewDirection((MouseCoords) a);
+                    } else if (a instanceof ChangeWeapon) {
+                        Weapon weapon = null;
+                        if (((ChangeWeapon) a).weapon == ActionType.WEAPON_PISTOL) {
+                            weapon = new Pistol(c.getPlayer());
+                        } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_SHOTGUN) {
+                            weapon = new Shotgun(c.getPlayer());
+                        } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_RPG) {
+                            weapon = new RocketLauncher(c.getPlayer());
+                        } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_FLAMETHROWER) {
+                            weapon = new Flamethrower(c.getPlayer());
+                        }
+                        c.getPlayer().setWeapon(weapon);
                     }
-                    c.getPlayer().setWeapon(weapon);
                 }
-            }
-        });
+            });
+        } catch (ConcurrentModificationException ignored) {
+        }
     }
 
     /**
@@ -188,6 +196,7 @@ public class Game extends Thread {
                 c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
                 c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
                 c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
+                c.sendTCP(new PlayerStatistics(p.getId(), p.getDeaths(), p.getKills()));
                 if (p.deathTick) {
                     c.sendTCP(new PlayerDeath());
                     p.deathTick = false;

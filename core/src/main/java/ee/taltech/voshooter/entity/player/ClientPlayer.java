@@ -14,6 +14,8 @@ public class ClientPlayer extends Entity implements Drawable {
     private float spriteScale = -0.85f;
     private long id;
     private String name;
+    private int deaths;
+    private int kills;
     public float respawnTimer;
 
     /**
@@ -105,5 +107,33 @@ public class ClientPlayer extends Entity implements Drawable {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * @return amount of deaths.
+     */
+    public int getDeaths() {
+        return deaths;
+    }
+
+    /**
+     * @param deaths amount of deaths.
+     */
+    public void setDeaths(int deaths) {
+        this.deaths = deaths;
+    }
+
+    /**
+     * @return amount of kills.
+     */
+    public int getKills() {
+        return kills;
+    }
+
+    /**
+     * @param kills amount of kills.
+     */
+    public void setKills(int kills) {
+        this.kills = kills;
     }
 }

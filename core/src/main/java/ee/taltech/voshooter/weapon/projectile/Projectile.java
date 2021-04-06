@@ -27,7 +27,8 @@ public abstract class Projectile {
 
     public enum Type {
         ROCKET,
-        PISTOL_BULLET
+        PISTOL_BULLET,
+        FIREBALL
     }
 
     /**
