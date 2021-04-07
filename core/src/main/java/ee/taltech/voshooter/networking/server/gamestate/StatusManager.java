@@ -29,6 +29,7 @@ public class StatusManager {
     }
 
     public void update() {
+        parent.getGame().sendUpdates = true;
         reduceDurations();
         applyEffects();
     }

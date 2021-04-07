@@ -69,6 +69,7 @@ public class Game extends Thread {
 
     private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this);
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
+    public boolean sendUpdates;
 
     /**
      * Construct the game.
@@ -195,8 +196,11 @@ public class Game extends Thread {
             for (Player p : getPlayers()) {
                 c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
                 c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
-                c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
-                c.sendTCP(new PlayerStatistics(p.getId(), p.getDeaths(), p.getKills()));
+                if (sendUpdates) {
+                    c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
+                    c.sendTCP(new PlayerStatistics(p.getId(), p.getDeaths(), p.getKills()));
+                    sendUpdates = false;
+                }
                 if (p.deathTick) {
                     c.sendTCP(new PlayerDeath());
                     p.deathTick = false;
