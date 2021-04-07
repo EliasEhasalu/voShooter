@@ -8,7 +8,7 @@ public class Rocket extends Projectile {
 
     public static final float RADIUS = 0.3f;
     private static final float SPEED = 25f;
-    private static final float EXPLOSION_RADIUS = 1f;
+    private static final float EXPLOSION_RADIUS = 2.5f;
     private static final float EXPLOSION_FORCE = 200f;
     private static final float LIFE_TIME = 2f;
     private static final int DAMAGE = 40;

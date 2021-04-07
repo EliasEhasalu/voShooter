@@ -70,6 +70,7 @@ public class Game extends Thread {
     private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this);
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
     public boolean sendUpdates;
+    private int playerUpdateTick = 0;
 
     /**
      * Construct the game.
@@ -159,21 +160,40 @@ public class Game extends Thread {
                     } else if (a instanceof MouseCoords) {
                         c.getPlayer().setViewDirection((MouseCoords) a);
                     } else if (a instanceof ChangeWeapon) {
-                        Weapon weapon = null;
-                        if (((ChangeWeapon) a).weapon == ActionType.WEAPON_PISTOL) {
-                            weapon = new Pistol(c.getPlayer());
-                        } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_SHOTGUN) {
-                            weapon = new Shotgun(c.getPlayer());
-                        } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_RPG) {
-                            weapon = new RocketLauncher(c.getPlayer());
-                        } else if (((ChangeWeapon) a).weapon == ActionType.WEAPON_FLAMETHROWER) {
-                            weapon = new Flamethrower(c.getPlayer());
-                        }
-                        c.getPlayer().setWeapon(weapon);
+                        handleChangeWeapon(c, (ChangeWeapon) a);
                     }
                 }
             });
         } catch (ConcurrentModificationException ignored) {
+        }
+    }
+
+    /**
+     * Change the weapon of a player.
+     * @param c the connection who's weapon should be changed.
+     * @param a the weapon to change to.
+     */
+    private void handleChangeWeapon(VoConnection c, ChangeWeapon a) {
+        Weapon weapon = null;
+        if (a.weapon == ActionType.WEAPON_PISTOL) {
+            if (!(c.getPlayer().getWeapon() instanceof Pistol)) {
+                weapon = new Pistol(c.getPlayer());
+            }
+        } else if (a.weapon == ActionType.WEAPON_SHOTGUN) {
+            if (!(c.getPlayer().getWeapon() instanceof Shotgun)) {
+                weapon = new Shotgun(c.getPlayer());
+            }
+        } else if (a.weapon == ActionType.WEAPON_RPG) {
+            if (!(c.getPlayer().getWeapon() instanceof RocketLauncher)) {
+                weapon = new RocketLauncher(c.getPlayer());
+            }
+        } else if (a.weapon == ActionType.WEAPON_FLAMETHROWER) {
+            if (!(c.getPlayer().getWeapon() instanceof Flamethrower)) {
+                weapon = new Flamethrower(c.getPlayer());
+            }
+        }
+        if (weapon != null) {
+            c.getPlayer().setWeapon(weapon);
         }
     }
 
@@ -196,7 +216,7 @@ public class Game extends Thread {
             for (Player p : getPlayers()) {
                 c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
                 c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
-                if (sendUpdates) {
+                if (sendUpdates || playerUpdateTick % 5 == 0) {
                     c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
                     c.sendTCP(new PlayerStatistics(p.getId(), p.getDeaths(), p.getKills()));
                     sendUpdates = false;
@@ -209,6 +229,7 @@ public class Game extends Thread {
                     c.sendTCP(new PlayerDead(p.getId(), p.getRespawnTime()));
                 }
             }
+            playerUpdateTick++;
         }
     }
 
