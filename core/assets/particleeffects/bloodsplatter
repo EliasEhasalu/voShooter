@@ -1,40 +1,34 @@
-emitter
+blood splatter
 - Delay -
 active: false
 - Duration - 
-lowMin: 300.0
-lowMax: 300.0
+lowMin: 400.0
+lowMax: 400.0
 - Count - 
 min: 0
-max: 100
+max: 10
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 400.0
-highMax: 400.0
-relative: false
-scalingCount: 3
-scaling0: 1.0
-scaling1: 1.0
-scaling2: 0.0
-timelineCount: 3
-timeline0: 0.0
-timeline1: 0.15753424
-timeline2: 0.19178082
-- Life - 
-lowMin: 0.0
-lowMax: 10.0
-highMin: 500.0
+highMin: 1000.0
 highMax: 1000.0
 relative: false
-scalingCount: 3
+scalingCount: 2
 scaling0: 1.0
-scaling1: 1.0
-scaling2: 0.3
-timelineCount: 3
+scaling1: 0.0
+timelineCount: 2
 timeline0: 0.0
-timeline1: 0.66
-timeline2: 1.0
+timeline1: 0.49315068
+- Life - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 200.0
+highMax: 400.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
 independent: false
 - Life Offset - 
 active: false
@@ -68,8 +62,8 @@ timeline0: 0.0
 - X Scale - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 32.0
-highMax: 32.0
+highMin: 6.0
+highMax: 12.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -80,22 +74,18 @@ active: false
 - Velocity - 
 active: true
 lowMin: 0.0
-lowMax: 10.0
-highMin: 100.0
-highMax: 400.0
+lowMax: 0.0
+highMin: 170.0
+highMax: 220.0
 relative: false
-scalingCount: 3
+scalingCount: 1
 scaling0: 1.0
-scaling1: 1.0
-scaling2: 0.0
-timelineCount: 3
+timelineCount: 1
 timeline0: 0.0
-timeline1: 0.09589041
-timeline2: 0.19863014
 - Angle - 
 active: true
 lowMin: 0.0
-lowMax: 0.0
+lowMax: 360.0
 highMin: 0.0
 highMax: 360.0
 relative: false
@@ -104,7 +94,16 @@ scaling0: 1.0
 timelineCount: 1
 timeline0: 0.0
 - Rotation - 
-active: false
+active: true
+lowMin: 0.0
+lowMax: 0.0
+highMin: 0.0
+highMax: 360.0
+relative: true
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
 - Wind - 
 active: false
 - Gravity - 
@@ -112,8 +111,8 @@ active: false
 - Tint - 
 colorsCount: 3
 colors0: 1.0
-colors1: 0.19607843
-colors2: 0.047058824
+colors1: 0.0
+colors2: 0.0
 timelineCount: 1
 timeline0: 0.0
 - Transparency - 
@@ -122,24 +121,24 @@ lowMax: 0.0
 highMin: 1.0
 highMax: 1.0
 relative: false
-scalingCount: 4
-scaling0: 0.0
-scaling1: 1.0
-scaling2: 0.14035088
-scaling3: 0.0
-timelineCount: 4
+scalingCount: 3
+scaling0: 1.0
+scaling1: 0.75438595
+scaling2: 0.0
+timelineCount: 3
 timeline0: 0.0
-timeline1: 0.06849315
-timeline2: 0.58219177
-timeline3: 1.0
+timeline1: 0.28767124
+timeline2: 0.37671232
 - Options - 
 attached: false
 continuous: false
 aligned: false
-additive: true
+additive: false
 behind: false
 premultipliedAlpha: false
-spriteMode: single
+spriteMode: random
 - Image Paths -
-particle.png
+splatter1.png
+splatter2.png
+splatter3.png
 

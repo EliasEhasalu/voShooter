@@ -32,10 +32,9 @@ public class GameState {
     public List<PlayerAction> currentInputs = new ArrayList<>();
 
     public Set<ClientPlayer> players = ConcurrentHashMap.newKeySet();
-    private final Set<ClientProjectile> projectiles = new HashSet<>();
+    private final Set<ClientProjectile> projectiles = ConcurrentHashMap.newKeySet();
 
-    private Set<ParticleEffect> particleEffects = new HashSet<>();
-    //private Set<ParticleEffect> loopingParticleEffects = new HashSet<>();
+    private final Set<ParticleEffect> particleEffects = ConcurrentHashMap.newKeySet();
 
     /**
      * @return The list of drawable entities.
@@ -127,10 +126,10 @@ public class GameState {
         for (ClientProjectile p : projectiles) {
             if (msg.id == p.getId()) {
                 projectiles.remove(p);
+                addParticleEffect(p.getPosition(), false, "particleeffects/projectile/explosionmedium");
+                break;
             }
-            addParticleEffect(p.getPosition(), false, "particleeffects/projectile/simpleexplosion");
         }
-        //projectiles.removeIf(p -> p.getId() == msg.id);
     }
 
     /**
@@ -174,7 +173,7 @@ public class GameState {
      */
     public void addParticleEffect(Vector2 pos, boolean looping, String path) {
         ParticleEffect pe = new ParticleEffect();
-        pe.load(Gdx.files.internal(path), Gdx.files.internal(""));
+        pe.load(Gdx.files.internal(path), Gdx.files.internal("textures/particles"));
         pe.setPosition(pos.x, pos.y);
         pe.start();
 
@@ -193,9 +192,4 @@ public class GameState {
     public Set<ParticleEffect> getParticleEffects() {
         return particleEffects;
     }
-
-    ///** @return Particle effects that loop. */
-    //public Set<ParticleEffect> getLoopingParticleEffects() {
-    //    return loopingParticleEffects;
-    //}
 }
