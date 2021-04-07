@@ -38,6 +38,7 @@ public class ChangeControlsScreen implements Screen {
     private Label pistol;
     private Label shotgun;
     private Label rocketLauncher;
+    private Label flameThrower;
     private TextButton returnToPreferencesScreen;
     private Map.Entry<Label, TextButton> changeControlEntry;
 
@@ -172,12 +173,19 @@ public class ChangeControlsScreen implements Screen {
                 put(shotgun,
                         new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberTwo()), skin));
             }
-            rocketLauncher = new Label("Pistol", skin);
+            rocketLauncher = new Label("Rocket launcher", skin);
             if (AppPreferences.getNumberThreeIsKey()) {
                 put(rocketLauncher, new TextButton(Input.Keys.toString(AppPreferences.getNumberThree()), skin));
             } else {
                 put(rocketLauncher,
                         new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberThree()), skin));
+            }
+            flameThrower = new Label("Flamethrower", skin);
+            if (AppPreferences.getNumberFourIsKey()) {
+                put(flameThrower, new TextButton(Input.Keys.toString(AppPreferences.getNumberFour()), skin));
+            } else {
+                put(flameThrower,
+                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberFour()), skin));
             }
         }};
     }
@@ -251,6 +259,9 @@ public class ChangeControlsScreen implements Screen {
         } else if (key.equals(rocketLauncher)) {
             AppPreferences.setNumberThree(inputKey);
             AppPreferences.setNumberThreeIsKey(true);
+        } else if (key.equals(flameThrower)) {
+            AppPreferences.setNumberFour(inputKey);
+            AppPreferences.setNumberFourIsKey(true);
         }
         changeControlEntry.getValue().setText(Input.Keys.toString(inputKey));
         setButtonsWhite();
@@ -290,6 +301,9 @@ public class ChangeControlsScreen implements Screen {
         } else if (key.equals(rocketLauncher)) {
             AppPreferences.setNumberThree(inputButton);
             AppPreferences.setNumberThreeIsKey(false);
+        } else if (key.equals(flameThrower)) {
+            AppPreferences.setNumberFour(inputButton);
+            AppPreferences.setNumberFourIsKey(false);
         }
         changeControlEntry.getValue().setText(AppPreferences.stringRepresentation(inputButton));
         setButtonsWhite();
