@@ -69,6 +69,7 @@ public class Game extends Thread {
 
     private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this);
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
+    public boolean sendUpdates;
 
     /**
      * Construct the game.
