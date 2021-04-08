@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -160,30 +161,10 @@ public class MainScreen implements Screen {
         table.add(new Label("Kills", skin)).padRight(20);
         table.add(new Label("Deaths", skin)).padRight(20);
         table.add(new Label("KDR", skin)).padRight(20);
-
-        // TODO: Move all of this to a renderer.
-        for (Drawable drawable : parent.gameState.getDrawables()) {
-            if (drawable.isVisible()) {
-                drawable.getSprite().draw(stage.getBatch());
-            }
-            if (drawable instanceof ClientPlayer) {
-                font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
-                        drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
-                        drawable.getPosition().y + 40);
-                drawStatisticsTable((ClientPlayer) drawable);
-            }
-        }
-
-        for (ClientProjectile p : parent.gameState.getProjectiles()) {
-            p.getSprite().setRotation(p.getVelocity().angleDeg());
-            p.getSprite().draw(stage.getBatch());
-        }
-        ClientPlayer player = parent.gameState.userPlayer;
-        if (player.getHealth() <= 0) {
-            font.draw(stage.getBatch(),
-                    String.format("%s seconds", (double) Math.round(player.respawnTimer * 10) / 10),
-                    player.getPosition().x, player.getPosition().y);
-        }
+        drawEntities();
+        drawProjectiles();
+        drawParticles();
+        drawRespawnTimer();
         stage.getBatch().end();
 
         drawMiniMap();
@@ -347,6 +328,45 @@ public class MainScreen implements Screen {
     }
 
     /**
+     * Draw all drawable entities to the screen.
+     */
+    private void drawEntities() {
+        for (Drawable drawable : parent.gameState.getDrawables()) {
+            if (drawable.isVisible()) {
+                drawable.getSprite().draw(stage.getBatch());
+            }
+            if (drawable instanceof ClientPlayer) {
+                font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
+                        drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
+                        drawable.getPosition().y + 40);
+                drawStatisticsTable((ClientPlayer) drawable);
+            }
+        }
+    }
+
+    /**
+     * Draw the projectiles to the screen.
+     */
+    private void drawProjectiles() {
+        for (ClientProjectile p : parent.gameState.getProjectiles()) {
+            p.getSprite().setRotation(p.getVelocity().angleDeg());
+            p.getSprite().draw(stage.getBatch());
+        }
+    }
+
+    /**
+     * Draw the respawn timer.
+     */
+    private void drawRespawnTimer() {
+        ClientPlayer player = parent.gameState.userPlayer;
+        if (player.getHealth() <= 0) {
+            font.draw(stage.getBatch(),
+                    String.format("Respawning in %s seconds", (double) Math.round(player.respawnTimer * 10) / 10),
+                    player.getPosition().x, player.getPosition().y);
+        }
+    }
+
+    /**
      * Draw the HUD in the render cycle.
      */
     private void drawHUD() {
@@ -379,6 +399,19 @@ public class MainScreen implements Screen {
     }
 
     /**
+     * Draw the particles to the sprite batch.
+     */
+    private void drawParticles() {
+        for (ParticleEffect pe : parent.gameState.getParticleEffects()) {
+            pe.update(Gdx.graphics.getDeltaTime());
+            pe.draw(stage.getBatch());
+            if (pe.isComplete()) {
+                parent.gameState.particleEffectFinished(pe);
+            }
+        }
+    }
+
+    /**
      * Make sure the window doesn't break.
      */
     @Override
@@ -386,8 +419,7 @@ public class MainScreen implements Screen {
         stage.getViewport().update(width, height, true);
         hudBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         camera.setToOrtho(false, width, height);
-        table.setPosition(Gdx.graphics.getWidth() - 240, Gdx.graphics.getHeight() - 40);
-        table.padRight(20);
+
         minimapCamera.setToOrtho(false, width / 10f, height / 10f);
         minimapCamera.position.x = width - MINIMAP_MARGIN;
         minimapCamera.position.y = -height + (450) + MINIMAP_MARGIN;

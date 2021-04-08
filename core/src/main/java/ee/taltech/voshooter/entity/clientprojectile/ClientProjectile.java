@@ -9,6 +9,7 @@ import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,6 +22,11 @@ public class ClientProjectile extends Entity implements Drawable {
             new AbstractMap.SimpleEntry<>(Projectile.Type.FIREBALL, "textures/projectiles/flame.png")
             )
             .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
+
+    private static final Map<Projectile.Type, String> PARTICLE_MAP = new HashMap<Projectile.Type, String>() {{
+       put(Projectile.Type.PISTOL_BULLET, "particleeffects/projectile/bullethit");
+       put(Projectile.Type.ROCKET, "particleeffects/projectile/explosionmedium");
+    }};
 
     private final int id;
     private final Projectile.Type type;
@@ -79,5 +85,10 @@ public class ClientProjectile extends Entity implements Drawable {
     /** @return The id of the projectile. */
     public int getId() {
         return id;
+    }
+
+    /** @return The path to the particle effect used when clientprojectile is destroyed. */
+    public String getParticlePath() {
+        return PARTICLE_MAP.getOrDefault(type, PARTICLE_MAP.get(Projectile.Type.PISTOL_BULLET));
     }
 }
