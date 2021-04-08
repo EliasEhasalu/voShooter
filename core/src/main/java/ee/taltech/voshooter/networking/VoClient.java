@@ -141,10 +141,6 @@ public class VoClient {
             parent.gameState.currentLobby.handleJoining(msg);
     }
 
-    private void handlePlayerDeath(PlayerDeath msg) {
-        // TODO: method stub.
-    }
-
     /**
      * Update users currently in lobby.
      * @param update Update containing users currently in the lobby.
@@ -189,6 +185,15 @@ public class VoClient {
                 p.respawnTimer = msg.timeToRespawn;
             }
         }
+    }
+
+    /**
+     * Message received when a player dies.
+     * @param msg The message containing info about the death.
+     */
+    private void handlePlayerDeath(PlayerDeath msg) {
+        // TODO: method stub.
+        parent.gameState.addDeathMessage(msg.playerId, msg.killerId);
     }
 
     /**

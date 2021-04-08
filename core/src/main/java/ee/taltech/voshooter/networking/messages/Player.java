@@ -23,6 +23,7 @@ public class Player {
     private float respawnTime = 5f;
     private static final float RESPAWN_TIME = 5f;
     public boolean deathTick = false;
+    private long killerId;
     private int deaths;
     private int kills;
 
@@ -220,6 +221,19 @@ public class Player {
      */
     public float getRespawnTime() {
         return respawnTime;
+    }
+
+    /**
+     * Set killerId to be the id of the player that killed this player.
+     * @param id Killer id.
+     */
+    public void setKillerId(long id) {
+        killerId = id;
+    }
+
+    /** @return The id of the player that killed this player. */
+    public long getKillerId() {
+        return killerId;
     }
 
     /**

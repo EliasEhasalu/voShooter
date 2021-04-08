@@ -212,8 +212,10 @@ public class Game extends Thread {
      * Send position updates to players.
      */
     private void sendPlayerPoseUpdates() {
+        final List<Player> playerList = getPlayers();
+
         for (VoConnection c : connectionInputs.keySet()) {
-            for (Player p : getPlayers()) {
+            for (Player p : playerList) {
                 c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
                 c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
                 if (sendUpdates || playerUpdateTick % 5 == 0) {
@@ -222,8 +224,7 @@ public class Game extends Thread {
                     sendUpdates = false;
                 }
                 if (p.deathTick) {
-                    c.sendTCP(new PlayerDeath());
-                    p.deathTick = false;
+                    c.sendTCP(new PlayerDeath(p.getId(), p.getKillerId()));
                 }
                 if (p.getHealth() <= 0) {
                     c.sendTCP(new PlayerDead(p.getId(), p.getRespawnTime()));
@@ -231,6 +232,8 @@ public class Game extends Thread {
             }
             playerUpdateTick++;
         }
+
+        playerList.forEach(p -> p.deathTick = false);
     }
 
     /** Reset "last input" for every connection after every tick. */
