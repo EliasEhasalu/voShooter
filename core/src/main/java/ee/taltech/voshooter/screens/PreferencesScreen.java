@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -28,6 +29,7 @@ public class PreferencesScreen implements Screen {
     private Label volumeSoundIndicator;
     private Slider volumeMusicSlider;
     private Slider volumeSoundSlider;
+    private CheckBox minimapCheckbox;
     private TextButton goToChangeControls;
     private TextButton returnToPreviousScreen;
 
@@ -70,9 +72,12 @@ public class PreferencesScreen implements Screen {
         final Label titleLabel = new Label("Settings", skin);
         final Label volumeMusicLabel = new Label("Music volume", skin);
         final Label volumeSoundLabel = new Label("Sound volume", skin);
+        final Label minimapToggleLabel = new Label("Minimap", skin);
 
         volumeMusicIndicator = new Label(String.valueOf(Math.round(AppPreferences.getMusicVolume() * 100)), skin);
         volumeSoundIndicator = new Label(String.valueOf(Math.round(AppPreferences.getSoundVolume() * 100)), skin);
+        minimapCheckbox = new CheckBox("", skin);
+        minimapCheckbox.setChecked(AppPreferences.getMinimapOn());
 
         // Add the sliders and labels to the table.
         table.add(titleLabel).fillX().uniformX().pad(0, 0, 20, 0).bottom().right();
@@ -82,10 +87,14 @@ public class PreferencesScreen implements Screen {
         table.add(volumeMusicSlider).fillX().uniformX();
         table.add(volumeMusicIndicator).fillX().uniformX();
 
-        table.row().pad(0, 0, 100, 30);
+        table.row().pad(0, 0, 5, 30);
         table.add(volumeSoundLabel).fillX().uniformX();
         table.add(volumeSoundSlider).fillX().uniformX();
         table.add(volumeSoundIndicator).fillX().uniformX();
+
+        table.row().pad(0, 0, 100, 30);
+        table.add(minimapToggleLabel).fillX().uniformX();
+        table.add(minimapCheckbox);
 
         table.row().pad(0, 0, 0, 30);
         table.add(returnToPreviousScreen).fillX().uniformX().bottom().right();
@@ -118,6 +127,14 @@ public class PreferencesScreen implements Screen {
             AppPreferences.setSoundVolume(volumeSoundSlider.getValue());
             volumeSoundIndicator.setText(String.valueOf(Math.round(AppPreferences.getSoundVolume() * 100)));
             return false;
+        });
+
+        minimapCheckbox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                AppPreferences.setMinimapOn(minimapCheckbox.isChecked());
+                minimapCheckbox.setChecked(minimapCheckbox.isChecked());
+            }
         });
 
         returnToPreviousScreen.addListener(new ChangeListener() {
