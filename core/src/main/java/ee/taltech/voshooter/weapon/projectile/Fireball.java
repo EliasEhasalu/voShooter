@@ -30,14 +30,9 @@ public class Fireball extends Bullet {
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
                 p.takeDamage(DAMAGE);
+                p.getStatusManager().setBurnApplier(owner);
                 p.getStatusManager().applyDebuff(StatusManager.Debuff.BURNING);
-                if (p.deathTick) {
-                    if (this.owner.equals(p)) {
-                        this.owner.removeKill();
-                    } else {
-                        this.owner.addKill();
-                    }
-                }
+                updatePlayers(p, owner);
             }
 
             if (!(fix.getBody().getUserData() instanceof Player)) destroy();

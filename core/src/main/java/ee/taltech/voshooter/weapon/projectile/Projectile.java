@@ -108,6 +108,22 @@ public abstract class Projectile {
         );
     }
 
+    /**
+     * Update player deaths and kills.
+     * @param p that died.
+     * @param killer that killed.
+     */
+    public void updatePlayers(Player p, Player killer) {
+        if (p.deathTick) {
+            if (killer.equals(p)) {
+                killer.removeKill();
+            } else {
+                killer.addKill();
+            }
+        }
+        killer.getGame().sendUpdates = true;
+    }
+
     /** @return The position of the projectile in world space. */
     public Vector2 getPosition() {
        return body.getPosition().cpy();

@@ -14,6 +14,7 @@ public class StatusManager {
     private static final int HERTZ = ((int) Game.TICK_RATE_IN_HZ);
 
     private final Player parent;
+    private Player burnApplier;
     private Map<Debuff, Integer> debuffDurations = new HashMap<>();
     private Map<Debuff, Integer> maxDebuffDurations = new HashMap<Debuff, Integer>() {{
         put(Debuff.BURNING, 10 * HERTZ);
@@ -29,6 +30,7 @@ public class StatusManager {
     }
 
     public void update() {
+        parent.getGame().sendUpdates = true;
         reduceDurations();
         applyEffects();
     }
@@ -55,6 +57,20 @@ public class StatusManager {
        final int FREQ = 32;
        final int DAMAGE = 2;
 
-       if (debuffDurations.get(Debuff.BURNING) % FREQ == 0) parent.takeDamage(DAMAGE);
+       if (debuffDurations.get(Debuff.BURNING) % FREQ == 0) {
+           parent.takeDamage(DAMAGE);
+           if (parent.deathTick) {
+               if (burnApplier.equals(parent)) {
+                   burnApplier.removeKill();
+               } else {
+                   burnApplier.addKill();
+               }
+           }
+           burnApplier.getGame().sendUpdates = true;
+       }
+    }
+
+    public void setBurnApplier(Player burnApplier) {
+        this.burnApplier = burnApplier;
     }
 }

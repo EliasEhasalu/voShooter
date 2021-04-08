@@ -228,4 +228,11 @@ public class Player {
     public void setWeapon(Weapon weapon) {
         currentWeapon = weapon;
     }
+
+    /**
+     * @return get the current weapon of the player.
+     */
+    public Weapon getWeapon() {
+        return currentWeapon;
+    }
 }
