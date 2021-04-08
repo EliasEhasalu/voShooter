@@ -55,7 +55,7 @@ public class Game extends Thread {
 
     private boolean running = false;
 
-    public static final double TICK_RATE_IN_HZ = 64.0;
+    public static final double TICK_RATE_IN_HZ = 60.0;
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new ConcurrentHashMap<>();
