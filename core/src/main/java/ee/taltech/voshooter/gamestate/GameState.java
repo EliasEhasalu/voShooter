@@ -126,7 +126,7 @@ public class GameState {
         for (ClientProjectile p : projectiles) {
             if (msg.id == p.getId()) {
                 projectiles.remove(p);
-                addParticleEffect(p.getPosition(), false, "particleeffects/projectile/explosionmedium");
+                addParticleEffect(p.getPosition(), false, p.getParticlePath());
                 break;
             }
         }
