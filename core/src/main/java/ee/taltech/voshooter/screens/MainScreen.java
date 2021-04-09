@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
@@ -402,11 +403,13 @@ public class MainScreen implements Screen {
      * Draw the particles to the sprite batch.
      */
     private void drawParticles() {
-        for (ParticleEffect pe : parent.gameState.getParticleEffects()) {
-            pe.update(Gdx.graphics.getDeltaTime());
-            pe.draw(stage.getBatch());
-            if (pe.isComplete()) {
-                parent.gameState.particleEffectFinished(pe);
+        if (AppPreferences.getParticlesOn()) {
+            for (ParticleEffect pe : parent.gameState.getParticleEffects()) {
+                pe.update(Gdx.graphics.getDeltaTime());
+                pe.draw(stage.getBatch());
+                if (pe.isComplete()) {
+                    parent.gameState.particleEffectFinished(pe);
+                }
             }
         }
     }
