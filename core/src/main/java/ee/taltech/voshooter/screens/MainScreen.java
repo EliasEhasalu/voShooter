@@ -466,6 +466,13 @@ public class MainScreen implements Screen {
         hudBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         camera.setToOrtho(false, width, height);
 
+        table.setPosition(Gdx.graphics.getWidth() - 240, Gdx.graphics.getHeight() - 40);
+        table.padRight(20);
+        table.add(new Label("Player", skin)).padRight(20);
+        table.add(new Label("Kills", skin)).padRight(20);
+        table.add(new Label("Deaths", skin)).padRight(20);
+        table.add(new Label("KDR", skin)).padRight(20);
+
         minimapCamera.setToOrtho(false, width / 10f, height / 10f);
         minimapCamera.position.x = width - MINIMAP_MARGIN;
         minimapCamera.position.y = -height + (450) + MINIMAP_MARGIN;
