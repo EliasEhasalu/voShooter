@@ -204,7 +204,10 @@ public class Game extends Thread {
      */
     public void addPlayerInput(VoConnection c, PlayerInput input) {
         if (connectionInputs.containsKey(c)) {
-            connectionInputs.get(c).addAll(input.inputs);
+            try {
+                connectionInputs.get(c).addAll(input.inputs);
+            } catch (ConcurrentModificationException ignored) {
+            }
         }
     }
 
