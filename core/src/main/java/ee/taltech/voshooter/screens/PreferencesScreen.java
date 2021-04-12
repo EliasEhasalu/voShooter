@@ -96,7 +96,7 @@ public class PreferencesScreen implements Screen {
         table.add(volumeSoundSlider).fillX().uniformX();
         table.add(volumeSoundIndicator).fillX().uniformX();
 
-        table.row().pad(0, 0, 100, 30);
+        table.row().pad(0, 0, 5, 30);
         table.add(particleToggleLabel).fillX().uniformX();
         table.add(particleToggleCheckbox);
         table.row().pad(0, 0, 100, 30);
@@ -140,6 +140,7 @@ public class PreferencesScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 AppPreferences.setParticlesOn(particleToggleCheckbox.isChecked());
+                particleToggleCheckbox.setChecked(particleToggleCheckbox.isChecked());
             }
         });
 
