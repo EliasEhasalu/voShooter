@@ -12,6 +12,7 @@ public class AppPreferences {
     private static final String PREFS_NAME = "voshooter";
     private static final String PREF_MUSIC_VOLUME = "volume";
     private static final String PREF_SOUND_VOL = "sound";
+    private static final String PREF_PARTICLE_TOGGLE = "particles";
     private static final String PREF_MINIMAP = "minimap";
     private static final String PREF_PLAYER_COUNT = "4";
     private static final String PREF_GAME_MODE = "gamemode";
@@ -71,6 +72,20 @@ public class AppPreferences {
     public static void setSoundVolume(float volume) {
         getPrefs().putFloat(PREF_SOUND_VOL, volume);
         // Write to disk.
+        getPrefs().flush();
+    }
+
+    /** @return If particles are toggled on or off. */
+    public static boolean getParticlesOn() {
+        return getPrefs().getBoolean(PREF_PARTICLE_TOGGLE, true);
+    }
+
+    /**
+     * Set particle toggle on or off.
+     * @param on If particles should be on.
+     */
+    public static void setParticlesOn(boolean on) {
+        getPrefs().putBoolean(PREF_PARTICLE_TOGGLE, on);
         getPrefs().flush();
     }
 

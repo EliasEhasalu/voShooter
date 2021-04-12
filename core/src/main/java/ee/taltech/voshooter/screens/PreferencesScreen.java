@@ -29,6 +29,7 @@ public class PreferencesScreen implements Screen {
     private Label volumeSoundIndicator;
     private Slider volumeMusicSlider;
     private Slider volumeSoundSlider;
+    private CheckBox particleToggleCheckbox;
     private CheckBox minimapCheckbox;
     private TextButton goToChangeControls;
     private TextButton returnToPreviousScreen;
@@ -72,10 +73,13 @@ public class PreferencesScreen implements Screen {
         final Label titleLabel = new Label("Settings", skin);
         final Label volumeMusicLabel = new Label("Music volume", skin);
         final Label volumeSoundLabel = new Label("Sound volume", skin);
-        final Label minimapToggleLabel = new Label("Minimap", skin);
+        final Label particleToggleLabel = new Label("Toggle particles", skin);
 
         volumeMusicIndicator = new Label(String.valueOf(Math.round(AppPreferences.getMusicVolume() * 100)), skin);
         volumeSoundIndicator = new Label(String.valueOf(Math.round(AppPreferences.getSoundVolume() * 100)), skin);
+        particleToggleCheckbox = new CheckBox("", skin);
+        particleToggleCheckbox.setChecked(AppPreferences.getParticlesOn());
+        final Label minimapToggleLabel = new Label("Minimap", skin);
         minimapCheckbox = new CheckBox("", skin);
         minimapCheckbox.setChecked(AppPreferences.getMinimapOn());
 
@@ -92,6 +96,9 @@ public class PreferencesScreen implements Screen {
         table.add(volumeSoundSlider).fillX().uniformX();
         table.add(volumeSoundIndicator).fillX().uniformX();
 
+        table.row().pad(0, 0, 5, 30);
+        table.add(particleToggleLabel).fillX().uniformX();
+        table.add(particleToggleCheckbox);
         table.row().pad(0, 0, 100, 30);
         table.add(minimapToggleLabel).fillX().uniformX();
         table.add(minimapCheckbox);
@@ -127,6 +134,14 @@ public class PreferencesScreen implements Screen {
             AppPreferences.setSoundVolume(volumeSoundSlider.getValue());
             volumeSoundIndicator.setText(String.valueOf(Math.round(AppPreferences.getSoundVolume() * 100)));
             return false;
+        });
+
+        particleToggleCheckbox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                AppPreferences.setParticlesOn(particleToggleCheckbox.isChecked());
+                particleToggleCheckbox.setChecked(particleToggleCheckbox.isChecked());
+            }
         });
 
         minimapCheckbox.addListener(new ChangeListener() {

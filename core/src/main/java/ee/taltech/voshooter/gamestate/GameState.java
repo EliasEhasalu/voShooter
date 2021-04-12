@@ -3,6 +3,7 @@ package ee.taltech.voshooter.gamestate;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Vector2;
+import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
@@ -172,12 +173,14 @@ public class GameState {
      * @param path Path to the particle effect in assets.
      */
     public void addParticleEffect(Vector2 pos, boolean looping, String path) {
-        ParticleEffect pe = new ParticleEffect();
-        pe.load(Gdx.files.internal(path), Gdx.files.internal("textures/particles"));
-        pe.setPosition(pos.x, pos.y);
-        pe.start();
+        if (AppPreferences.getParticlesOn()) {
+            ParticleEffect pe = new ParticleEffect();
+            pe.load(Gdx.files.internal(path), Gdx.files.internal("textures/particles"));
+            pe.setPosition(pos.x, pos.y);
+            pe.start();
 
-        particleEffects.add(pe);
+            particleEffects.add(pe);
+        }
     }
 
     /**

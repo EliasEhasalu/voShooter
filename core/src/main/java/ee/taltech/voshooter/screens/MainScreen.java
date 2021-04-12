@@ -406,11 +406,13 @@ public class MainScreen implements Screen {
      * Draw the particles to the sprite batch.
      */
     private void drawParticles() {
-        for (ParticleEffect pe : parent.gameState.getParticleEffects()) {
-            pe.update(Gdx.graphics.getDeltaTime());
-            pe.draw(stage.getBatch());
-            if (pe.isComplete()) {
-                parent.gameState.particleEffectFinished(pe);
+        if (AppPreferences.getParticlesOn()) {
+            for (ParticleEffect pe : parent.gameState.getParticleEffects()) {
+                pe.update(Gdx.graphics.getDeltaTime());
+                pe.draw(stage.getBatch());
+                if (pe.isComplete()) {
+                    parent.gameState.particleEffectFinished(pe);
+                }
             }
         }
     }
