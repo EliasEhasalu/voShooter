@@ -89,7 +89,7 @@ public class Game extends Thread {
      */
     public void addConnection(VoConnection connection) {
         // Track the connection.
-        connectionInputs.computeIfAbsent(connection, k -> ConcurrentHashMap.newKeySet());
+        if (!connectionInputs.containsKey(connection)) connectionInputs.put(connection, ConcurrentHashMap.newKeySet());
 
         // Create a player object with a physics body which will be tracked in the world.
         createPlayer(connection);
@@ -204,7 +204,10 @@ public class Game extends Thread {
      */
     public void addPlayerInput(VoConnection c, PlayerInput input) {
         if (connectionInputs.containsKey(c)) {
-            connectionInputs.get(c).addAll(input.inputs);
+            try {
+                connectionInputs.get(c).addAll(input.inputs);
+            } catch (ConcurrentModificationException ignored) {
+            }
         }
     }
 
