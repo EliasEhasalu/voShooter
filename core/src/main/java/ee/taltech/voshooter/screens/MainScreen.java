@@ -3,10 +3,12 @@ package ee.taltech.voshooter.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -31,6 +33,7 @@ import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.gamestate.DeathMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
@@ -53,6 +56,7 @@ public class MainScreen implements Screen {
     private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     public VoShooter.Screen shouldChangeScreen;
     private BitmapFont font;
+    private BitmapFont killfeedFont;
     private boolean pauseMenuActive;
     private final TextButton exitButton = new TextButton("Exit", skin);
     private TextButton resumeButton;
@@ -78,10 +82,16 @@ public class MainScreen implements Screen {
     private final Texture handgun = new Texture("textures/hud/item/handgun.png");
     private final Texture healthEmpty = new Texture("textures/hud/background/healthBarEmpty.png");
     private final Texture healthFull = new Texture("textures/hud/background/healthBarFull.png");
+    private final Texture killIcon = new Texture("textures/hud/background/killicon.png");
+    private final Texture selfKillIcon = new Texture("textures/hud/background/selfkillicon.png");
     private Texture selectedGun = handgun;
     private float healthFraction = 1.00f;
     private int currentAmmo = 16;
     private int maxAmmo = 20;
+    private static final int KILLFEED_TOP_MARGIN = 50;
+    private static final int KILLFEED_RIGHT_MARGIN = 50;
+    private static final int KILLFEED_GAP = 38;
+    private static final int KILLFEED_ICON_SPACE = 10;
 
     /**
      * Construct the menu screen.
@@ -110,6 +120,8 @@ public class MainScreen implements Screen {
         font = new BitmapFont(Gdx.files.internal("bitmapFont/commodore.fnt"),
                 Gdx.files.internal("bitmapFont/commodore.png"), false);
         font.getData().setScale(0.6f);
+        killfeedFont = new BitmapFont(Gdx.files.internal("bitmapFont/pixeloperator.fnt"),
+                Gdx.files.internal("bitmapFont/pixeloperator.png"), false);
         MusicPlayer.stopMusic();
 
         // Have it handle player's input.
@@ -173,7 +185,7 @@ public class MainScreen implements Screen {
     }
 
     /**
-     * Draw the players statistics
+     * Draw the players statistics.
      * @param player
      */
     private void drawStatisticsTable(ClientPlayer player) {
@@ -372,6 +384,40 @@ public class MainScreen implements Screen {
      */
     private void drawHUD() {
         hudBatch.begin();
+
+        killfeedFont.setColor(Color.WHITE);
+        int i = parent.gameState.deathMessages.size() - 1;
+        for (DeathMessage msg : parent.gameState.deathMessages) {
+            GlyphLayout playerLayout = new GlyphLayout();
+            playerLayout.setText(killfeedFont, msg.getPlayer().getName());
+
+            final int playerX = Gdx.graphics.getWidth() - (int) playerLayout.width - KILLFEED_RIGHT_MARGIN;
+            final int playerY = Gdx.graphics.getHeight() - (i * KILLFEED_GAP) - KILLFEED_TOP_MARGIN;
+
+            if (msg.getKiller() != msg.getPlayer()) {
+                GlyphLayout killerLayout = new GlyphLayout();
+                killerLayout.setText(killfeedFont, msg.getKiller().getName());
+
+                hudBatch.draw(killIcon,
+                        playerX - killIcon.getWidth() - KILLFEED_ICON_SPACE,
+                        playerY - killIcon.getHeight() / 1.4f);
+                killfeedFont.draw(hudBatch, killerLayout,
+                        playerX - killIcon.getWidth() - killerLayout.width - 2 * KILLFEED_ICON_SPACE,
+                        playerY);
+            } else {
+                hudBatch.draw(selfKillIcon,
+                        playerX - selfKillIcon.getWidth() - KILLFEED_ICON_SPACE,
+                        playerY - selfKillIcon.getHeight() / 1.4f);
+            }
+
+            killfeedFont.draw(hudBatch, playerLayout, playerX, playerY);
+
+            if (msg.tick()) {
+                parent.gameState.removeDeathMessage(msg);
+            }
+            i--;
+        }
+
         hudBatch.draw(selectedGunBackground, 64, 64);
         hudBatch.draw(selectedGun, 64, 64);
 
@@ -425,6 +471,13 @@ public class MainScreen implements Screen {
         stage.getViewport().update(width, height, true);
         hudBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         camera.setToOrtho(false, width, height);
+
+        table.setPosition(Gdx.graphics.getWidth() - 240, Gdx.graphics.getHeight() - 40);
+        table.padRight(20);
+        table.add(new Label("Player", skin)).padRight(20);
+        table.add(new Label("Kills", skin)).padRight(20);
+        table.add(new Label("Deaths", skin)).padRight(20);
+        table.add(new Label("KDR", skin)).padRight(20);
 
         minimapCamera.setToOrtho(false, width / 10f, height / 10f);
         minimapCamera.position.x = width - MINIMAP_MARGIN;

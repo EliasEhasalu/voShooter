@@ -16,9 +16,11 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositio
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.rendering.Drawable;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,8 +36,9 @@ public class GameState {
 
     public Set<ClientPlayer> players = ConcurrentHashMap.newKeySet();
     private final Set<ClientProjectile> projectiles = ConcurrentHashMap.newKeySet();
-
     private final Set<ParticleEffect> particleEffects = ConcurrentHashMap.newKeySet();
+
+    public Queue<DeathMessage> deathMessages = new ArrayDeque<>();
 
     /**
      * @return The list of drawable entities.
@@ -189,6 +192,33 @@ public class GameState {
      */
     public void particleEffectFinished(ParticleEffect pe) {
         particleEffects.remove(pe);
+    }
+
+    /**
+     * Add a new death message.
+     * @param playerId The player that died.
+     * @param killerId The player that killed.
+     */
+    public void addDeathMessage(long playerId, long killerId) {
+        ClientPlayer player = null;
+        ClientPlayer killer = null;
+
+        for (ClientPlayer clientPlayer : players) {
+            if (clientPlayer.getId() == playerId) player = clientPlayer;
+            if (clientPlayer.getId() == killerId) killer = clientPlayer;
+            if (player != null && killer != null) break;
+        }
+
+        DeathMessage msg = new DeathMessage(player, killer);
+        deathMessages.offer(msg);
+    }
+
+    /**
+     * Remove a message from the set of death messages.
+     * @param msg The message to remove.
+     */
+    public void removeDeathMessage(DeathMessage msg) {
+        deathMessages.poll();
     }
 
     /** @return Set of particle effects currently in the game. */

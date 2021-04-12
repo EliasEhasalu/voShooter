@@ -120,6 +120,7 @@ public abstract class Projectile {
             } else {
                 killer.addKill();
             }
+            p.setKillerId(killer.getId());
         }
         killer.getGame().sendUpdates = true;
     }
