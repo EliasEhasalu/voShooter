@@ -30,6 +30,7 @@ public class PreferencesScreen implements Screen {
     private Slider volumeMusicSlider;
     private Slider volumeSoundSlider;
     private CheckBox particleToggleCheckbox;
+    private CheckBox minimapCheckbox;
     private TextButton goToChangeControls;
     private TextButton returnToPreviousScreen;
 
@@ -78,6 +79,9 @@ public class PreferencesScreen implements Screen {
         volumeSoundIndicator = new Label(String.valueOf(Math.round(AppPreferences.getSoundVolume() * 100)), skin);
         particleToggleCheckbox = new CheckBox("", skin);
         particleToggleCheckbox.setChecked(AppPreferences.getParticlesOn());
+        final Label minimapToggleLabel = new Label("Minimap", skin);
+        minimapCheckbox = new CheckBox("", skin);
+        minimapCheckbox.setChecked(AppPreferences.getMinimapOn());
 
         // Add the sliders and labels to the table.
         table.add(titleLabel).fillX().uniformX().pad(0, 0, 20, 0).bottom().right();
@@ -95,6 +99,9 @@ public class PreferencesScreen implements Screen {
         table.row().pad(0, 0, 100, 30);
         table.add(particleToggleLabel).fillX().uniformX();
         table.add(particleToggleCheckbox);
+        table.row().pad(0, 0, 100, 30);
+        table.add(minimapToggleLabel).fillX().uniformX();
+        table.add(minimapCheckbox);
 
         table.row().pad(0, 0, 0, 30);
         table.add(returnToPreviousScreen).fillX().uniformX().bottom().right();
@@ -133,6 +140,14 @@ public class PreferencesScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 AppPreferences.setParticlesOn(particleToggleCheckbox.isChecked());
+            }
+        });
+
+        minimapCheckbox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                AppPreferences.setMinimapOn(minimapCheckbox.isChecked());
+                minimapCheckbox.setChecked(minimapCheckbox.isChecked());
             }
         });
 

@@ -9,10 +9,11 @@ import java.util.List;
 
 public class AppPreferences {
 
+    private static final String PREFS_NAME = "voshooter";
     private static final String PREF_MUSIC_VOLUME = "volume";
     private static final String PREF_SOUND_VOL = "sound";
     private static final String PREF_PARTICLE_TOGGLE = "particles";
-    private static final String PREFS_NAME = "voshooter";
+    private static final String PREF_MINIMAP = "minimap";
     private static final String PREF_PLAYER_COUNT = "4";
     private static final String PREF_GAME_MODE = "gamemode";
     private static final String PREF_MOVE_UP_KEY = "up key";
@@ -85,6 +86,22 @@ public class AppPreferences {
      */
     public static void setParticlesOn(boolean on) {
         getPrefs().putBoolean(PREF_PARTICLE_TOGGLE, on);
+        getPrefs().flush();
+    }
+
+    /**
+     * @return If the minimap is toggled on or off.
+     */
+    public static boolean getMinimapOn() {
+        return getPrefs().getBoolean(PREF_MINIMAP, true);
+    }
+
+    /**
+     * Set if the minimap is toggled on or off.
+     * @param on If the minimap should be on.
+     */
+    public static void setMinimapOn(boolean on) {
+        getPrefs().putBoolean(PREF_MINIMAP, on);
         getPrefs().flush();
     }
 
