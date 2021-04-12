@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
@@ -386,16 +387,19 @@ public class MainScreen implements Screen {
      * Draw the minimap in the render cycle.
      */
     private void drawMiniMap() {
-        miniMapRenderer.setView(minimapCamera);
-        miniMapRenderer.render();
-        minimapBatch.setProjectionMatrix(minimapCamera.combined);
-        minimapBatch.begin();
-        ClientPlayer player = parent.gameState.userPlayer;
-        Vector2 pos = player.getPosition();
-        minimapBatch.draw(minimapPlayer,
-                pos.x * MINIMAP_SCALE - MARKER_SIZE / 2f, pos.y * MINIMAP_SCALE - MARKER_SIZE / 2f,
-                MARKER_SIZE, MARKER_SIZE);
-        minimapBatch.end();
+        if (AppPreferences.getMinimapOn()) {
+            miniMapRenderer.setView(minimapCamera);
+            miniMapRenderer.render();
+            minimapBatch.setProjectionMatrix(minimapCamera.combined);
+
+            minimapBatch.begin();
+            ClientPlayer player = parent.gameState.userPlayer;
+            Vector2 pos = player.getPosition();
+            minimapBatch.draw(minimapPlayer,
+                    pos.x * MINIMAP_SCALE - MARKER_SIZE / 2f, pos.y * MINIMAP_SCALE - MARKER_SIZE / 2f,
+                    MARKER_SIZE, MARKER_SIZE);
+            minimapBatch.end();
+        }
     }
 
     /**
