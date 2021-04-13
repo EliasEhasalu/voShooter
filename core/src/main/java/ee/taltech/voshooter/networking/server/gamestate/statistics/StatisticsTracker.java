@@ -1,6 +1,5 @@
 package ee.taltech.voshooter.networking.server.gamestate.statistics;
 
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
 import ee.taltech.voshooter.networking.server.VoConnection;
@@ -58,7 +57,6 @@ public class StatisticsTracker {
     private void assembleUpdates() {
         sendPlayerStats();
         sendPlayerDeathEvents();
-        sendPlayerDeadUpdates();
     }
 
     private void sendPlayerStats() {
@@ -76,12 +74,6 @@ public class StatisticsTracker {
             for (long[] deathEvent : playerDeathEvents) c.sendTCP(new PlayerDeath(deathEvent[0], deathEvent[1]));
         }
         playerDeathEvents.clear();
-    }
-
-    private void sendPlayerDeadUpdates() {
-        for (Player p : parent.getPlayers()) {
-            if (!(p.isAlive())) p.getConnection().sendTCP(new PlayerDead(p.getId(), p.getTimeToRespawn()));
-        }
     }
 
     private boolean isPeriodicUpdate() {

@@ -3,6 +3,7 @@ package ee.taltech.voshooter.networking.server.gamestate.entitymanager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
@@ -45,12 +46,13 @@ public class PlayerManager extends EntityManager {
 
     @Override
     protected void sendUpdates() {
-        for (VoConnection c : game.getConnections()) {
-            for (Player p : players) {
-                c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
-                c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
-                c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
-            }
+        for (Player p : players) {
+            VoConnection c = p.getConnection();
+
+            c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
+            c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
+            c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
+            if (!(p.isAlive())) c.sendTCP(new PlayerDead(p.getId(), p.getTimeToRespawn()));
         }
     }
 
