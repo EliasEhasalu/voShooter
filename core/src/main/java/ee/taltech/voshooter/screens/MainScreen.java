@@ -93,7 +93,7 @@ public class MainScreen implements Screen {
     private int currentAmmo = 16;
     private int maxAmmo = 20;
     private boolean isStatsTabOpen = false;
-    private static final int KILLFEED_TOP_MARGIN = 50;
+    public static final int KILLFEED_TOP_MARGIN = 50;
     private static final int KILLFEED_RIGHT_MARGIN = 50;
     private static final int KILLFEED_GAP = 38;
     private static final int KILLFEED_ICON_SPACE = 10;
@@ -397,6 +397,17 @@ public class MainScreen implements Screen {
      */
     private void drawHUD() {
         hudBatch.begin();
+
+        // Draw UI particles.
+        if (AppPreferences.getParticlesOn()) {
+            for (ParticleEffect pe : parent.gameState.getUiParticles()) {
+                pe.update(Gdx.graphics.getDeltaTime());
+                pe.draw(hudBatch);
+                if (pe.isComplete()) {
+                    parent.gameState.particleEffectFinished(pe);
+                }
+            }
+        }
 
         killfeedFont.setColor(Color.WHITE);
         int i = parent.gameState.deathMessages.size() - 1;
