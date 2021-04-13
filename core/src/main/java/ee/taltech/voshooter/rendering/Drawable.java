@@ -24,4 +24,9 @@ public interface Drawable {
      * @return What the scale of the drawable's sprite should currently be.
      */
     float getScale();
+
+    /**
+     * @return amount of kills a drawable has, min_integer if it can't have kills.
+     */
+    int getKills();
 }
