@@ -21,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -53,6 +52,7 @@ import java.util.stream.Collectors;
 public class MainScreen implements Screen {
 
     public static final float MINIMAP_ZOOM = 20f;
+    public static final int STATS_ROW_PAD = 120;
     private final VoShooter parent;
     private final Stage stage;
     private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
@@ -76,9 +76,9 @@ public class MainScreen implements Screen {
     public static final int MINIMAP_MARGIN = 50;
     public static final int MARKER_SIZE = 20;
     public static final float MINIMAP_SCALE = 0.22f;
-    private Table leaderBoardTable;
 
     private final SpriteBatch hudBatch = new SpriteBatch();
+    private final SpriteBatch menusBatch = new SpriteBatch();
     private final Texture selectedGunBackground
             = new Texture("textures/hud/background/selectedGunBackground.png");
     private final Texture handgun = new Texture("textures/hud/item/handgun.png");
@@ -90,6 +90,7 @@ public class MainScreen implements Screen {
     private float healthFraction = 1.00f;
     private int currentAmmo = 16;
     private int maxAmmo = 20;
+    private boolean isStatsTabOpen = false;
     private static final int KILLFEED_TOP_MARGIN = 50;
     private static final int KILLFEED_RIGHT_MARGIN = 50;
     private static final int KILLFEED_GAP = 38;
@@ -137,7 +138,6 @@ public class MainScreen implements Screen {
                 Gdx.graphics.getHeight() / 10f);
 
         createMenuButtons();
-        makeLeaderBoardTable();
     }
 
     /**
@@ -172,38 +172,37 @@ public class MainScreen implements Screen {
 
         drawMiniMap();
         drawHUD();
-    }
-
-    /**
-     * Make the table.
-     */
-    private void makeLeaderBoardTable() {
-        leaderBoardTable = new Table();
-        leaderBoardTable.setFillParent(true);
-        leaderBoardTable.setVisible(false);
-        leaderBoardTable.padRight(20);
-        leaderBoardTable.add(new Label("Player", skin)).padRight(20).fillX();
-        leaderBoardTable.add(new Label("Kills", skin)).padRight(20).fillX();
-        leaderBoardTable.add(new Label("Deaths", skin)).padRight(20).fillX();
-        leaderBoardTable.add(new Label("KDR", skin)).padRight(20).fillX();
-        stage.addActor(leaderBoardTable);
+        if (isStatsTabOpen) {
+            updateLeaderBoard();
+        }
     }
 
     /**
      * Draw the players statistics.
-     * @param player player to display in the leaderboard.
      */
-    private void updateLeaderBoardTable(ClientPlayer player) {
-        leaderBoardTable.row().padRight(20).fillX();
-        leaderBoardTable.add(new Label(player.getName(), skin)).padRight(20).fillX();
-        leaderBoardTable.add(new Label(String.valueOf(player.getKills()), skin)).padRight(20).fillX();
-        leaderBoardTable.add(new Label(String.valueOf(player.getDeaths()), skin)).padRight(20).fillX();
-        if (player.getDeaths() > 0) {
-            leaderBoardTable.add(new Label(String.valueOf(
-                    (double) Math.round((player.getKills() / (float) player.getDeaths()) * 100) / 100), skin)).fillX();
-        } else {
-            leaderBoardTable.add(new Label(String.valueOf(player.getKills()), skin)).fillX();
+    private void updateLeaderBoard() {
+        menusBatch.begin();
+        int tableTop = Gdx.graphics.getHeight() - 30;
+        int tableLeft = Gdx.graphics.getWidth() / 2 - 2 * STATS_ROW_PAD;
+        font.draw(menusBatch, "Player names", tableLeft, tableTop);
+        font.draw(menusBatch, "Kills", tableLeft + (STATS_ROW_PAD * 2), tableTop);
+        font.draw(menusBatch, "Deaths", tableLeft + (STATS_ROW_PAD * 3), tableTop);
+        font.draw(menusBatch, "KDR", tableLeft + (STATS_ROW_PAD * 4), tableTop);
+        tableTop -= 20;
+        for (ClientPlayer player : parent.gameState.getPlayers().stream()
+                .sorted(Comparator.comparing(Drawable::getKills).reversed()).collect(Collectors.toList())) {
+            font.draw(menusBatch, player.getName(), tableLeft, tableTop);
+            font.draw(menusBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 2), tableTop);
+            font.draw(menusBatch, String.valueOf(player.getDeaths()), tableLeft + (STATS_ROW_PAD * 3), tableTop);
+            if (player.getDeaths() > 0) {
+                font.draw(menusBatch, String.valueOf(player.getKills() / player.getDeaths()),
+                        tableLeft + (STATS_ROW_PAD * 4), tableTop);
+            } else {
+                font.draw(menusBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 4), tableTop);
+            }
+            tableTop -= 20;
         }
+        menusBatch.end();
     }
 
     /**
@@ -305,7 +304,7 @@ public class MainScreen implements Screen {
                 if (keycode == Input.Keys.ESCAPE) {
                     setPauseTableVisibility(!resumeButton.isVisible());
                 } else if (keycode == Input.Keys.TAB) {
-                    leaderBoardTable.setVisible(true);
+                    isStatsTabOpen = true;
                 }
                 return true;
             }
@@ -313,7 +312,7 @@ public class MainScreen implements Screen {
             @Override
             public boolean keyUp(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.TAB) {
-                    leaderBoardTable.setVisible(false);
+                    isStatsTabOpen = false;
                 }
                 return true;
             }
@@ -359,8 +358,7 @@ public class MainScreen implements Screen {
      * Draw all drawable entities to the screen.
      */
     private void drawEntities() {
-        for (Drawable drawable : parent.gameState.getDrawables().stream()
-                .sorted(Comparator.comparing(Drawable::getKills).reversed()).collect(Collectors.toList())) {
+        for (Drawable drawable : parent.gameState.getDrawables()) {
             if (drawable.isVisible()) {
                 drawable.getSprite().draw(stage.getBatch());
             }
@@ -368,7 +366,6 @@ public class MainScreen implements Screen {
                 font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
                         drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
                         drawable.getPosition().y + 40);
-                updateLeaderBoardTable((ClientPlayer) drawable);
             }
         }
     }
