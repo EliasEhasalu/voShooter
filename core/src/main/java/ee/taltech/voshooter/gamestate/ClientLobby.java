@@ -53,6 +53,7 @@ public class ClientLobby {
     public boolean removeUser(User user) {
         if (users.contains(user)) {
             users.remove(user);
+            players.removeIf(player -> player.getId() == user.id);
             return true;
         }
         return false;
@@ -71,6 +72,7 @@ public class ClientLobby {
      */
     public void clearLobby() {
         users.clear();
+        players.clear();
         lobbyCode = null;
         maxUsers = 4;
         gamemode = 0;

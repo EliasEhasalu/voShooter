@@ -169,9 +169,10 @@ public class VoShooter extends Game {
      * with the server.
      */
     public void createNetworkClient() throws IOException {
-        if (client == null) client = new VoClient(this, HOST_ADDRESS, PORT_NUMBER);
+        client = new VoClient(this, HOST_ADDRESS, PORT_NUMBER);
         try {
             TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException ignored) { }
+        } catch (InterruptedException ignored) {
+        }
     }
 }
