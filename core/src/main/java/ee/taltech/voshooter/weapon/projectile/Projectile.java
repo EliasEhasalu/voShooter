@@ -9,8 +9,9 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositio
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
+import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
 
-public abstract class Projectile {
+public abstract class Projectile implements DamageDealer {
 
     private static int ID_GENERATOR = 0;
 
@@ -123,5 +124,9 @@ public abstract class Projectile {
 
     protected void reduceLifeTime(float amount) {
         lifeTime -= amount;
+    }
+
+    public Player getOwner() {
+        return owner;
     }
 }
