@@ -41,7 +41,8 @@ public class ClientProjectile extends Entity implements Drawable {
         super(msg.pos, msg.vel);
         this.id = msg.id;
         this.type = msg.type;
-        this.sprite = new Sprite(new Texture(SPRITE_MAP.getOrDefault(type, "textures/projectiles/pistolProjectile.png")));
+        this.sprite = new Sprite(new Texture(SPRITE_MAP
+                .getOrDefault(type, "textures/projectiles/pistolProjectile.png")));
         this.sprite.scale(spriteScale);
         this.sprite.setCenterX(getPosition().x);
         this.sprite.setCenterY(getPosition().y);
@@ -80,6 +81,12 @@ public class ClientProjectile extends Entity implements Drawable {
     @Override
     public float getScale() {
         return spriteScale;
+    }
+
+    /** @return MIN_VALUE. */
+    @Override
+    public int getKills() {
+        return Integer.MIN_VALUE;
     }
 
     /** @return The id of the projectile. */
