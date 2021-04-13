@@ -91,7 +91,6 @@ public class Player {
             body.setLinearVelocity(body.getLinearVelocity().cpy().limit(maxPlayerVelocity));
         }
         playerAcc.limit(0);  // Reset player acceleration vector after application.
-        System.out.println(this.toString());
     }
 
     /**
