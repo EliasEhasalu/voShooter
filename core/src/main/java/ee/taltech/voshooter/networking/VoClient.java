@@ -2,6 +2,7 @@ package ee.taltech.voshooter.networking;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -23,6 +24,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
 
 import java.io.IOException;
@@ -56,6 +58,7 @@ public class VoClient {
             private GameStarted gameStart;
             private Set<ProjectileCreated> projectilesCreatedSet = ConcurrentHashMap.newKeySet();
             private Set<ProjectileDestroyed> projectileDestroyedSet = ConcurrentHashMap.newKeySet();
+            private Set<PlayerDeath> playerDeathSet = ConcurrentHashMap.newKeySet();
             private ProjectilePositions projectileUpdate;
 
             @Override
@@ -91,7 +94,7 @@ public class VoClient {
                 } else if (message instanceof PlayerHealthUpdate) {
                     updatePlayerHealth((PlayerHealthUpdate) message);
                 } else if (message instanceof PlayerDeath) {
-                    handlePlayerDeath((PlayerDeath) message);
+                    playerDeathSet.add((PlayerDeath) message);
                 } else if (message instanceof PlayerDead) {
                     updatePlayerDead((PlayerDead) message);
                 } else if (message instanceof PlayerStatistics) {
@@ -125,6 +128,12 @@ public class VoClient {
                             for (ProjectileDestroyed msg : projectileDestroyedSet) {
                                 destroyProjectile(msg);
                                 projectileDestroyedSet.remove(msg);
+                            }
+                        }
+                        if (!playerDeathSet.isEmpty()) {
+                            for (PlayerDeath msg : playerDeathSet) {
+                                handlePlayerDeath(msg);
+                                playerDeathSet.remove(msg);
                             }
                         }
                     }
@@ -191,8 +200,21 @@ public class VoClient {
      */
     private void handlePlayerDeath(PlayerDeath msg) {
         parent.gameState.addDeathMessage(msg.playerId, msg.killerId);
-        if (msg.playerId != msg.killerId && msg.killerId == parent.gameState.userPlayer.getId()) {
-            SoundPlayer.play("soundfx/ui/kill.ogg");
+        if (msg.playerId != msg.killerId) {
+            if (msg.killerId == parent.gameState.userPlayer.getId()) {
+                SoundPlayer.play("soundfx/ui/kill.ogg");
+                parent.gameState.addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
+                                Gdx.graphics.getHeight() - MainScreen.KILLFEED_TOP_MARGIN - 18),
+                        "particleeffects/ui/killfeedkill",
+                        false,
+                        true);
+            } else if (msg.playerId == parent.gameState.userPlayer.getId()) {
+                parent.gameState.addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
+                                Gdx.graphics.getHeight() - MainScreen.KILLFEED_TOP_MARGIN - 18),
+                        "particleeffects/ui/killfeeddeath",
+                        false,
+                        true);
+            }
         }
     }
 

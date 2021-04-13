@@ -38,6 +38,7 @@ public class GameState {
     public Map<Long, ClientPlayer> players = new ConcurrentHashMap<>();
     private final Set<ClientProjectile> projectiles = ConcurrentHashMap.newKeySet();
     private final Set<ParticleEffect> particleEffects = ConcurrentHashMap.newKeySet();
+    private final Set<ParticleEffect> uiParticles = ConcurrentHashMap.newKeySet();
 
     public Queue<DeathMessage> deathMessages = new ArrayDeque<>();
 
@@ -95,7 +96,7 @@ public class GameState {
             }
             if (!userFound) {
                 entities.remove(e);
-                this.players.remove(e);
+                this.players.remove(e.getId());
                 drawableEntities.remove(e);
             }
         }
@@ -131,7 +132,7 @@ public class GameState {
         for (ClientProjectile p : projectiles) {
             if (msg.id == p.getId()) {
                 projectiles.remove(p);
-                addParticleEffect(p.getPosition(), false, p.getParticlePath());
+                addParticleEffect(p.getPosition(), p.getParticlePath(), false, false);
                 break;
             }
         }
@@ -175,15 +176,20 @@ public class GameState {
      * @param pos Position of the particle effect.
      * @param looping If the particle is looping or not.
      * @param path Path to the particle effect in assets.
+     * @param isUI If the particle should be rendered on the UI.
      */
-    public void addParticleEffect(Vector2 pos, boolean looping, String path) {
+    public void addParticleEffect(Vector2 pos, String path, boolean looping, boolean isUI) {
         if (AppPreferences.getParticlesOn()) {
             ParticleEffect pe = new ParticleEffect();
             pe.load(Gdx.files.internal(path), Gdx.files.internal("textures/particles"));
             pe.setPosition(pos.x, pos.y);
             pe.start();
 
-            particleEffects.add(pe);
+            if (isUI) {
+                uiParticles.add(pe);
+            } else {
+                particleEffects.add(pe);
+            }
         }
     }
 
@@ -193,6 +199,7 @@ public class GameState {
      */
     public void particleEffectFinished(ParticleEffect pe) {
         particleEffects.remove(pe);
+        uiParticles.remove(pe);
     }
 
     /**
@@ -219,5 +226,10 @@ public class GameState {
     /** @return Set of particle effects currently in the game. */
     public Set<ParticleEffect> getParticleEffects() {
         return particleEffects;
+    }
+
+    /** @return Set of the UI particles. */
+    public Set<ParticleEffect> getUiParticles() {
+        return uiParticles;
     }
 }
