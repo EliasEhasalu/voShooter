@@ -19,7 +19,7 @@ public class Flamethrower extends ProjectileWeapon {
      * @param wielder The player who wields this weapon.
      */
     public Flamethrower(Player wielder) {
-        super(wielder, COOL_DOWN);
+        super(wielder, COOL_DOWN, Type.FLAMETHROWER);
     }
 
     @Override

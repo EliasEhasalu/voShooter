@@ -14,7 +14,7 @@ public class MachineGun extends ProjectileWeapon {
     public static final float BULLET_SPREAD = 10f;
 
     public MachineGun(Player owner) {
-        super(owner, BASE_COOL_DOWN);
+        super(owner, BASE_COOL_DOWN, Type.MACHINE_GUN);
     }
 
     @Override

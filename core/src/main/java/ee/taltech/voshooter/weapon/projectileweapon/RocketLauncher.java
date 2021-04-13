@@ -9,7 +9,7 @@ public class RocketLauncher extends ProjectileWeapon {
     private static final float COOL_DOWN = 1f;
 
     public RocketLauncher(Player wielder) {
-        super(wielder, COOL_DOWN);
+        super(wielder, COOL_DOWN, Type.ROCKET_LAUNCHER);
     }
 
     @Override

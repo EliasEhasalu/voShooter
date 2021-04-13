@@ -9,7 +9,7 @@ public class Pistol extends ProjectileWeapon {
     private static final float BASE_COOL_DOWN = 0.25f;
 
     public Pistol(Player owner) {
-        super(owner, BASE_COOL_DOWN);
+        super(owner, BASE_COOL_DOWN, Type.PISTOL);
     }
 
     @Override

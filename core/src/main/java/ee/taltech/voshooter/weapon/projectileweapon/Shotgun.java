@@ -15,7 +15,7 @@ public class Shotgun extends ProjectileWeapon {
      * @param wielder The player who wields this weapon.
      */
     public Shotgun(Player wielder) {
-        super(wielder, COOL_DOWN);
+        super(wielder, COOL_DOWN, Type.SHOTGUN);
     }
 
     @Override
