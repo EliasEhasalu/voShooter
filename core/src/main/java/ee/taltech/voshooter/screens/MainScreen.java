@@ -44,8 +44,10 @@ import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 
 public class MainScreen implements Screen {
@@ -387,7 +389,8 @@ public class MainScreen implements Screen {
 
         killfeedFont.setColor(Color.WHITE);
         int i = parent.gameState.deathMessages.size() - 1;
-        for (DeathMessage msg : parent.gameState.deathMessages) {
+        Queue<DeathMessage> messages = new ArrayDeque<>(parent.gameState.deathMessages);
+        for (DeathMessage msg : messages) {
             GlyphLayout playerLayout = new GlyphLayout();
             playerLayout.setText(killfeedFont, msg.getPlayer().getName());
 
