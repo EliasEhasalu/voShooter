@@ -42,6 +42,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
+import ee.taltech.voshooter.soundeffects.SoundPlayer;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -516,5 +517,6 @@ public class MainScreen implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
+        SoundPlayer.dispose();
     }
 }
