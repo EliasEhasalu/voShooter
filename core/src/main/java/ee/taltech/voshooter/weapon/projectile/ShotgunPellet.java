@@ -23,7 +23,7 @@ public class ShotgunPellet extends Bullet {
 
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
-                p.takeDamage(DAMAGE);
+                p.takeDamage(DAMAGE, this);
                 destroy();
             }
         }

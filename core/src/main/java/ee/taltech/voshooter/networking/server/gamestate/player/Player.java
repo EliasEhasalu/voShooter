@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
+import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerManager;
 import ee.taltech.voshooter.networking.server.gamestate.player.status.Burning;
@@ -29,6 +30,7 @@ public class Player {
     private int deaths;
     private int kills;
 
+    private transient VoConnection connection;
     private transient Body body;
     private transient Weapon currentWeapon = new Pistol(this);
     private final transient PlayerStatusManager statusManager = new PlayerStatusManager(this);
@@ -45,11 +47,12 @@ public class Player {
      * @param id The ID associated with the player.
      * @param name The name associated with the player.
      */
-    public Player(PlayerManager playerManager, long id, String name) {
+    public Player(PlayerManager playerManager, VoConnection connection, long id, String name) {
         this.id = id;
         this.name = name;
         this.health = MAX_HEALTH;
 
+        this.connection = connection;
         this.playerManager = playerManager;
     }
 
@@ -237,5 +240,13 @@ public class Player {
 
     private StatisticsTracker getStatisticsTracker() {
         return getGame().getStatisticsTracker();
+    }
+
+    public VoConnection getConnection() {
+        return connection;
+    }
+
+    public float getTimeToRespawn() {
+        return respawnTime;
     }
 }

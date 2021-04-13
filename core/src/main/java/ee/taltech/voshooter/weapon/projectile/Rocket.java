@@ -38,7 +38,7 @@ public class Rocket extends Projectile {
         for (Player p : owner.getPlayerManager().getPlayers()) {
             if (Vector2.dst(currPos.x, currPos.y, p.getPos().x, p.getPos().y) < EXPLOSION_RADIUS) {
                 p.getBody().applyLinearImpulse(p.getPos().cpy().sub(currPos).scl(EXPLOSION_FORCE), p.getPos(), true);
-                p.takeDamage(DAMAGE);
+                p.takeDamage(DAMAGE, this);
             }
         }
     }
