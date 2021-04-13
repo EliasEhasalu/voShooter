@@ -42,9 +42,6 @@ public class Game extends Thread {
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
     private final InputHandler inputHandler = new InputHandler();
 
-    public boolean sendUpdates;
-    private int playerUpdateTick = 0;
-
     /**
      * Construct the game.
      * @param gameMode The game mode for the game.
