@@ -45,7 +45,7 @@ public abstract class Projectile {
         this.lifeTime = lifeTime;
         this.id = ID_GENERATOR++;
 
-        this.body = ShapeFactory.getProjectileBody(type, owner.getGame().getWorld(), pos, vel);
+        this.body = ShapeFactory.getProjectileBody(type, owner.getWorld(), pos, vel);
         this.body.setUserData(this);  // Have the body remember this rocket object.
     }
 
@@ -106,23 +106,6 @@ public abstract class Projectile {
                 PixelToSimulation.toPixels(getPosition()),
                 PixelToSimulation.toPixels(getVelocity())
         );
-    }
-
-    /**
-     * Update player deaths and kills.
-     * @param p that died.
-     * @param killer that killed.
-     */
-    public void updatePlayers(Player p, Player killer) {
-        if (p.deathTick) {
-            if (killer.equals(p)) {
-                killer.removeKill();
-            } else {
-                killer.addKill();
-            }
-            p.setKillerId(killer.getId());
-        }
-        killer.getGame().sendUpdates = true;
     }
 
     /** @return The position of the projectile in world space. */

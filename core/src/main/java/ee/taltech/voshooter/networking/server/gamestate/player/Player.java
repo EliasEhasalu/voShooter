@@ -2,34 +2,32 @@ package ee.taltech.voshooter.networking.server.gamestate.player;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
+import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerManager;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
-import ee.taltech.voshooter.weapon.projectileweapon.Shotgun;
 
 public class Player {
 
-    private transient float basePlayerAcceleration = (float) (800f / Game.TICK_RATE_IN_HZ);
-    private final transient float MAX_PLAYER_VELOCITY = 10f;
-
-    private transient Game game;
+    public static final Integer MAX_HEALTH = 100;
+    private static final float RESPAWN_TIME = 5f;
 
     private long id;
     private String name;
     private Integer health;
     public Vector2 initialPos;
     private float respawnTime = 5f;
-    private static final float RESPAWN_TIME = 5f;
     public boolean deathTick = false;
     private long killerId;
     private int deaths;
     private int kills;
 
-    public static final Integer MAX_HEALTH = 100;
     private transient Body body;
     private transient Weapon currentWeapon = new Pistol(this);
-    private transient PlayerStatusManager statusManager = new PlayerStatusManager(this);
+    private final transient PlayerStatusManager statusManager = new PlayerStatusManager(this);
+    private transient PlayerManager playerManager;
 
     private final Vector2 playerAcc = new Vector2(0f, 0f);
     private Vector2 viewDirection = new Vector2(0f, 0f);
@@ -42,17 +40,12 @@ public class Player {
      * @param id The ID associated with the player.
      * @param name The name associated with the player.
      */
-    public Player(Game game, long id, String name) {
-        this.game = game;
+    public Player(PlayerManager playerManager, long id, String name) {
         this.id = id;
         this.name = name;
         this.health = MAX_HEALTH;
 
-        if (id == 1) this.currentWeapon = new Shotgun(this);
-    }
-
-    public PlayerStatusManager getStatusManager() {
-        return statusManager;
+        this.playerManager = playerManager;
     }
 
     /**
@@ -70,6 +63,7 @@ public class Player {
      * @param yDir The direction to move on the y-axis.
      */
     public void addMoveDirection(int xDir, int yDir) {
+        float basePlayerAcceleration = (float) (800f / Game.TICK_RATE_IN_HZ);
         Vector2 moveVector = new Vector2(basePlayerAcceleration * xDir, basePlayerAcceleration * yDir);
         playerAcc.add(moveVector);
         playerAcc.limit(basePlayerAcceleration);
@@ -89,11 +83,15 @@ public class Player {
      * Update the player's position.
      */
     private void move() {
+        float maxPlayerVelocity = 10f;
+
         body.applyLinearImpulse(playerAcc, body.getPosition(), true);
-        if (body.getLinearVelocity().len() > MAX_PLAYER_VELOCITY) {
-            body.setLinearVelocity(body.getLinearVelocity().cpy().limit(MAX_PLAYER_VELOCITY));
+
+        if (body.getLinearVelocity().len() > maxPlayerVelocity) {
+            body.setLinearVelocity(body.getLinearVelocity().cpy().limit(maxPlayerVelocity));
         }
         playerAcc.limit(0);  // Reset player acceleration vector after application.
+        System.out.println(this.toString());
     }
 
     /**
@@ -123,7 +121,7 @@ public class Player {
     public void respawn() {
         if (respawnTime <= 0) {
             health = MAX_HEALTH;
-            body.setTransform(game.getSpawnPoint(), 0f);
+            body.setTransform(getSpawnPoint(), 0f);
             respawnTime = RESPAWN_TIME;
         } else {
             respawnTime -= (1 / Game.TICK_RATE_IN_HZ);
@@ -179,10 +177,6 @@ public class Player {
         this.body = b;
     }
 
-    public Game getGame() {
-        return game;
-    }
-
     public Body getBody() {
         return body;
     }
@@ -192,6 +186,10 @@ public class Player {
      */
     public int getDeaths() {
         return deaths;
+    }
+
+    private Vector2 getSpawnPoint() {
+        return playerManager.getSpawnPoint();
     }
 
     /**
@@ -247,5 +245,21 @@ public class Player {
      */
     public Weapon getWeapon() {
         return currentWeapon;
+    }
+
+    public World getWorld() {
+        return playerManager.getWorld();
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
+    }
+
+    public boolean isAlive() {
+        return (health > 0);
+    }
+
+    public Game getGame() {
+        return playerManager.getGame();
     }
 }
