@@ -115,6 +115,7 @@ public class VoClient {
                             projectileUpdate = null;
                         }
                         if (!projectilesCreatedSet.isEmpty()) {
+                            SoundPlayer.play("soundfx/ui/shoot.ogg");
                             for (ProjectileCreated msg : projectilesCreatedSet) {
                                 createProjectile(msg);
                                 projectilesCreatedSet.remove(msg);
