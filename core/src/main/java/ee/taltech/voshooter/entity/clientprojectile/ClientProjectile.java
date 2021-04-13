@@ -46,7 +46,6 @@ public class ClientProjectile extends Entity implements Drawable {
         this.sprite.scale(spriteScale);
         this.sprite.setCenterX(getPosition().x);
         this.sprite.setCenterY(getPosition().y);
-        System.out.println(position);
     }
 
     /**

@@ -115,6 +115,7 @@ public class VoClient {
                             projectileUpdate = null;
                         }
                         if (!projectilesCreatedSet.isEmpty()) {
+                            SoundPlayer.play("soundfx/ui/shoot.ogg");
                             for (ProjectileCreated msg : projectilesCreatedSet) {
                                 createProjectile(msg);
                                 projectilesCreatedSet.remove(msg);
@@ -169,10 +170,8 @@ public class VoClient {
      * @param msg The message containing information about player positions.
      */
     private void updatePlayerPositions(PlayerPositionUpdate msg) {
-        for (ClientPlayer p : parent.gameState.players) {
-            if (p.getId() == msg.id) {
-                p.setPos(msg.pos);
-            }
+        if (parent.gameState.players.containsKey(msg.id)) {
+            parent.gameState.players.get(msg.id).setPos(msg.pos);
         }
     }
 
@@ -181,10 +180,8 @@ public class VoClient {
      * @param msg time until respawn.
      */
     private void updatePlayerDead(PlayerDead msg) {
-        for (ClientPlayer p : parent.gameState.players) {
-            if (p.getId() == msg.id) {
-                p.respawnTimer = msg.timeToRespawn;
-            }
+        if (parent.gameState.players.containsKey(msg.id)) {
+            parent.gameState.players.get(msg.id).respawnTimer = msg.timeToRespawn;
         }
     }
 
@@ -204,10 +201,8 @@ public class VoClient {
      * @param msg The message containing info about player health.
      */
     private void updatePlayerHealth(PlayerHealthUpdate msg) {
-        for (ClientPlayer p : parent.gameState.players) {
-            if (p.getId() == msg.id) {
-                p.setHealth(msg.health);
-            }
+        if (parent.gameState.players.containsKey(msg.id)) {
+            parent.gameState.players.get(msg.id).setHealth(msg.health);
         }
     }
 
@@ -216,11 +211,10 @@ public class VoClient {
      * @param msg The message containing info about the player.
      */
     private void updatePlayerStatistics(PlayerStatistics msg) {
-        for (ClientPlayer p : parent.gameState.players) {
-            if (p.getId() == msg.id) {
-                p.setDeaths(msg.deaths);
-                p.setKills(msg.kills);
-            }
+        if (parent.gameState.players.containsKey(msg.id)) {
+            ClientPlayer p = parent.gameState.players.get(msg.id);
+            p.setKills(msg.kills);
+            p.setDeaths(msg.deaths);
         }
     }
 
@@ -229,10 +223,8 @@ public class VoClient {
      * @param msg The message describing the poses of the players.
      */
     private void updatePlayerViewDirections(PlayerViewUpdate msg) {
-        for (ClientPlayer p : parent.gameState.players) {
-            if (p.getId() == msg.id) {
-                p.getSprite().setRotation(msg.viewDirection.angleDeg());
-            }
+        if (parent.gameState.players.containsKey(msg.id)) {
+            parent.gameState.players.get(msg.id).getSprite().setRotation(msg.viewDirection.angleDeg());
         }
     }
 
