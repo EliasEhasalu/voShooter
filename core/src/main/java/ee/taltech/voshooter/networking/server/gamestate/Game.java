@@ -135,13 +135,9 @@ public class Game extends Thread {
 
         world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);
 
-        sendUpdatesToPlayers();
-        clearPlayerInputs();
-    }
-
-    private void sendUpdatesToPlayers() {
         sendPlayerPoseUpdates();
         entityManagerHub.sendUpdates();
+        clearPlayerInputs();
     }
 
     /**
