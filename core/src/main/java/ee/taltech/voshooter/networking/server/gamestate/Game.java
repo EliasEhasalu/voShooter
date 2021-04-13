@@ -145,10 +145,6 @@ public class Game extends Thread {
                .collect(Collectors.toList());
     }
 
-    public World getWorld() {
-        return world;
-    }
-
     public Set<VoConnection> getConnections() {
         return connectionInputs.keySet();
     }

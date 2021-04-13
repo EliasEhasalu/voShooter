@@ -21,7 +21,7 @@ public class PlayerSpawner {
         add(new Vector2(32, 32));
     }};
 
-    private final Map<Integer, List<Vector2>> SPAWN_POINTS = new HashMap<Integer, List<Vector2>>() {{
+    private final Map<Integer, List<Vector2>> SPAWN_POINTS_BY_MAP = new HashMap<Integer, List<Vector2>>() {{
         put(1, map1Spawns);
     }};
 
@@ -30,7 +30,8 @@ public class PlayerSpawner {
      * @return A spawn point for a player.
      */
     public Vector2 getSpawnPointForCurrentMap() {
-        return SPAWN_POINTS.get(currentMap).get(R.nextInt(SPAWN_POINTS.size()));
+        List<Vector2> spawnPoints = SPAWN_POINTS_BY_MAP.get(currentMap);
+        return spawnPoints.get(R.nextInt(spawnPoints.size()));
     }
 
     public void setMap(int map) {
