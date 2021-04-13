@@ -27,10 +27,10 @@ public class Flamethrower extends ProjectileWeapon {
         if (canFire()) {
             remainingCoolDown = coolDown;
 
+            final float start = -(CONE_ANGLE) / 2;
+            final float end = (CONE_ANGLE) / 2;
+            final float inc = (end - start) / FLAME_COUNT;
             for (int i = 0; i < FLAME_COUNT; i++) {
-                final float start = -(CONE_ANGLE) / 2;
-                final float end = (CONE_ANGLE) / 2;
-                final float inc = (end - start) / FLAME_COUNT;
                 final float dist = rand.nextFloat() * FIREBALL_SPAWN_DISTANCE_VARIANCE;
 
                 Vector2 offset = wielder.getViewDirection().cpy().nor().rotateDeg(start + i * inc);

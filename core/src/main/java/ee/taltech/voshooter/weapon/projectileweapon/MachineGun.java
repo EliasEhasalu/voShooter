@@ -11,7 +11,7 @@ public class MachineGun extends ProjectileWeapon {
 
     private static final float BASE_COOL_DOWN = 0.06f;
     private static final Random random = new Random();
-    public static final float BULLET_SPREAD = 10f;
+    public static final int BULLET_SPREAD = 5;
 
     public MachineGun(Player owner) {
         super(owner, BASE_COOL_DOWN, Type.MACHINE_GUN);
@@ -21,10 +21,15 @@ public class MachineGun extends ProjectileWeapon {
     public void fire() {
         if (canFire()) {
             remainingCoolDown = coolDown;
-            final float start = -BULLET_SPREAD / 2;
-            final float angle = (random.nextInt(20) - BULLET_SPREAD) / 2;
+            final boolean randomDirection = random.nextBoolean();
+            final float randomAngle;
+            if (randomDirection) {
+                randomAngle = random.nextInt(BULLET_SPREAD) * -1;
+            } else {
+                randomAngle = random.nextInt(BULLET_SPREAD);
+            }
 
-            Vector2 offset = wielder.getViewDirection().cpy().nor().rotateDeg(start + angle);
+            Vector2 offset = wielder.getViewDirection().cpy().nor().rotateDeg(randomAngle);
 
             Projectile p = new PistolBullet(
                     wielder,

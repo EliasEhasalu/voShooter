@@ -241,6 +241,9 @@ public class MainScreen implements Screen {
                 case WEAPON_FLAMETHROWER:
                     inputsToSend.add(new ChangeWeapon(ActionType.WEAPON_FLAMETHROWER));
                     break;
+                case WEAPON_MACHINE_GUN:
+                    inputsToSend.add(new ChangeWeapon(ActionType.WEAPON_MACHINE_GUN));
+                    break;
                 default:
                     break;
             }
