@@ -191,7 +191,9 @@ public class MainScreen implements Screen {
             font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 2), tableTop);
             font.draw(hudBatch, String.valueOf(player.getDeaths()), tableLeft + (STATS_ROW_PAD * 3), tableTop);
             if (player.getDeaths() > 0) {
-                font.draw(hudBatch, String.valueOf(player.getKills() / player.getDeaths()),
+                font.draw(hudBatch,
+                        String.valueOf((double) Math.round((player.getKills()
+                                / (double) player.getDeaths()) * 100) / 100),
                         tableLeft + (STATS_ROW_PAD * 4), tableTop);
             } else {
                 font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 4), tableTop);
