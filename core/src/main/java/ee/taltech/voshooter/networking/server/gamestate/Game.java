@@ -136,6 +136,7 @@ public class Game extends Thread {
 
     /** Close the game simulation. */
     public void shutDown() {
+        System.out.println(connectionInputs);
         running = false;
     }
 
