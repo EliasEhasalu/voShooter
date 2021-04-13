@@ -10,6 +10,7 @@ import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectileweapon.Flamethrower;
+import ee.taltech.voshooter.weapon.projectileweapon.MachineGun;
 import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
 import ee.taltech.voshooter.weapon.projectileweapon.RocketLauncher;
 import ee.taltech.voshooter.weapon.projectileweapon.Shotgun;
@@ -54,6 +55,10 @@ public class InputHandler {
         } else if (a.weapon == ActionType.WEAPON_FLAMETHROWER) {
             if (!(c.getPlayer().getWeapon() instanceof Flamethrower)) {
                 weapon = new Flamethrower(c.getPlayer());
+            }
+        } else if (a.weapon == ActionType.WEAPON_MACHINE_GUN) {
+            if (!(c.getPlayer().getWeapon() instanceof MachineGun)) {
+                weapon = new MachineGun(c.getPlayer());
             }
         }
         if (weapon != null) {

@@ -39,6 +39,7 @@ public class ChangeControlsScreen implements Screen {
     private Label shotgun;
     private Label rocketLauncher;
     private Label flameThrower;
+    private Label machineGun;
     private TextButton returnToPreferencesScreen;
     private Map.Entry<Label, TextButton> changeControlEntry;
 
@@ -187,6 +188,13 @@ public class ChangeControlsScreen implements Screen {
                 put(flameThrower,
                         new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberFour()), skin));
             }
+            machineGun = new Label("Machine Gun", skin);
+            if (AppPreferences.getNumberFiveIsKey()) {
+                put(machineGun, new TextButton(Input.Keys.toString(AppPreferences.getNumberFive()), skin));
+            } else {
+                put(machineGun,
+                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberFive()), skin));
+            }
         }};
     }
 
@@ -262,6 +270,9 @@ public class ChangeControlsScreen implements Screen {
         } else if (key.equals(flameThrower)) {
             AppPreferences.setNumberFour(inputKey);
             AppPreferences.setNumberFourIsKey(true);
+        } else if (key.equals(machineGun)) {
+            AppPreferences.setNumberFive(inputKey);
+            AppPreferences.setNumberFiveIsKey(true);
         }
         changeControlEntry.getValue().setText(Input.Keys.toString(inputKey));
         setButtonsWhite();
@@ -304,6 +315,9 @@ public class ChangeControlsScreen implements Screen {
         } else if (key.equals(flameThrower)) {
             AppPreferences.setNumberFour(inputButton);
             AppPreferences.setNumberFourIsKey(false);
+        } else if (key.equals(machineGun)) {
+            AppPreferences.setNumberFive(inputButton);
+            AppPreferences.setNumberFiveIsKey(false);
         }
         changeControlEntry.getValue().setText(AppPreferences.stringRepresentation(inputButton));
         setButtonsWhite();
