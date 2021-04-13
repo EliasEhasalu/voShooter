@@ -1,7 +1,7 @@
 package ee.taltech.voshooter.networking.server.gamestate.entitymanager;
 
 import com.badlogic.gdx.physics.box2d.World;
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;

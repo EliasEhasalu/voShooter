@@ -1,6 +1,6 @@
 package ee.taltech.voshooter.weapon.projectileweapon;
 
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.weapon.projectile.PistolBullet;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 

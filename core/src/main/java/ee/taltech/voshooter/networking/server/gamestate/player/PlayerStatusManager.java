@@ -1,11 +1,11 @@
-package ee.taltech.voshooter.networking.server.gamestate;
+package ee.taltech.voshooter.networking.server.gamestate.player;
 
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.Game;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class StatusManager {
+public class PlayerStatusManager {
 
     public enum Debuff {
         BURNING
@@ -20,7 +20,7 @@ public class StatusManager {
         put(Debuff.BURNING, 10 * HERTZ);
     }};
 
-    public StatusManager(Player parent) {
+    public PlayerStatusManager(Player parent) {
         this.parent = parent;
     }
 
@@ -44,12 +44,7 @@ public class StatusManager {
 
     private void applyEffects() {
         for (Map.Entry<Debuff, Integer> e : debuffDurations.entrySet()) {
-            switch (e.getKey()) {
-                case BURNING:
-                    burn(parent);
-                default:
-                    // No op
-            }
+            if (e.getKey() == Debuff.BURNING) burn(parent);
         }
     }
 

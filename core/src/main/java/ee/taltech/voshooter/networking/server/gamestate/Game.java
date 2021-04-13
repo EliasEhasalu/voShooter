@@ -2,22 +2,11 @@ package ee.taltech.voshooter.networking.server.gamestate;
 
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.headless.HeadlessFileHandle;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.objects.CircleMapObject;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
-import com.badlogic.gdx.maps.objects.PolylineMapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.controller.ActionType;
-import ee.taltech.voshooter.networking.messages.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
@@ -33,10 +22,12 @@ import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.collision.CollisionHandler;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.HijackedTmxLoader;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.LevelGenerator;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerSpawner;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectileweapon.Flamethrower;
 import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
@@ -78,7 +69,7 @@ public class Game extends Thread {
      */
     public Game(int gameMode) {
         setCurrentMap(gameMode);
-        generateTerrain();
+        LevelGenerator.generateLevel(world, currentMap);
 
         world.setContactListener(collisionHandler);
     }
@@ -292,44 +283,6 @@ public class Game extends Thread {
         if (gameMode == 1) {
             currentMap = new HijackedTmxLoader(fileName -> new HeadlessFileHandle(fileName, Files.FileType.Classpath))
                     .load("tileset/vo_shooter_map.tmx");
-        }
-    }
-
-    /**
-     * Add the collidable objects from the tiled map to the world object.
-     */
-    private void generateTerrain() {
-        MapObjects objects;
-
-        for (MapLayer l : currentMap.getLayers()) {
-            if (l.getName().equals("WallsObjects")) {
-                objects = l.getObjects();
-                for (MapObject object : objects) {
-                    Shape shape;
-
-                    if (object instanceof RectangleMapObject) {
-                        shape = ShapeFactory.getRectangle((RectangleMapObject) object);
-                    } else if (object instanceof PolygonMapObject) {
-                        shape = ShapeFactory.getPolygon((PolygonMapObject) object);
-                    } else if (object instanceof PolylineMapObject) {
-                        shape = ShapeFactory.getPolyline((PolylineMapObject) object);
-                    } else if (object instanceof CircleMapObject) {
-                        shape = ShapeFactory.getCircle((CircleMapObject) object);
-                    } else {
-                        continue;
-                    }
-
-                    BodyDef bodyDef = new BodyDef();
-                    bodyDef.type = BodyDef.BodyType.StaticBody;
-                    Body body = world.createBody(bodyDef);
-                    Fixture f = body.createFixture(shape, 1);
-                    f.setFriction(0f);
-                    f.setRestitution(1f);
-
-                    shape.dispose();
-                }
-                break;
-            }
         }
     }
 }
