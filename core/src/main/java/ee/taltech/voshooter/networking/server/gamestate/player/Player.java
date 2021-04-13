@@ -6,7 +6,12 @@ import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerManager;
+import ee.taltech.voshooter.networking.server.gamestate.player.status.Burning;
+import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
+import ee.taltech.voshooter.networking.server.gamestate.player.status.PlayerStatusManager;
+import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 import ee.taltech.voshooter.weapon.Weapon;
+import ee.taltech.voshooter.weapon.projectile.Fireball;
 import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
 
 public class Player {
@@ -73,7 +78,7 @@ public class Player {
      * Update the player.
      */
     public void update() {
-        if (health <= 0) respawn();
+        if (!(isAlive())) respawn();
         statusManager.update();
         currentWeapon.coolDown();
         move();
@@ -108,11 +113,19 @@ public class Player {
     public void takeDamage(int amount) {
         if (health > 0) {
             health -= amount;
-            if (health <= 0) {
-                deathTick = true;
-                deaths++;
-            }
+            if (health <= 0) die();
         }
+    }
+
+    public void takeDamage(int amount, DamageDealer source) {
+        if (source instanceof Fireball) statusManager.applyDebuff(new Burning(this, source));
+        getStatisticsTracker().setLastDamageTakenFrom(this, source);
+
+        takeDamage(amount);
+    }
+
+    private void die() {
+        getStatisticsTracker().incrementDeaths(this);
     }
 
     /**
@@ -193,47 +206,6 @@ public class Player {
     }
 
     /**
-     * @return the amount of times this player has killed.
-     */
-    public int getKills() {
-        return kills;
-    }
-
-    /**
-     * Add a kill for this person.
-     */
-    public void addKill() {
-        this.kills++;
-    }
-
-    /**
-     * Remove a kill from this person.
-     */
-    public void removeKill() {
-        this.kills--;
-    }
-
-    /**
-     * @return how much time is left until respawn.
-     */
-    public float getRespawnTime() {
-        return respawnTime;
-    }
-
-    /**
-     * Set killerId to be the id of the player that killed this player.
-     * @param id Killer id.
-     */
-    public void setKillerId(long id) {
-        killerId = id;
-    }
-
-    /** @return The id of the player that killed this player. */
-    public long getKillerId() {
-        return killerId;
-    }
-
-    /**
      * @param weapon to give the player.
      */
     public void setWeapon(Weapon weapon) {
@@ -261,5 +233,9 @@ public class Player {
 
     public Game getGame() {
         return playerManager.getGame();
+    }
+
+    private StatisticsTracker getStatisticsTracker() {
+        return getGame().getStatisticsTracker();
     }
 }

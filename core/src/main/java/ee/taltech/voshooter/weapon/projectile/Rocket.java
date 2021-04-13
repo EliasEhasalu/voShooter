@@ -42,4 +42,9 @@ public class Rocket extends Projectile {
             }
         }
     }
+
+    @Override
+    public Object getDamageSource() {
+        return getOwner();
+    }
 }

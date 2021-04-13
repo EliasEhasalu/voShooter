@@ -28,7 +28,7 @@ public class Fireball extends Bullet {
         ) {
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
-                p.takeDamage(DAMAGE);
+                p.takeDamage(DAMAGE, this);
             }
 
             if (!(fix.getBody().getUserData() instanceof Player)) destroy();
@@ -37,5 +37,10 @@ public class Fireball extends Bullet {
 
     @Override
     protected void uponDestroy() {
+    }
+
+    @Override
+    public Object getDamageSource() {
+        return getOwner();
     }
 }

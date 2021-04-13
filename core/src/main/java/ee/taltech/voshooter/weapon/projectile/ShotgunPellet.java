@@ -32,4 +32,9 @@ public class ShotgunPellet extends Bullet {
     @Override
     protected void uponDestroy() {
     }
+
+    @Override
+    public Object getDamageSource() {
+        return getOwner();
+    }
 }

@@ -13,6 +13,7 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.Hijacked
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.LevelGenerator;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
@@ -41,6 +42,7 @@ public class Game extends Thread {
     private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this);
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
     private final InputHandler inputHandler = new InputHandler();
+    private final StatisticsTracker statisticsTracker = new StatisticsTracker();
 
     /**
      * Construct the game.
@@ -73,6 +75,7 @@ public class Game extends Thread {
         world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);  // Update physics simulation.
 
         entityManagerHub.sendUpdates();                   // Send updates to players.
+        statisticsTracker.sendUpdates();
         clearPlayerInputs();                              // Clear inputs.
     }
 
@@ -151,6 +154,10 @@ public class Game extends Thread {
 
     public EntityManagerHub getEntityManagerHub() {
         return entityManagerHub;
+    }
+
+    public StatisticsTracker getStatisticsTracker() {
+        return statisticsTracker;
     }
 
     private void setCurrentMap(int gameMode) {
