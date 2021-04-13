@@ -78,7 +78,6 @@ public class MainScreen implements Screen {
     public static final float MINIMAP_SCALE = 0.22f;
 
     private final SpriteBatch hudBatch = new SpriteBatch();
-    private final SpriteBatch menusBatch = new SpriteBatch();
     private final Texture selectedGunBackground
             = new Texture("textures/hud/background/selectedGunBackground.png");
     private final Texture handgun = new Texture("textures/hud/item/handgun.png");
@@ -172,37 +171,32 @@ public class MainScreen implements Screen {
 
         drawMiniMap();
         drawHUD();
-        if (isStatsTabOpen) {
-            updateLeaderBoard();
-        }
     }
 
     /**
      * Draw the players statistics.
      */
     private void updateLeaderBoard() {
-        menusBatch.begin();
         int tableTop = Gdx.graphics.getHeight() - 30;
         int tableLeft = Gdx.graphics.getWidth() / 2 - 2 * STATS_ROW_PAD;
-        font.draw(menusBatch, "Player names", tableLeft, tableTop);
-        font.draw(menusBatch, "Kills", tableLeft + (STATS_ROW_PAD * 2), tableTop);
-        font.draw(menusBatch, "Deaths", tableLeft + (STATS_ROW_PAD * 3), tableTop);
-        font.draw(menusBatch, "KDR", tableLeft + (STATS_ROW_PAD * 4), tableTop);
+        font.draw(hudBatch, "Player names", tableLeft, tableTop);
+        font.draw(hudBatch, "Kills", tableLeft + (STATS_ROW_PAD * 2), tableTop);
+        font.draw(hudBatch, "Deaths", tableLeft + (STATS_ROW_PAD * 3), tableTop);
+        font.draw(hudBatch, "KDR", tableLeft + (STATS_ROW_PAD * 4), tableTop);
         tableTop -= 20;
         for (ClientPlayer player : parent.gameState.getPlayers().stream()
                 .sorted(Comparator.comparing(Drawable::getKills).reversed()).collect(Collectors.toList())) {
-            font.draw(menusBatch, player.getName(), tableLeft, tableTop);
-            font.draw(menusBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 2), tableTop);
-            font.draw(menusBatch, String.valueOf(player.getDeaths()), tableLeft + (STATS_ROW_PAD * 3), tableTop);
+            font.draw(hudBatch, player.getName(), tableLeft, tableTop);
+            font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 2), tableTop);
+            font.draw(hudBatch, String.valueOf(player.getDeaths()), tableLeft + (STATS_ROW_PAD * 3), tableTop);
             if (player.getDeaths() > 0) {
-                font.draw(menusBatch, String.valueOf(player.getKills() / player.getDeaths()),
+                font.draw(hudBatch, String.valueOf(player.getKills() / player.getDeaths()),
                         tableLeft + (STATS_ROW_PAD * 4), tableTop);
             } else {
-                font.draw(menusBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 4), tableTop);
+                font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 4), tableTop);
             }
             tableTop -= 20;
         }
-        menusBatch.end();
     }
 
     /**
@@ -429,6 +423,10 @@ public class MainScreen implements Screen {
                 parent.gameState.removeDeathMessage(msg);
             }
             i--;
+        }
+
+        if (isStatsTabOpen) {
+            updateLeaderBoard();
         }
 
         hudBatch.draw(selectedGunBackground, 64, 64);
