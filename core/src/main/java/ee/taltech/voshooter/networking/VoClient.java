@@ -23,6 +23,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+import ee.taltech.voshooter.soundeffects.SoundPlayer;
 
 import java.io.IOException;
 import java.util.List;
@@ -192,8 +193,10 @@ public class VoClient {
      * @param msg The message containing info about the death.
      */
     private void handlePlayerDeath(PlayerDeath msg) {
-        // TODO: method stub.
         parent.gameState.addDeathMessage(msg.playerId, msg.killerId);
+        if (msg.playerId != msg.killerId && msg.killerId == parent.gameState.userPlayer.getId()) {
+            SoundPlayer.play("soundfx/ui/kill.ogg");
+        }
     }
 
     /**
