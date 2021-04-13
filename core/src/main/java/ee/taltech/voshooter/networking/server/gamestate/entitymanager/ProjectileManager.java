@@ -31,7 +31,7 @@ public class ProjectileManager extends EntityManager {
     }
 
     @Override
-    public void sendUpdates() {
+    protected void sendUpdates() {
         ProjectilePositions update = new ProjectilePositions();
 
         update.updates = projectiles.stream()

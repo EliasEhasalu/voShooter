@@ -9,9 +9,11 @@ import java.util.List;
 
 public class AppPreferences {
 
+    private static final String PREFS_NAME = "voshooter";
     private static final String PREF_MUSIC_VOLUME = "volume";
     private static final String PREF_SOUND_VOL = "sound";
-    private static final String PREFS_NAME = "voshooter";
+    private static final String PREF_PARTICLE_TOGGLE = "particles";
+    private static final String PREF_MINIMAP = "minimap";
     private static final String PREF_PLAYER_COUNT = "4";
     private static final String PREF_GAME_MODE = "gamemode";
     private static final String PREF_MOVE_UP_KEY = "up key";
@@ -20,20 +22,22 @@ public class AppPreferences {
     private static final String PREF_MOVE_RIGHT_KEY = "right key";
     private static final String PREF_MOUSE_LEFT = "mouse left";
     private static final String PREF_MOUSE_RIGHT = "mouse right";
-    private static final String PREF_NUMBER_1 = "number 1";
-    private static final String PREF_NUMBER_2 = "number 2";
-    private static final String PREF_NUMBER_3 = "number 3";
-    private static final String PREF_NUMBER_4 = "number 4";
     private static final String PREF_UP_KEY_IS_KEY = "up key is key";
     private static final String PREF_DOWN_IS_KEY = "down key is key";
     private static final String PREF_LEFT_IS_KEY = "left key is key";
     private static final String PREF_RIGHT_IS_KEY = "right key is key";
     private static final String PREF_MOUSE_LEFT_IS_KEY = "left button is key";
     private static final String PREF_MOUSE_RIGHT_IS_KEY = "right button is key";
+    private static final String PREF_NUMBER_1 = "number 1";
+    private static final String PREF_NUMBER_2 = "number 2";
+    private static final String PREF_NUMBER_3 = "number 3";
+    private static final String PREF_NUMBER_4 = "number 4";
+    private static final String PREF_NUMBER_5 = "number 5";
     private static final String PREF_1_IS_KEY = "number 1 is key";
     private static final String PREF_2_IS_KEY = "number 2 is key";
     private static final String PREF_3_IS_KEY = "number 3 is key";
     private static final String PREF_4_IS_KEY = "number 4 is key";
+    private static final String PREF_5_IS_KEY = "number 5 is key";
     private static final List<String> BUTTONS_LIST = Arrays.asList("Left Button", "Right Button", "Middle Button", "Back", "Forward");
 
     /** @return A preferences object containing the player's preferences */
@@ -70,6 +74,36 @@ public class AppPreferences {
     public static void setSoundVolume(float volume) {
         getPrefs().putFloat(PREF_SOUND_VOL, volume);
         // Write to disk.
+        getPrefs().flush();
+    }
+
+    /** @return If particles are toggled on or off. */
+    public static boolean getParticlesOn() {
+        return getPrefs().getBoolean(PREF_PARTICLE_TOGGLE, true);
+    }
+
+    /**
+     * Set particle toggle on or off.
+     * @param on If particles should be on.
+     */
+    public static void setParticlesOn(boolean on) {
+        getPrefs().putBoolean(PREF_PARTICLE_TOGGLE, on);
+        getPrefs().flush();
+    }
+
+    /**
+     * @return If the minimap is toggled on or off.
+     */
+    public static boolean getMinimapOn() {
+        return getPrefs().getBoolean(PREF_MINIMAP, true);
+    }
+
+    /**
+     * Set if the minimap is toggled on or off.
+     * @param on If the minimap should be on.
+     */
+    public static void setMinimapOn(boolean on) {
+        getPrefs().putBoolean(PREF_MINIMAP, on);
         getPrefs().flush();
     }
 
@@ -245,6 +279,20 @@ public class AppPreferences {
         getPrefs().flush();
     }
 
+    /** @param key Set the key that triggers PREF_NUMBER_5 action. */
+    public static void setNumberFive(int key) {
+        getPrefs().putInteger(PREF_NUMBER_5, key);
+        // Write to disk.
+        getPrefs().flush();
+    }
+
+    /** @param isKey Set whether PREF_NUMBER_5 action is key. */
+    public static void setNumberFiveIsKey(boolean isKey) {
+        getPrefs().putBoolean(PREF_5_IS_KEY, isKey);
+        // Write to disk.
+        getPrefs().flush();
+    }
+
 
     /** @return Key that triggers MOVE_UP action. */
     public static int getUpKey() {
@@ -344,6 +392,16 @@ public class AppPreferences {
     /** @return Whether NUMBER_4 action is key. */
     public static boolean getNumberFourIsKey() {
         return getPrefs().getBoolean(PREF_4_IS_KEY, true);
+    }
+
+    /** @return Key that triggers NUMBER_5 action. */
+    public static int getNumberFive() {
+        return getPrefs().getInteger(PREF_NUMBER_5, Input.Keys.NUM_5);
+    }
+
+    /** @return Whether NUMBER_5 action is key. */
+    public static boolean getNumberFiveIsKey() {
+        return getPrefs().getBoolean(PREF_5_IS_KEY, true);
     }
 
     /**

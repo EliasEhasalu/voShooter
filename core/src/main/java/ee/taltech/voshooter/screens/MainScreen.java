@@ -3,10 +3,12 @@ package ee.taltech.voshooter.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -19,17 +21,18 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.gamestate.DeathMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
@@ -39,19 +42,26 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
+import ee.taltech.voshooter.soundeffects.SoundPlayer;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Queue;
+import java.util.stream.Collectors;
 
 
 public class MainScreen implements Screen {
 
     public static final float MINIMAP_ZOOM = 20f;
+    public static final int STATS_ROW_PAD = 120;
     private final VoShooter parent;
     private final Stage stage;
     private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     public VoShooter.Screen shouldChangeScreen;
     private BitmapFont font;
+    private BitmapFont killfeedFont;
     private boolean pauseMenuActive;
     private final TextButton exitButton = new TextButton("Exit", skin);
     private TextButton resumeButton;
@@ -69,7 +79,6 @@ public class MainScreen implements Screen {
     public static final int MINIMAP_MARGIN = 50;
     public static final int MARKER_SIZE = 20;
     public static final float MINIMAP_SCALE = 0.22f;
-    private final Table table = new Table();
 
     private final SpriteBatch hudBatch = new SpriteBatch();
     private final Texture selectedGunBackground
@@ -77,10 +86,17 @@ public class MainScreen implements Screen {
     private final Texture handgun = new Texture("textures/hud/item/handgun.png");
     private final Texture healthEmpty = new Texture("textures/hud/background/healthBarEmpty.png");
     private final Texture healthFull = new Texture("textures/hud/background/healthBarFull.png");
+    private final Texture killIcon = new Texture("textures/hud/background/killicon.png");
+    private final Texture selfKillIcon = new Texture("textures/hud/background/selfkillicon.png");
     private Texture selectedGun = handgun;
     private float healthFraction = 1.00f;
     private int currentAmmo = 16;
     private int maxAmmo = 20;
+    private boolean isStatsTabOpen = false;
+    public static final int KILLFEED_TOP_MARGIN = 50;
+    private static final int KILLFEED_RIGHT_MARGIN = 50;
+    private static final int KILLFEED_GAP = 38;
+    private static final int KILLFEED_ICON_SPACE = 10;
 
     /**
      * Construct the menu screen.
@@ -109,19 +125,14 @@ public class MainScreen implements Screen {
         font = new BitmapFont(Gdx.files.internal("bitmapFont/commodore.fnt"),
                 Gdx.files.internal("bitmapFont/commodore.png"), false);
         font.getData().setScale(0.6f);
+        killfeedFont = new BitmapFont(Gdx.files.internal("bitmapFont/pixeloperator.fnt"),
+                Gdx.files.internal("bitmapFont/pixeloperator.png"), false);
         MusicPlayer.stopMusic();
 
         // Have it handle player's input.
         Gdx.input.setInputProcessor(stage);
         stage.clear();
 
-        stage.addActor(table);
-        table.setPosition(Gdx.graphics.getWidth() - 240, Gdx.graphics.getHeight() - 40);
-        table.padRight(20);
-        table.add(new Label("Player", skin)).padRight(20);
-        table.add(new Label("Kills", skin)).padRight(20);
-        table.add(new Label("Deaths", skin)).padRight(20);
-        table.add(new Label("KDR", skin)).padRight(20);
         miniMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, MINIMAP_SCALE);
         minimapCamera = new OrthographicCamera(MINIMAP_WIDTH, MINIMAP_HEIGHT);
         minimapCamera.zoom = MINIMAP_ZOOM;
@@ -155,12 +166,6 @@ public class MainScreen implements Screen {
 
         stage.getBatch().setProjectionMatrix(camera.combined);
         stage.getBatch().begin();
-        table.clear();
-        table.padRight(20);
-        table.add(new Label("Player", skin)).padRight(20);
-        table.add(new Label("Kills", skin)).padRight(20);
-        table.add(new Label("Deaths", skin)).padRight(20);
-        table.add(new Label("KDR", skin)).padRight(20);
         drawEntities();
         drawProjectiles();
         drawParticles();
@@ -172,19 +177,31 @@ public class MainScreen implements Screen {
     }
 
     /**
-     * Draw the players statistics
-     * @param player
+     * Draw the players statistics.
      */
-    private void drawStatisticsTable(ClientPlayer player) {
-        table.row().padRight(20);
-        table.add(new Label(player.getName(), skin)).padRight(20);
-        table.add(new Label(String.valueOf(player.getKills()), skin)).padRight(20);
-        table.add(new Label(String.valueOf(player.getDeaths()), skin)).padRight(20);
-        if (player.getDeaths() > 0) {
-            table.add(new Label(String.valueOf(
-                    (double) Math.round((player.getKills() / (float) player.getDeaths()) * 100) / 100), skin));
-        } else {
-            table.add(new Label(String.valueOf(player.getKills()), skin));
+    private void updateLeaderBoard() {
+        int tableTop = Gdx.graphics.getHeight() - 30;
+        int tableLeft = Gdx.graphics.getWidth() / 2 - 2 * STATS_ROW_PAD;
+        font.draw(hudBatch, "Player names", tableLeft, tableTop);
+        font.draw(hudBatch, "Kills", tableLeft + (STATS_ROW_PAD * 2), tableTop);
+        font.draw(hudBatch, "Deaths", tableLeft + (STATS_ROW_PAD * 3), tableTop);
+        font.draw(hudBatch, "KDR", tableLeft + (STATS_ROW_PAD * 4), tableTop);
+        tableTop -= 20;
+        System.out.println(parent.gameState.getPlayers());
+        for (ClientPlayer player : parent.gameState.getPlayers().values().stream()
+                .sorted(Comparator.comparing(Drawable::getKills).reversed()).collect(Collectors.toList())) {
+            font.draw(hudBatch, player.getName(), tableLeft, tableTop);
+            font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 2), tableTop);
+            font.draw(hudBatch, String.valueOf(player.getDeaths()), tableLeft + (STATS_ROW_PAD * 3), tableTop);
+            if (player.getDeaths() > 0) {
+                font.draw(hudBatch,
+                        String.valueOf((double) Math.round((player.getKills()
+                                / (double) player.getDeaths()) * 100) / 100),
+                        tableLeft + (STATS_ROW_PAD * 4), tableTop);
+            } else {
+                font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 4), tableTop);
+            }
+            tableTop -= 20;
         }
     }
 
@@ -228,6 +245,9 @@ public class MainScreen implements Screen {
                     break;
                 case WEAPON_FLAMETHROWER:
                     inputsToSend.add(new ChangeWeapon(ActionType.WEAPON_FLAMETHROWER));
+                    break;
+                case WEAPON_MACHINE_GUN:
+                    inputsToSend.add(new ChangeWeapon(ActionType.WEAPON_MACHINE_GUN));
                     break;
                 default:
                     break;
@@ -286,6 +306,16 @@ public class MainScreen implements Screen {
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
                     setPauseTableVisibility(!resumeButton.isVisible());
+                } else if (keycode == Input.Keys.TAB) {
+                    isStatsTabOpen = true;
+                }
+                return true;
+            }
+
+            @Override
+            public boolean keyUp(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.TAB) {
+                    isStatsTabOpen = false;
                 }
                 return true;
             }
@@ -339,7 +369,6 @@ public class MainScreen implements Screen {
                 font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
                         drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
                         drawable.getPosition().y + 40);
-                drawStatisticsTable((ClientPlayer) drawable);
             }
         }
     }
@@ -371,6 +400,56 @@ public class MainScreen implements Screen {
      */
     private void drawHUD() {
         hudBatch.begin();
+
+        // Draw UI particles.
+        if (AppPreferences.getParticlesOn()) {
+            for (ParticleEffect pe : parent.gameState.getUiParticles()) {
+                pe.update(Gdx.graphics.getDeltaTime());
+                pe.draw(hudBatch);
+                if (pe.isComplete()) {
+                    parent.gameState.particleEffectFinished(pe);
+                }
+            }
+        }
+
+        killfeedFont.setColor(Color.WHITE);
+        int i = parent.gameState.deathMessages.size() - 1;
+        Queue<DeathMessage> messages = new ArrayDeque<>(parent.gameState.deathMessages);
+        for (DeathMessage msg : messages) {
+            GlyphLayout playerLayout = new GlyphLayout();
+            playerLayout.setText(killfeedFont, msg.getPlayer().getName());
+
+            final int playerX = Gdx.graphics.getWidth() - (int) playerLayout.width - KILLFEED_RIGHT_MARGIN;
+            final int playerY = Gdx.graphics.getHeight() - (i * KILLFEED_GAP) - KILLFEED_TOP_MARGIN;
+
+            if (msg.getKiller() != msg.getPlayer()) {
+                GlyphLayout killerLayout = new GlyphLayout();
+                killerLayout.setText(killfeedFont, msg.getKiller().getName());
+
+                hudBatch.draw(killIcon,
+                        playerX - killIcon.getWidth() - KILLFEED_ICON_SPACE,
+                        playerY - killIcon.getHeight() / 1.4f);
+                killfeedFont.draw(hudBatch, killerLayout,
+                        playerX - killIcon.getWidth() - killerLayout.width - 2 * KILLFEED_ICON_SPACE,
+                        playerY);
+            } else {
+                hudBatch.draw(selfKillIcon,
+                        playerX - selfKillIcon.getWidth() - KILLFEED_ICON_SPACE,
+                        playerY - selfKillIcon.getHeight() / 1.4f);
+            }
+
+            killfeedFont.draw(hudBatch, playerLayout, playerX, playerY);
+
+            if (msg.tick()) {
+                parent.gameState.removeDeathMessage(msg);
+            }
+            i--;
+        }
+
+        if (isStatsTabOpen) {
+            updateLeaderBoard();
+        }
+
         hudBatch.draw(selectedGunBackground, 64, 64);
         hudBatch.draw(selectedGun, 64, 64);
 
@@ -386,27 +465,32 @@ public class MainScreen implements Screen {
      * Draw the minimap in the render cycle.
      */
     private void drawMiniMap() {
-        miniMapRenderer.setView(minimapCamera);
-        miniMapRenderer.render();
-        minimapBatch.setProjectionMatrix(minimapCamera.combined);
-        minimapBatch.begin();
-        ClientPlayer player = parent.gameState.userPlayer;
-        Vector2 pos = player.getPosition();
-        minimapBatch.draw(minimapPlayer,
-                pos.x * MINIMAP_SCALE - MARKER_SIZE / 2f, pos.y * MINIMAP_SCALE - MARKER_SIZE / 2f,
-                MARKER_SIZE, MARKER_SIZE);
-        minimapBatch.end();
+        if (AppPreferences.getMinimapOn()) {
+            miniMapRenderer.setView(minimapCamera);
+            miniMapRenderer.render();
+            minimapBatch.setProjectionMatrix(minimapCamera.combined);
+
+            minimapBatch.begin();
+            ClientPlayer player = parent.gameState.userPlayer;
+            Vector2 pos = player.getPosition();
+            minimapBatch.draw(minimapPlayer,
+                    pos.x * MINIMAP_SCALE - MARKER_SIZE / 2f, pos.y * MINIMAP_SCALE - MARKER_SIZE / 2f,
+                    MARKER_SIZE, MARKER_SIZE);
+            minimapBatch.end();
+        }
     }
 
     /**
      * Draw the particles to the sprite batch.
      */
     private void drawParticles() {
-        for (ParticleEffect pe : parent.gameState.getParticleEffects()) {
-            pe.update(Gdx.graphics.getDeltaTime());
-            pe.draw(stage.getBatch());
-            if (pe.isComplete()) {
-                parent.gameState.particleEffectFinished(pe);
+        if (AppPreferences.getParticlesOn()) {
+            for (ParticleEffect pe : parent.gameState.getParticleEffects()) {
+                pe.update(Gdx.graphics.getDeltaTime());
+                pe.draw(stage.getBatch());
+                if (pe.isComplete()) {
+                    parent.gameState.particleEffectFinished(pe);
+                }
             }
         }
     }
@@ -453,5 +537,6 @@ public class MainScreen implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
+        SoundPlayer.dispose();
     }
 }

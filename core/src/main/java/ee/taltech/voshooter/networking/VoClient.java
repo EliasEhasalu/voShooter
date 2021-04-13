@@ -2,13 +2,14 @@ package ee.taltech.voshooter.networking;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
@@ -23,6 +24,8 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+import ee.taltech.voshooter.screens.MainScreen;
+import ee.taltech.voshooter.soundeffects.SoundPlayer;
 
 import java.io.IOException;
 import java.util.List;
@@ -55,6 +58,7 @@ public class VoClient {
             private GameStarted gameStart;
             private Set<ProjectileCreated> projectilesCreatedSet = ConcurrentHashMap.newKeySet();
             private Set<ProjectileDestroyed> projectileDestroyedSet = ConcurrentHashMap.newKeySet();
+            private Set<PlayerDeath> playerDeathSet = ConcurrentHashMap.newKeySet();
             private ProjectilePositions projectileUpdate;
 
             @Override
@@ -90,7 +94,7 @@ public class VoClient {
                 } else if (message instanceof PlayerHealthUpdate) {
                     updatePlayerHealth((PlayerHealthUpdate) message);
                 } else if (message instanceof PlayerDeath) {
-                    handlePlayerDeath((PlayerDeath) message);
+                    playerDeathSet.add((PlayerDeath) message);
                 } else if (message instanceof PlayerDead) {
                     updatePlayerDead((PlayerDead) message);
                 } else if (message instanceof PlayerStatistics) {
@@ -114,6 +118,7 @@ public class VoClient {
                             projectileUpdate = null;
                         }
                         if (!projectilesCreatedSet.isEmpty()) {
+                            SoundPlayer.play("soundfx/ui/shoot.ogg");
                             for (ProjectileCreated msg : projectilesCreatedSet) {
                                 createProjectile(msg);
                                 projectilesCreatedSet.remove(msg);
@@ -123,6 +128,12 @@ public class VoClient {
                             for (ProjectileDestroyed msg : projectileDestroyedSet) {
                                 destroyProjectile(msg);
                                 projectileDestroyedSet.remove(msg);
+                            }
+                        }
+                        if (!playerDeathSet.isEmpty()) {
+                            for (PlayerDeath msg : playerDeathSet) {
+                                handlePlayerDeath(msg);
+                                playerDeathSet.remove(msg);
                             }
                         }
                     }
@@ -139,10 +150,6 @@ public class VoClient {
      */
     private void joinLobby(LobbyJoined msg) {
             parent.gameState.currentLobby.handleJoining(msg);
-    }
-
-    private void handlePlayerDeath(PlayerDeath msg) {
-        // TODO: method stub.
     }
 
     /**
@@ -172,10 +179,8 @@ public class VoClient {
      * @param msg The message containing information about player positions.
      */
     private void updatePlayerPositions(PlayerPositionUpdate msg) {
-        for (ClientPlayer p : parent.gameState.players) {
-            if (p.getId() == msg.id) {
-                p.setPos(msg.pos);
-            }
+        if (parent.gameState.players.containsKey(msg.id)) {
+            parent.gameState.players.get(msg.id).setPos(msg.pos);
         }
     }
 
@@ -184,9 +189,31 @@ public class VoClient {
      * @param msg time until respawn.
      */
     private void updatePlayerDead(PlayerDead msg) {
-        for (ClientPlayer p : parent.gameState.players) {
-            if (p.getId() == msg.id) {
-                p.respawnTimer = msg.timeToRespawn;
+        if (parent.gameState.players.containsKey(msg.id)) {
+            parent.gameState.players.get(msg.id).respawnTimer = msg.timeToRespawn;
+        }
+    }
+
+    /**
+     * Message received when a player dies.
+     * @param msg The message containing info about the death.
+     */
+    private void handlePlayerDeath(PlayerDeath msg) {
+        parent.gameState.addDeathMessage(msg.playerId, msg.killerId);
+        if (msg.playerId != msg.killerId) {
+            if (msg.killerId == parent.gameState.userPlayer.getId()) {
+                SoundPlayer.play("soundfx/ui/kill.ogg");
+                parent.gameState.addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
+                                Gdx.graphics.getHeight() - MainScreen.KILLFEED_TOP_MARGIN - 18),
+                        "particleeffects/ui/killfeedkill",
+                        false,
+                        true);
+            } else if (msg.playerId == parent.gameState.userPlayer.getId()) {
+                parent.gameState.addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
+                                Gdx.graphics.getHeight() - MainScreen.KILLFEED_TOP_MARGIN - 18),
+                        "particleeffects/ui/killfeeddeath",
+                        false,
+                        true);
             }
         }
     }
@@ -196,10 +223,8 @@ public class VoClient {
      * @param msg The message containing info about player health.
      */
     private void updatePlayerHealth(PlayerHealthUpdate msg) {
-        for (ClientPlayer p : parent.gameState.players) {
-            if (p.getId() == msg.id) {
-                p.setHealth(msg.health);
-            }
+        if (parent.gameState.players.containsKey(msg.id)) {
+            parent.gameState.players.get(msg.id).setHealth(msg.health);
         }
     }
 
@@ -208,11 +233,10 @@ public class VoClient {
      * @param msg The message containing info about the player.
      */
     private void updatePlayerStatistics(PlayerStatistics msg) {
-        for (ClientPlayer p : parent.gameState.players) {
-            if (p.getId() == msg.id) {
-                p.setDeaths(msg.deaths);
-                p.setKills(msg.kills);
-            }
+        if (parent.gameState.players.containsKey(msg.id)) {
+            ClientPlayer p = parent.gameState.players.get(msg.id);
+            p.setKills(msg.kills);
+            p.setDeaths(msg.deaths);
         }
     }
 
@@ -221,10 +245,8 @@ public class VoClient {
      * @param msg The message describing the poses of the players.
      */
     private void updatePlayerViewDirections(PlayerViewUpdate msg) {
-        for (ClientPlayer p : parent.gameState.players) {
-            if (p.getId() == msg.id) {
-                p.getSprite().setRotation(msg.viewDirection.angleDeg());
-            }
+        if (parent.gameState.players.containsKey(msg.id)) {
+            parent.gameState.players.get(msg.id).getSprite().setRotation(msg.viewDirection.angleDeg());
         }
     }
 

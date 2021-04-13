@@ -1,7 +1,7 @@
 package ee.taltech.voshooter.weapon.projectile;
 
 import com.badlogic.gdx.math.Vector2;
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
 public abstract class Bullet extends Projectile {
 

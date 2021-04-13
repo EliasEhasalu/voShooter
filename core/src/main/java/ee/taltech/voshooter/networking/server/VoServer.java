@@ -153,22 +153,6 @@ public class VoServer {
     }
 
     /**
-     * @param connection The connection.
-     */
-    private void handleLeaveLobby(VoConnection connection) {
-        String currentLobby = connection.user.currentLobby;
-        if (currentLobby != null) {
-            Lobby lobby = lobbies.get(connection.user.currentLobby);
-            lobby.removeConnection(connection);
-
-            // Delete unused lobbies.
-            if (lobby.getPlayerCount() == 0) {
-                lobbies.remove(lobby.getLobbyCode());
-            }
-        }
-    }
-
-    /**
      * Start a game upon valid request.
      * @param connection The connection that sent the start game request.
      */
@@ -226,6 +210,13 @@ public class VoServer {
     }
 
     /**
+     * @param connection The connection.
+     */
+    private void handleLeaveLobby(VoConnection connection) {
+        handleDisconnects(connection);
+    }
+
+    /**
      * Handle severed connections.
      * @param connection The connection that disconnected.
      */
@@ -236,8 +227,12 @@ public class VoServer {
                Lobby lobby = lobbies.get(connection.user.currentLobby);
                lobby.removeConnection(connection);
                if (lobby.getPlayerCount() == 0) {
-                   if (lobby.getGame() != null) lobby.getGame().shutDown();
-                   if (lobbyExists(lobby.getLobbyCode())) lobbies.remove(lobby.getLobbyCode());
+                   if (lobby.getGame() != null) {
+                       lobby.getGame().shutDown();
+                   }
+                   if (lobbyExists(lobby.getLobbyCode())) {
+                       lobbies.remove(lobby.getLobbyCode());
+                   }
                }
            }
        }

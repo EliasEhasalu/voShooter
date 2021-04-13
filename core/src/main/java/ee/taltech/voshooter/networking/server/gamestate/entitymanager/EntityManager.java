@@ -13,9 +13,9 @@ public abstract class EntityManager {
         this.game = game;
     }
 
-    public abstract void update();
+    protected abstract void update();
 
-    public abstract void sendUpdates();
+    protected abstract void sendUpdates();
 
     public abstract void add(Object p);
 }

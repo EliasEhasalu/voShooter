@@ -3,10 +3,11 @@ package ee.taltech.voshooter.gamestate;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Vector2;
+import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
@@ -15,9 +16,12 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositio
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.rendering.Drawable;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,10 +35,12 @@ public class GameState {
     public ClientPlayer userPlayer;
     public List<PlayerAction> currentInputs = new ArrayList<>();
 
-    public Set<ClientPlayer> players = ConcurrentHashMap.newKeySet();
+    public Map<Long, ClientPlayer> players = new ConcurrentHashMap<>();
     private final Set<ClientProjectile> projectiles = ConcurrentHashMap.newKeySet();
-
     private final Set<ParticleEffect> particleEffects = ConcurrentHashMap.newKeySet();
+    private final Set<ParticleEffect> uiParticles = ConcurrentHashMap.newKeySet();
+
+    public Queue<DeathMessage> deathMessages = new ArrayDeque<>();
 
     /**
      * @return The list of drawable entities.
@@ -46,7 +52,7 @@ public class GameState {
     /**
      * @return The list of players.
      */
-    public Set<ClientPlayer> getPlayers() {
+    public Map<Long, ClientPlayer> getPlayers() {
         return players;
     }
 
@@ -70,7 +76,7 @@ public class GameState {
             }
 
             if (e instanceof ClientPlayer) {
-                players.add((ClientPlayer) e);
+                players.put(((ClientPlayer) e).getId(), (ClientPlayer) e);
             }
         }
     }
@@ -80,7 +86,7 @@ public class GameState {
      * @param players currently in lobby.
      */
     public void updatePlayers(List<Player> players) {
-        for (ClientPlayer e : this.players) {
+        for (ClientPlayer e : this.players.values()) {
             boolean userFound = false;
             for (Player p : players) {
                 if (p.getId() == e.getId()) {
@@ -90,7 +96,7 @@ public class GameState {
             }
             if (!userFound) {
                 entities.remove(e);
-                this.players.remove(e);
+                this.players.remove(e.getId());
                 drawableEntities.remove(e);
             }
         }
@@ -126,7 +132,7 @@ public class GameState {
         for (ClientProjectile p : projectiles) {
             if (msg.id == p.getId()) {
                 projectiles.remove(p);
-                addParticleEffect(p.getPosition(), false, p.getParticlePath());
+                addParticleEffect(p.getPosition(), p.getParticlePath(), false, false);
                 break;
             }
         }
@@ -170,14 +176,21 @@ public class GameState {
      * @param pos Position of the particle effect.
      * @param looping If the particle is looping or not.
      * @param path Path to the particle effect in assets.
+     * @param isUI If the particle should be rendered on the UI.
      */
-    public void addParticleEffect(Vector2 pos, boolean looping, String path) {
-        ParticleEffect pe = new ParticleEffect();
-        pe.load(Gdx.files.internal(path), Gdx.files.internal("textures/particles"));
-        pe.setPosition(pos.x, pos.y);
-        pe.start();
+    public void addParticleEffect(Vector2 pos, String path, boolean looping, boolean isUI) {
+        if (AppPreferences.getParticlesOn()) {
+            ParticleEffect pe = new ParticleEffect();
+            pe.load(Gdx.files.internal(path), Gdx.files.internal("textures/particles"));
+            pe.setPosition(pos.x, pos.y);
+            pe.start();
 
-        particleEffects.add(pe);
+            if (isUI) {
+                uiParticles.add(pe);
+            } else {
+                particleEffects.add(pe);
+            }
+        }
     }
 
     /**
@@ -186,10 +199,37 @@ public class GameState {
      */
     public void particleEffectFinished(ParticleEffect pe) {
         particleEffects.remove(pe);
+        uiParticles.remove(pe);
+    }
+
+    /**
+     * Add a new death message.
+     * @param playerId The player that died.
+     * @param killerId The player that killed.
+     */
+    public void addDeathMessage(long playerId, long killerId) {
+        ClientPlayer player = players.getOrDefault(playerId, null);
+        ClientPlayer killer = players.getOrDefault(killerId, null);
+
+        DeathMessage msg = new DeathMessage(player, killer);
+        deathMessages.offer(msg);
+    }
+
+    /**
+     * Remove a message from the set of death messages.
+     * @param msg The message to remove.
+     */
+    public void removeDeathMessage(DeathMessage msg) {
+        deathMessages.poll();
     }
 
     /** @return Set of particle effects currently in the game. */
     public Set<ParticleEffect> getParticleEffects() {
         return particleEffects;
+    }
+
+    /** @return Set of the UI particles. */
+    public Set<ParticleEffect> getUiParticles() {
+        return uiParticles;
     }
 }

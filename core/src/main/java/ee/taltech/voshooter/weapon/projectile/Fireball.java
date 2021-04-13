@@ -2,8 +2,7 @@ package ee.taltech.voshooter.weapon.projectile;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import ee.taltech.voshooter.networking.messages.Player;
-import ee.taltech.voshooter.networking.server.gamestate.StatusManager;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
 public class Fireball extends Bullet {
 
@@ -29,10 +28,7 @@ public class Fireball extends Bullet {
         ) {
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
-                p.takeDamage(DAMAGE);
-                p.getStatusManager().setBurnApplier(owner);
-                p.getStatusManager().applyDebuff(StatusManager.Debuff.BURNING);
-                updatePlayers(p, owner);
+                p.takeDamage(DAMAGE, this);
             }
 
             if (!(fix.getBody().getUserData() instanceof Player)) destroy();
@@ -41,5 +37,10 @@ public class Fireball extends Bullet {
 
     @Override
     protected void uponDestroy() {
+    }
+
+    @Override
+    public Object getDamageSource() {
+        return getOwner();
     }
 }

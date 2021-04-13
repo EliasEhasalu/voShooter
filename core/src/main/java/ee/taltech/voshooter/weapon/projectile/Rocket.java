@@ -2,7 +2,7 @@ package ee.taltech.voshooter.weapon.projectile;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
 public class Rocket extends Projectile {
 
@@ -35,12 +35,16 @@ public class Rocket extends Projectile {
     private void explode() {
         Vector2 currPos = body.getPosition();
 
-        for (Player p : owner.getGame().getPlayers()) {
+        for (Player p : owner.getPlayerManager().getPlayers()) {
             if (Vector2.dst(currPos.x, currPos.y, p.getPos().x, p.getPos().y) < EXPLOSION_RADIUS) {
                 p.getBody().applyLinearImpulse(p.getPos().cpy().sub(currPos).scl(EXPLOSION_FORCE), p.getPos(), true);
-                p.takeDamage(DAMAGE);
-                updatePlayers(p, owner);
+                p.takeDamage(DAMAGE, this);
             }
         }
+    }
+
+    @Override
+    public Object getDamageSource() {
+        return getOwner();
     }
 }

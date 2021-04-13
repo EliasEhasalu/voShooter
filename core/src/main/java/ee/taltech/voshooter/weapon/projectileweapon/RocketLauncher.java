@@ -1,6 +1,6 @@
 package ee.taltech.voshooter.weapon.projectileweapon;
 
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 import ee.taltech.voshooter.weapon.projectile.Rocket;
 
@@ -9,7 +9,7 @@ public class RocketLauncher extends ProjectileWeapon {
     private static final float COOL_DOWN = 1f;
 
     public RocketLauncher(Player wielder) {
-        super(wielder, COOL_DOWN);
+        super(wielder, COOL_DOWN, Type.ROCKET_LAUNCHER);
     }
 
     @Override
