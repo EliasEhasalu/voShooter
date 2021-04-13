@@ -185,7 +185,7 @@ public class MainScreen implements Screen {
         font.draw(hudBatch, "Deaths", tableLeft + (STATS_ROW_PAD * 3), tableTop);
         font.draw(hudBatch, "KDR", tableLeft + (STATS_ROW_PAD * 4), tableTop);
         tableTop -= 20;
-        for (ClientPlayer player : parent.gameState.getPlayers().stream()
+        for (ClientPlayer player : parent.gameState.getPlayers().values().stream()
                 .sorted(Comparator.comparing(Drawable::getKills).reversed()).collect(Collectors.toList())) {
             font.draw(hudBatch, player.getName(), tableLeft, tableTop);
             font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 2), tableTop);
