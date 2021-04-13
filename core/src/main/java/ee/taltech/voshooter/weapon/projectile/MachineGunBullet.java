@@ -3,8 +3,9 @@ package ee.taltech.voshooter.weapon.projectile;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
 
-public class MachineGunBullet extends Bullet {
+public class MachineGunBullet extends Bullet implements DamageDealer {
 
     public static final float RADIUS = 0.05f;
     private static final float SPEED = 80f;
@@ -23,7 +24,7 @@ public class MachineGunBullet extends Bullet {
         ) {
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
-                p.takeDamage(DAMAGE);
+                p.takeDamage(DAMAGE, this);
             }
             destroy();
         }
@@ -31,5 +32,10 @@ public class MachineGunBullet extends Bullet {
 
     @Override
     protected void uponDestroy() {
+    }
+
+    @Override
+    public Object getDamageSource() {
+        return getOwner();
     }
 }
