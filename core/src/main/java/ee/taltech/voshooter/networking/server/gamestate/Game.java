@@ -2,46 +2,18 @@ package ee.taltech.voshooter.networking.server.gamestate;
 
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.headless.HeadlessFileHandle;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.objects.CircleMapObject;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
-import com.badlogic.gdx.maps.objects.PolylineMapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
-import ee.taltech.voshooter.controller.ActionType;
-import ee.taltech.voshooter.networking.messages.Player;
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
-import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
-import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
-import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
-import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.collision.CollisionHandler;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.HijackedTmxLoader;
-import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
-import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.LevelGenerator;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
-import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerSpawner;
-import ee.taltech.voshooter.weapon.Weapon;
-import ee.taltech.voshooter.weapon.projectileweapon.Flamethrower;
-import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
-import ee.taltech.voshooter.weapon.projectileweapon.RocketLauncher;
-import ee.taltech.voshooter.weapon.projectileweapon.Shotgun;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
@@ -69,8 +41,8 @@ public class Game extends Thread {
 
     private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this);
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
-    public boolean sendUpdates;
-    private int playerUpdateTick = 0;
+    private final InputHandler inputHandler = new InputHandler();
+    private final StatisticsTracker statisticsTracker = new StatisticsTracker(this);
 
     /**
      * Construct the game.
@@ -78,7 +50,7 @@ public class Game extends Thread {
      */
     public Game(int gameMode) {
         setCurrentMap(gameMode);
-        generateTerrain();
+        LevelGenerator.generateLevel(world, currentMap);
 
         world.setContactListener(collisionHandler);
     }
@@ -92,52 +64,19 @@ public class Game extends Thread {
         if (!connectionInputs.containsKey(connection)) connectionInputs.put(connection, ConcurrentHashMap.newKeySet());
 
         // Create a player object with a physics body which will be tracked in the world.
-        createPlayer(connection);
-    }
-
-    /**
-     * Create a player object for a given connection.
-     * @param c The connection to create the player for.
-     */
-    private void createPlayer(VoConnection c) {
-        Player p = new Player(this, c.user.id, c.user.getName());
-        Body body = ShapeFactory.getPlayer(world, getSpawnPoint());
-
-        p.setBody(body);
-        body.setUserData(p);
-
-        // Set the player object on the connection.
-        c.player = p;
-        c.player.initialPos = body.getPosition();
-    }
-
-    /**
-     * @return A spawn point for a player.
-     */
-    public Vector2 getSpawnPoint() {
-        return PlayerSpawner.getSpawnPoint();
-    }
-
-    /**
-     * @param connection The connection the update was received from.
-     * @param update The mouse movement update.
-     */
-    private void updatePlayerDirection(VoConnection connection, MouseCoords update) {
-        connection.player.setViewDirection(update);
+        entityManagerHub.createPlayer(connection);
     }
 
     /** Main game logic. */
     private void tick() {
-        connectionInputs.forEach(this::handleInputs);
-        connectionInputs.keySet().forEach(c -> c.player.update());
+        connectionInputs.forEach(this::handleInputs);     // Handle inputs.
+        entityManagerHub.update();                        // Update logic.
 
-        entityManagerHub.update();
+        world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);  // Update physics simulation.
 
-        world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);
-
-        sendPlayerPoseUpdates();
-        entityManagerHub.sendUpdates();
-        clearPlayerInputs();
+        entityManagerHub.sendUpdates();                   // Send updates to players.
+        statisticsTracker.sendUpdates();
+        clearPlayerInputs();                              // Clear inputs.
     }
 
     /**
@@ -148,48 +87,9 @@ public class Game extends Thread {
     private void handleInputs(VoConnection c, Set<PlayerAction> actions) {
         try {
             actions.forEach(a -> {
-                if (c.getPlayer().getHealth() > 0) {
-                    if (a instanceof MovePlayer) {
-                        c.getPlayer().addMoveDirection(((MovePlayer) a).xDir, ((MovePlayer) a).yDir);
-                    } else if (a instanceof Shoot) {
-                        c.getPlayer().shoot();
-                    } else if (a instanceof MouseCoords) {
-                        c.getPlayer().setViewDirection((MouseCoords) a);
-                    } else if (a instanceof ChangeWeapon) {
-                        handleChangeWeapon(c, (ChangeWeapon) a);
-                    }
-                }
+                inputHandler.handleInput(c, a);
             });
         } catch (ConcurrentModificationException ignored) {
-        }
-    }
-
-    /**
-     * Change the weapon of a player.
-     * @param c the connection who's weapon should be changed.
-     * @param a the weapon to change to.
-     */
-    private void handleChangeWeapon(VoConnection c, ChangeWeapon a) {
-        Weapon weapon = null;
-        if (a.weapon == ActionType.WEAPON_PISTOL) {
-            if (!(c.getPlayer().getWeapon() instanceof Pistol)) {
-                weapon = new Pistol(c.getPlayer());
-            }
-        } else if (a.weapon == ActionType.WEAPON_SHOTGUN) {
-            if (!(c.getPlayer().getWeapon() instanceof Shotgun)) {
-                weapon = new Shotgun(c.getPlayer());
-            }
-        } else if (a.weapon == ActionType.WEAPON_RPG) {
-            if (!(c.getPlayer().getWeapon() instanceof RocketLauncher)) {
-                weapon = new RocketLauncher(c.getPlayer());
-            }
-        } else if (a.weapon == ActionType.WEAPON_FLAMETHROWER) {
-            if (!(c.getPlayer().getWeapon() instanceof Flamethrower)) {
-                weapon = new Flamethrower(c.getPlayer());
-            }
-        }
-        if (weapon != null) {
-            c.getPlayer().setWeapon(weapon);
         }
     }
 
@@ -205,34 +105,6 @@ public class Game extends Thread {
             } catch (ConcurrentModificationException ignored) {
             }
         }
-    }
-
-    /**
-     * Send position updates to players.
-     */
-    private void sendPlayerPoseUpdates() {
-        final List<Player> playerList = getPlayers();
-
-        for (VoConnection c : connectionInputs.keySet()) {
-            for (Player p : playerList) {
-                c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
-                c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
-                if (sendUpdates || playerUpdateTick % 5 == 0) {
-                    c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
-                    c.sendTCP(new PlayerStatistics(p.getId(), p.getDeaths(), p.getKills()));
-                    sendUpdates = false;
-                }
-                if (p.deathTick) {
-                    c.sendTCP(new PlayerDeath(p.getId(), p.getKillerId()));
-                }
-                if (p.getHealth() <= 0) {
-                    c.sendTCP(new PlayerDead(p.getId(), p.getRespawnTime()));
-                }
-            }
-            playerUpdateTick++;
-        }
-
-        playerList.forEach(p -> p.deathTick = false);
     }
 
     /** Reset "last input" for every connection after every tick. */
@@ -276,10 +148,6 @@ public class Game extends Thread {
                .collect(Collectors.toList());
     }
 
-    public World getWorld() {
-        return world;
-    }
-
     public Set<VoConnection> getConnections() {
         return connectionInputs.keySet();
     }
@@ -288,48 +156,16 @@ public class Game extends Thread {
         return entityManagerHub;
     }
 
+    public StatisticsTracker getStatisticsTracker() {
+        return statisticsTracker;
+    }
+
     private void setCurrentMap(int gameMode) {
         if (gameMode == 1) {
             currentMap = new HijackedTmxLoader(fileName -> new HeadlessFileHandle(fileName, Files.FileType.Classpath))
                     .load("tileset/vo_shooter_map.tmx");
         }
-    }
 
-    /**
-     * Add the collidable objects from the tiled map to the world object.
-     */
-    private void generateTerrain() {
-        MapObjects objects;
-
-        for (MapLayer l : currentMap.getLayers()) {
-            if (l.getName().equals("WallsObjects")) {
-                objects = l.getObjects();
-                for (MapObject object : objects) {
-                    Shape shape;
-
-                    if (object instanceof RectangleMapObject) {
-                        shape = ShapeFactory.getRectangle((RectangleMapObject) object);
-                    } else if (object instanceof PolygonMapObject) {
-                        shape = ShapeFactory.getPolygon((PolygonMapObject) object);
-                    } else if (object instanceof PolylineMapObject) {
-                        shape = ShapeFactory.getPolyline((PolylineMapObject) object);
-                    } else if (object instanceof CircleMapObject) {
-                        shape = ShapeFactory.getCircle((CircleMapObject) object);
-                    } else {
-                        continue;
-                    }
-
-                    BodyDef bodyDef = new BodyDef();
-                    bodyDef.type = BodyDef.BodyType.StaticBody;
-                    Body body = world.createBody(bodyDef);
-                    Fixture f = body.createFixture(shape, 1);
-                    f.setFriction(0f);
-                    f.setRestitution(1f);
-
-                    shape.dispose();
-                }
-                break;
-            }
-        }
+        // TODO add set map to entity managers
     }
 }

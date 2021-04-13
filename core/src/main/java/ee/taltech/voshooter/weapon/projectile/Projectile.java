@@ -3,14 +3,15 @@ package ee.taltech.voshooter.weapon.projectile;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
+import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
 
-public abstract class Projectile {
+public abstract class Projectile implements DamageDealer {
 
     private static int ID_GENERATOR = 0;
 
@@ -45,7 +46,7 @@ public abstract class Projectile {
         this.lifeTime = lifeTime;
         this.id = ID_GENERATOR++;
 
-        this.body = ShapeFactory.getProjectileBody(type, owner.getGame().getWorld(), pos, vel);
+        this.body = ShapeFactory.getProjectileBody(type, owner.getWorld(), pos, vel);
         this.body.setUserData(this);  // Have the body remember this rocket object.
     }
 
@@ -108,23 +109,6 @@ public abstract class Projectile {
         );
     }
 
-    /**
-     * Update player deaths and kills.
-     * @param p that died.
-     * @param killer that killed.
-     */
-    public void updatePlayers(Player p, Player killer) {
-        if (p.deathTick) {
-            if (killer.equals(p)) {
-                killer.removeKill();
-            } else {
-                killer.addKill();
-            }
-            p.setKillerId(killer.getId());
-        }
-        killer.getGame().sendUpdates = true;
-    }
-
     /** @return The position of the projectile in world space. */
     public Vector2 getPosition() {
        return body.getPosition().cpy();
@@ -140,5 +124,9 @@ public abstract class Projectile {
 
     protected void reduceLifeTime(float amount) {
         lifeTime -= amount;
+    }
+
+    public Player getOwner() {
+        return owner;
     }
 }

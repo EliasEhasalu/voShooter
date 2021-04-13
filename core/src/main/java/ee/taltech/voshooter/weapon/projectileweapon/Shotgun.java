@@ -1,7 +1,7 @@
 package ee.taltech.voshooter.weapon.projectileweapon;
 
 import com.badlogic.gdx.math.Vector2;
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.weapon.projectile.PistolBullet;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 import ee.taltech.voshooter.weapon.projectile.ShotgunPellet;
@@ -15,7 +15,7 @@ public class Shotgun extends ProjectileWeapon {
      * @param wielder The player who wields this weapon.
      */
     public Shotgun(Player wielder) {
-        super(wielder, COOL_DOWN);
+        super(wielder, COOL_DOWN, Type.SHOTGUN);
     }
 
     @Override

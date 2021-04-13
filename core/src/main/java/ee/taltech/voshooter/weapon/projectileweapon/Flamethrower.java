@@ -1,7 +1,7 @@
 package ee.taltech.voshooter.weapon.projectileweapon;
 
 import com.badlogic.gdx.math.Vector2;
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.weapon.projectile.Fireball;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
@@ -19,7 +19,7 @@ public class Flamethrower extends ProjectileWeapon {
      * @param wielder The player who wields this weapon.
      */
     public Flamethrower(Player wielder) {
-        super(wielder, COOL_DOWN);
+        super(wielder, COOL_DOWN, Type.FLAMETHROWER);
     }
 
     @Override
@@ -27,10 +27,10 @@ public class Flamethrower extends ProjectileWeapon {
         if (canFire()) {
             remainingCoolDown = coolDown;
 
+            final float start = -(CONE_ANGLE) / 2;
+            final float end = (CONE_ANGLE) / 2;
+            final float inc = (end - start) / FLAME_COUNT;
             for (int i = 0; i < FLAME_COUNT; i++) {
-                final float start = -(CONE_ANGLE) / 2;
-                final float end = (CONE_ANGLE) / 2;
-                final float inc = (end - start) / FLAME_COUNT;
                 final float dist = rand.nextFloat() * FIREBALL_SPAWN_DISTANCE_VARIANCE;
 
                 Vector2 offset = wielder.getViewDirection().cpy().nor().rotateDeg(start + i * inc);

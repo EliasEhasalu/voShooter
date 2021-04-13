@@ -1,6 +1,6 @@
 package ee.taltech.voshooter.networking.messages.clientreceived;
 
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 
 import java.util.List;

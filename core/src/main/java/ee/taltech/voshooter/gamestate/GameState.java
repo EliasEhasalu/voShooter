@@ -7,7 +7,7 @@ import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
@@ -20,6 +20,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +35,7 @@ public class GameState {
     public ClientPlayer userPlayer;
     public List<PlayerAction> currentInputs = new ArrayList<>();
 
-    public Set<ClientPlayer> players = ConcurrentHashMap.newKeySet();
+    public Map<Long, ClientPlayer> players = new ConcurrentHashMap<>();
     private final Set<ClientProjectile> projectiles = ConcurrentHashMap.newKeySet();
     private final Set<ParticleEffect> particleEffects = ConcurrentHashMap.newKeySet();
 
@@ -50,7 +51,7 @@ public class GameState {
     /**
      * @return The list of players.
      */
-    public Set<ClientPlayer> getPlayers() {
+    public Map<Long, ClientPlayer> getPlayers() {
         return players;
     }
 
@@ -74,7 +75,7 @@ public class GameState {
             }
 
             if (e instanceof ClientPlayer) {
-                players.add((ClientPlayer) e);
+                players.put(((ClientPlayer) e).getId(), (ClientPlayer) e);
             }
         }
     }
@@ -84,7 +85,7 @@ public class GameState {
      * @param players currently in lobby.
      */
     public void updatePlayers(List<Player> players) {
-        for (ClientPlayer e : this.players) {
+        for (ClientPlayer e : this.players.values()) {
             boolean userFound = false;
             for (Player p : players) {
                 if (p.getId() == e.getId()) {
@@ -200,14 +201,8 @@ public class GameState {
      * @param killerId The player that killed.
      */
     public void addDeathMessage(long playerId, long killerId) {
-        ClientPlayer player = null;
-        ClientPlayer killer = null;
-
-        for (ClientPlayer clientPlayer : players) {
-            if (clientPlayer.getId() == playerId) player = clientPlayer;
-            if (clientPlayer.getId() == killerId) killer = clientPlayer;
-            if (player != null && killer != null) break;
-        }
+        ClientPlayer player = players.getOrDefault(playerId, null);
+        ClientPlayer killer = players.getOrDefault(killerId, null);
 
         DeathMessage msg = new DeathMessage(player, killer);
         deathMessages.offer(msg);

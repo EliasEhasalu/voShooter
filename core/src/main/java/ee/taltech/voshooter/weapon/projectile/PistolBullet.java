@@ -2,7 +2,7 @@ package ee.taltech.voshooter.weapon.projectile;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import ee.taltech.voshooter.networking.messages.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
 public class PistolBullet extends Bullet {
 
@@ -23,8 +23,7 @@ public class PistolBullet extends Bullet {
         ) {
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
-                p.takeDamage(DAMAGE);
-                updatePlayers(p, owner);
+                p.takeDamage(DAMAGE, this);
             }
             destroy();
         }
@@ -32,5 +31,10 @@ public class PistolBullet extends Bullet {
 
     @Override
     protected void uponDestroy() {
+    }
+
+    @Override
+    public Object getDamageSource() {
+        return getOwner();
     }
 }
