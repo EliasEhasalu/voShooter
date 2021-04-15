@@ -123,9 +123,7 @@ public class Player {
     }
 
     public void purge() {
-        System.out.println(getWorld().getBodyCount());
         getWorld().destroyBody(body);
-        System.out.println(getWorld().getBodyCount());
         body = null;
     }
 

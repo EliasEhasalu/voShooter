@@ -72,7 +72,7 @@ public class Lobby {
         connections.add(connection);
         connection.user.currentLobby = getLobbyCode();
 
-        System.out.printf("added ID %d: %s to lobby %s%n", connection.user.id, connection.user.name, lobbyCode);
+        System.out.printf("Added ID %d: %s to lobby %s.%n", connection.user.id, connection.user.name, lobbyCode);
         sendLobbyUpdates();
         return true;
     }
@@ -94,7 +94,7 @@ public class Lobby {
                 setHost(connections.iterator().next());
             }
 
-            System.out.printf("removed ID %d: %s from lobby %s%n", connection.user.id, connection.user.name, lobbyCode);
+            System.out.printf("Removed ID %d: %s from lobby %s.%n", connection.user.id, connection.user.name, lobbyCode);
             sendLobbyUpdates();
             return true;
         }
