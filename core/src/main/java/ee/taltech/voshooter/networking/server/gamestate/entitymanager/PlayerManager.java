@@ -13,6 +13,7 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToS
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -61,6 +62,14 @@ public class PlayerManager extends EntityManager {
         Player p = (Player) player;
 
         players.add(p);
+    }
+
+    public void remove(long id) {
+        Optional<Player> player = players.stream().filter(p -> p.getId() == id).findFirst();
+        if (player.isPresent()) {
+            player.get().purge();
+            players.remove(player.get());
+        }
     }
 
     public World getWorld() {

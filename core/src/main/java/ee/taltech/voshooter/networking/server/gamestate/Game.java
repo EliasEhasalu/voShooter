@@ -67,6 +67,17 @@ public class Game extends Thread {
         entityManagerHub.createPlayer(connection);
     }
 
+    /**
+     * Remove a connection from this game.
+     * @param connection the connection to remove.
+     */
+    public void removeConnection(VoConnection connection) {
+        if (connectionInputs.containsKey(connection)) {
+            connectionInputs.remove(connection);
+            entityManagerHub.removePlayer(connection.user.id);
+        }
+    }
+
     /** Main game logic. */
     private void tick() {
         connectionInputs.forEach(this::handleInputs);     // Handle inputs.
@@ -136,7 +147,6 @@ public class Game extends Thread {
 
     /** Close the game simulation. */
     public void shutDown() {
-        System.out.println(connectionInputs);
         running = false;
     }
 
