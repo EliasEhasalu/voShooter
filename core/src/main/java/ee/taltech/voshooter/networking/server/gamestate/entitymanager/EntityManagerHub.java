@@ -28,6 +28,10 @@ public class EntityManagerHub {
         if (p instanceof Player) entityManagers.get("Player").add(p);
     }
 
+    public void remove(long id) {
+        ((PlayerManager) entityManagers.get("Player")).remove(id);
+    }
+
     public void update() {
         entityManagers.values().forEach(EntityManager::update);
     }

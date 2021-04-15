@@ -63,6 +63,10 @@ public class PlayerManager extends EntityManager {
         players.add(p);
     }
 
+    public void remove(long id) {
+        players.removeIf(player -> player.getId() == id);
+    }
+
     public World getWorld() {
         return world;
     }
