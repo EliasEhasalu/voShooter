@@ -25,10 +25,6 @@ public class Player {
     private Integer health;
     public Vector2 initialPos;
     private float respawnTime = 5f;
-    public boolean deathTick = false;
-    private long killerId;
-    private int deaths;
-    private int kills;
 
     private transient VoConnection connection;
     private transient Body body;
@@ -126,6 +122,11 @@ public class Player {
         takeDamage(amount);
     }
 
+    public void purge() {
+        getWorld().destroyBody(body);
+        body = null;
+    }
+
     private void die() {
         getStatisticsTracker().incrementDeaths(this);
     }
@@ -196,12 +197,6 @@ public class Player {
         return body;
     }
 
-    /**
-     * @return the amount of times player has died.
-     */
-    public int getDeaths() {
-        return deaths;
-    }
 
     private Vector2 getSpawnPoint() {
         return playerManager.getSpawnPoint();
