@@ -28,7 +28,7 @@ public class EntityManagerHub {
         if (p instanceof Player) entityManagers.get("Player").add(p);
     }
 
-    public void remove(long id) {
+    public void removePlayer(long id) {
         ((PlayerManager) entityManagers.get("Player")).remove(id);
     }
 

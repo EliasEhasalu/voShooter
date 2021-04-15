@@ -74,7 +74,7 @@ public class Game extends Thread {
     public void removeConnection(VoConnection connection) {
         if (connectionInputs.containsKey(connection)) {
             connectionInputs.remove(connection);
-            entityManagerHub.remove(connection.getID());
+            entityManagerHub.removePlayer(connection.user.id);
         }
     }
 
