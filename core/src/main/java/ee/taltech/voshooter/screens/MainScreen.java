@@ -339,6 +339,7 @@ public class MainScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 parent.gameState.clearDrawables();
+                pauseMenuActive = false;
                 parent.getClient().sendTCP(new LeaveLobby());
                 parent.changeScreen(VoShooter.Screen.MENU);
             }
