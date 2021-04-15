@@ -1,10 +1,10 @@
 package ee.taltech.voshooter.networking.server;
 
-import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +74,12 @@ public class Lobby {
 
         System.out.printf("added ID %d to lobby %s%n", connection.user.id, lobbyCode);
         sendLobbyUpdates();
+        if (game != null) {
+            game.addConnection(connection);
+            for (VoConnection con : connections) {
+                con.sendTCP(new GameStarted(game.getPlayers()));
+            }
+        }
         return true;
     }
 
@@ -84,10 +90,6 @@ public class Lobby {
      */
     protected boolean removeConnection(VoConnection connection) {
         if (connections.contains(connection)) {
-            connections.remove(connection);
-            connection.user.currentLobby = null;
-            connection.user.host = false;
-
             // If host left, assign someone else as host.
             if (getHost().user == connection.user && !connections.isEmpty()) {
                 setHost(connections.iterator().next());
