@@ -85,7 +85,7 @@ public class Lobby {
     protected boolean removeConnection(VoConnection connection) {
         if (connections.contains(connection)) {
             connections.remove(connection);
-            game.removeConnection(connection);
+            if (game != null) game.removeConnection(connection);
             connection.user.currentLobby = null;
             connection.user.host = false;
 
