@@ -29,6 +29,7 @@ public class EntityManagerHub {
     }
 
     public void removePlayer(long id) {
+        System.out.println("Get the player manager.");
         ((PlayerManager) entityManagers.get("Player")).remove(id);
     }
 

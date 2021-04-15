@@ -67,6 +67,7 @@ public class PlayerManager extends EntityManager {
     public void remove(long id) {
         Optional<Player> player = players.stream().filter(p -> p.getId() == id).findFirst();
         if (player.isPresent()) {
+            System.out.printf("ID %d: %s removed from manager.", player.get().getId(), player.get().getName());
             player.get().purge();
             players.remove(player.get());
         }
