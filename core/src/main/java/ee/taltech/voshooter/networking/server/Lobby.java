@@ -90,15 +90,11 @@ public class Lobby {
      */
     protected boolean removeConnection(VoConnection connection) {
         if (connections.contains(connection)) {
-<<<<<<< HEAD
-<<<<<<< HEAD
             connections.remove(connection);
             if (game != null) game.removeConnection(connection);
             connection.user.currentLobby = null;
             connection.user.host = false;
 
-=======
->>>>>>> 237-join-ongoing-game
             // If host left, assign someone else as host.
             if (getHost().user == connection.user && !connections.isEmpty()) {
                 setHost(connections.iterator().next());
