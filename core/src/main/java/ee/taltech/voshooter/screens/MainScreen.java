@@ -202,6 +202,10 @@ public class MainScreen implements Screen {
             }
             tableTop -= 20;
         }
+        font.getData().setScale(1f);
+        font.draw(hudBatch, parent.gameState.currentLobby.getLobbyCode(),
+                Gdx.graphics.getWidth() / (float) 2 - 80, 50);
+        font.getData().setScale(0.6f);
     }
 
     /**
