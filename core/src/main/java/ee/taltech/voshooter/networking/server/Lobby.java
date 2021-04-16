@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class Lobby {
 
-    public static final int MINIMUM_PLAYERS = 2;
+    public static final int MINIMUM_PLAYERS = 1;
 
     private final int maxUsers;
     private final int gameMode;
@@ -100,7 +100,8 @@ public class Lobby {
                 setHost(connections.iterator().next());
             }
 
-            System.out.printf("Removed ID %d: %s from lobby %s.%n", connection.user.id, connection.user.name, lobbyCode);
+            System.out.printf("Removed ID %d: %s from lobby %s.%n",
+                    connection.user.id, connection.user.name, lobbyCode);
             sendLobbyUpdates();
             return true;
         }
