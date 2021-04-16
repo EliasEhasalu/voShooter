@@ -38,7 +38,6 @@ public class VoClient {
     public User clientUser = new User();
     public VoShooter parent;
     public Client client;
-    public VoShooter.Screen screen;
 
     private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
 
@@ -107,6 +106,7 @@ public class VoClient {
                 Gdx.app.postRunnable(new Runnable() {
                     public void run() {
                         if (screenToChangeTo != null) {
+                            if (screenToChangeTo != VoShooter.Screen.MAIN) parent.screen = null;
                             parent.changeScreen(screenToChangeTo);
                             screenToChangeTo = null;
                         }

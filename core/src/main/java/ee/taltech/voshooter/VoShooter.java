@@ -33,7 +33,7 @@ public class VoShooter extends Game {
     private boolean cameFromGame;
     public VoClient client;
     public GameState gameState;
-    private Screen screen;
+    public Screen screen;
 
     public String HOST_ADDRESS = "193.40.255.29";
     public int PORT_NUMBER = 5001;
@@ -69,16 +69,18 @@ public class VoShooter extends Game {
      * @param screen An enumerable of type Screen.
      */
     public void changeScreen(Screen screen) {
+        if (screen != Screen.MAIN) {
+            this.screen = null;
+            gameState.ongoingGame = false;
+        }
         switch (screen) {
             case MENU:
                 if (menuScreen == null) menuScreen = new MenuScreen(this);
                 setScreen(menuScreen);
-                this.screen = screen;
                 break;
             case PREFERENCES:
                 if (preferencesScreen == null) preferencesScreen = new PreferencesScreen(this);
                 setScreen(preferencesScreen);
-                this.screen = screen;
                 break;
             case MAIN:
                 if (mainScreen == null) mainScreen = new MainScreen(this);
@@ -90,27 +92,22 @@ public class VoShooter extends Game {
             case LOADING:
                 if (loadingScreen == null) loadingScreen = new LoadingScreen(this);
                 setScreen(loadingScreen);
-                this.screen = screen;
                 break;
             case CREATE_GAME:
                 if (createGameScreen == null) createGameScreen = new CreateGameScreen(this);
                 setScreen(createGameScreen);
-                this.screen = screen;
                 break;
             case JOIN_GAME:
                 if (joinGameScreen == null) joinGameScreen = new JoinGameScreen(this);
                 setScreen(joinGameScreen);
-                this.screen = screen;
                 break;
             case LOBBY:
                 if (lobbyScreen == null) lobbyScreen = new LobbyScreen(this);
                 setScreen(lobbyScreen);
-                this.screen = screen;
                 break;
             case CHANGE_CONTROLS:
                 if (changeControlsScreen == null) changeControlsScreen = new ChangeControlsScreen(this);
                 setScreen(changeControlsScreen);
-                this.screen = screen;
                 break;
             default:
                 // Noop.

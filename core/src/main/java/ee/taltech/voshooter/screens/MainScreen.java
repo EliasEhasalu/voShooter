@@ -335,6 +335,7 @@ public class MainScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 parent.setCameFromGame(true);
+                parent.screen = null;
                 parent.changeScreen(VoShooter.Screen.PREFERENCES);
             }
         });
@@ -344,6 +345,7 @@ public class MainScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 parent.gameState.clearDrawables();
                 pauseMenuActive = false;
+                parent.screen = null;
                 parent.getClient().sendTCP(new LeaveLobby());
                 parent.changeScreen(VoShooter.Screen.MENU);
             }
