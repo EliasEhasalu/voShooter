@@ -1,5 +1,6 @@
 package ee.taltech.voshooter.gamestate;
 
+import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
@@ -14,6 +15,7 @@ public class ClientLobby {
     private List<User> users = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private String lobbyCode;
+    private GameMap.MapType mapType;
 
     private GameState parent;
 
@@ -76,6 +78,7 @@ public class ClientLobby {
         lobbyCode = null;
         maxUsers = 4;
         gamemode = 0;
+        mapType = null;
     }
 
     /**
@@ -111,6 +114,11 @@ public class ClientLobby {
      */
     public String getLobbyCode() {
         return lobbyCode;
+    }
+
+    /** @return The game map used in the lobby. */
+    public GameMap.MapType getMap() {
+        return mapType;
     }
 
     /**
@@ -149,6 +157,14 @@ public class ClientLobby {
     }
 
     /**
+     * Set the game map for the lobby.
+     * @param mapType The map used.
+     */
+    public void setMapType(GameMap.MapType mapType) {
+        this.mapType = mapType;
+    }
+
+    /**
      * Set initial parameters upon joining lobby.
      * @param message The message with lobby info received from the server.
      */
@@ -162,5 +178,6 @@ public class ClientLobby {
         addUser(parent.clientUser);
         setLobbyCode(message.lobbyCode);
         setUsers(message.users);
+        this.mapType = message.mapType;
     }
 }

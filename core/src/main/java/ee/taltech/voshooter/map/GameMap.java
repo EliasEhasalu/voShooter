@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.AbstractMap;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,13 +13,19 @@ public class GameMap {
 
     public enum MapType {
         DEFAULT,
-        TEST1
+        MAP2
     }
+
+    // Maps available in game.
+    public static final MapType[] PLAYER_MAPS = {
+            MapType.DEFAULT,
+            MapType.MAP2};
+
 
     // Tileset used by map.
     private static final Map<MapType, String> TILESET_MAP = Stream.of(
-            new AbstractMap.SimpleEntry<>(MapType.DEFAULT, "tileset/voShooterMap.tmx"),
-            new AbstractMap.SimpleEntry<>(MapType.TEST1, "tileset/voShooterMap.tmx"))
+            new AbstractMap.SimpleEntry<>(MapType.DEFAULT, "tileset/vo_shooter_map.tmx"),
+            new AbstractMap.SimpleEntry<>(MapType.MAP2, "tileset/map2.tmx"))
 
             .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
@@ -28,9 +33,13 @@ public class GameMap {
     // Spawn locations for map.
     private static final Map<MapType, List<Vector2>> SPAWN_MAP = Stream.of(
             new AbstractMap.SimpleEntry<>(MapType.DEFAULT, Arrays.asList(
-                    new Vector2(10, 10),
-                    new Vector2(10, 100))),
-            new AbstractMap.SimpleEntry<>(MapType.TEST1, Collections.singletonList(
+                    new Vector2(6, 6),
+                    new Vector2(6, 58),
+                    new Vector2(58, 6),
+                    new Vector2(58, 58),
+                    new Vector2(32, 32))),
+            new AbstractMap.SimpleEntry<>(MapType.MAP2, Arrays.asList(
+                    new Vector2(58, 58),
                     new Vector2(10, 10))))
 
             .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));

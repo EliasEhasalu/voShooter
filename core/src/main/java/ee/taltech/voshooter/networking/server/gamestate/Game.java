@@ -5,6 +5,7 @@ import com.badlogic.gdx.backends.headless.HeadlessFileHandle;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.server.VoConnection;
@@ -36,6 +37,7 @@ public class Game extends Thread {
         World.setVelocityThreshold(0.1f);
     }
 
+    private GameMap.MapType mapType;
     private TiledMap currentMap;
     private final World world = new World(new Vector2(0, 0), false);
 
@@ -47,8 +49,10 @@ public class Game extends Thread {
     /**
      * Construct the game.
      * @param gameMode The game mode for the game.
+     * @param mapType The game map used in this game.
      */
-    public Game(int gameMode) {
+    public Game(int gameMode, GameMap.MapType mapType) {
+        this.mapType = mapType;
         setCurrentMap(gameMode);
         LevelGenerator.generateLevel(world, currentMap);
 
@@ -163,6 +167,10 @@ public class Game extends Thread {
         return connectionInputs.keySet();
     }
 
+    public GameMap.MapType getMapType() {
+        return mapType;
+    }
+
     public EntityManagerHub getEntityManagerHub() {
         return entityManagerHub;
     }
@@ -174,7 +182,7 @@ public class Game extends Thread {
     private void setCurrentMap(int gameMode) {
         if (gameMode == 1) {
             currentMap = new HijackedTmxLoader(fileName -> new HeadlessFileHandle(fileName, Files.FileType.Classpath))
-                    .load("tileset/vo_shooter_map.tmx");
+                    .load(GameMap.getTileSet(mapType));
         }
 
         // TODO add set map to entity managers
