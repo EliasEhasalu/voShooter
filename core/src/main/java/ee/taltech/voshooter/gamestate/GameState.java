@@ -33,6 +33,7 @@ public class GameState {
     public ClientLobby currentLobby = new ClientLobby(this);
     public User clientUser = new User();
     public ClientPlayer userPlayer;
+    public boolean ongoingGame = false;
     public List<PlayerAction> currentInputs = new ArrayList<>();
 
     public Map<Long, ClientPlayer> players = new ConcurrentHashMap<>();
@@ -116,6 +117,7 @@ public class GameState {
                 }
             }
         }
+        ongoingGame = true;
     }
 
     /**
