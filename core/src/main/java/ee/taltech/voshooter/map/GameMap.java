@@ -14,6 +14,7 @@ public class GameMap {
     public enum MapType {
         DEFAULT,
         MAP2,
+        FUNKY,
         WILD_RIDE
     }
 
@@ -21,6 +22,7 @@ public class GameMap {
     public static final MapType[] PLAYER_MAPS = {
             MapType.DEFAULT,
             MapType.MAP2,
+            MapType.FUNKY,
             MapType.WILD_RIDE
     };
 
@@ -29,6 +31,7 @@ public class GameMap {
     private static final Map<MapType, String> TILESET_MAP = Stream.of(
             new AbstractMap.SimpleEntry<>(MapType.DEFAULT, "tileset/vo_shooter_map.tmx"),
             new AbstractMap.SimpleEntry<>(MapType.MAP2, "tileset/map2.tmx"),
+            new AbstractMap.SimpleEntry<>(MapType.FUNKY, "tileset/funky_map.tmx"),
             new AbstractMap.SimpleEntry<>(MapType.WILD_RIDE, "tileset/wild_ride.tmx")
     )
             .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
@@ -44,7 +47,12 @@ public class GameMap {
                     new Vector2(32, 32))),
             new AbstractMap.SimpleEntry<>(MapType.MAP2, Arrays.asList(
                     new Vector2(58, 58),
-                    new Vector2(10, 10))))
+                    new Vector2(10, 10))),
+            new AbstractMap.SimpleEntry<>(MapType.FUNKY, Arrays.asList(
+            new Vector2(3, 3),
+                    new Vector2(3, 61),
+                    new Vector2(61, 3),
+                    new Vector2(61, 16))))
 
             .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
