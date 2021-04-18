@@ -488,6 +488,9 @@ public class MainScreen implements Screen {
         font.getData().setScale(0.8f);
         font.setColor(Color.WHITE);
         GlyphLayout currentAmmoStr = new GlyphLayout(font, String.valueOf(parent.gameState.userPlayer.currentAmmo));
+        if (parent.gameState.userPlayer.currentAmmo == Integer.MAX_VALUE) {
+            currentAmmoStr.setText(font, "INF");
+        }
         font.draw(hudBatch, currentAmmoStr, ammoX, ammoY);
 
 //        font.getData().setScale(0.6f);
