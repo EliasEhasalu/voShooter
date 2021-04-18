@@ -7,13 +7,13 @@ import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
-import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.rendering.Drawable;
 
 import java.util.ArrayDeque;
@@ -37,7 +37,7 @@ public class GameState {
     public List<PlayerAction> currentInputs = new ArrayList<>();
 
     public Map<Long, ClientPlayer> players = new ConcurrentHashMap<>();
-    private final Set<ClientProjectile> projectiles = ConcurrentHashMap.newKeySet();
+    private final Map<Long, ClientProjectile> projectiles = new ConcurrentHashMap<>();
     private final Set<ParticleEffect> particleEffects = ConcurrentHashMap.newKeySet();
     private final Set<ParticleEffect> uiParticles = ConcurrentHashMap.newKeySet();
 
@@ -125,7 +125,7 @@ public class GameState {
      * @param msg Update message.
      */
     public void createProjectile(ProjectileCreated msg) {
-        projectiles.add(new ClientProjectile(msg));
+        projectiles.put((long) msg.id, new ClientProjectile(msg));
     }
 
     /**
@@ -133,12 +133,10 @@ public class GameState {
      * @param msg Update message.
      */
     public void destroyProjectile(ProjectileDestroyed msg) {
-        for (ClientProjectile p : projectiles) {
-            if (msg.id == p.getId()) {
-                projectiles.remove(p);
-                addParticleEffect(p.getPosition(), p.getParticlePath(), false, false);
-                break;
-            }
+        if (projectiles.containsKey((long) msg.id)) {
+            ClientProjectile p = projectiles.get((long) msg.id);
+            addParticleEffect(p.getPosition(), p.getParticlePath(), false, false);
+            projectiles.remove((long) msg.id);
         }
     }
 
@@ -148,12 +146,10 @@ public class GameState {
      */
     public void updateProjectiles(ProjectilePositions msg) {
         for (ProjectilePositionUpdate u : msg.updates) {
-            for (ClientProjectile p : projectiles) {
-                if (p.getId() == u.id) {
-                    p.setPos(u.pos);
-                    p.setVel(u.vel);
-                    break;
-                }
+            if (projectiles.containsKey((long) u.id)) {
+                ClientProjectile p = projectiles.get((long) u.id);
+                p.setPos(u.pos);
+                p.setVel(u.vel);
             }
         }
     }
@@ -171,7 +167,7 @@ public class GameState {
     /**
      * @return Set of projectiles on the client.
      */
-    public Set<ClientProjectile> getProjectiles() {
+    public Map<Long, ClientProjectile> getProjectiles() {
         return projectiles;
     }
 

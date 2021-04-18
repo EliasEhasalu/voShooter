@@ -394,7 +394,7 @@ public class MainScreen implements Screen {
      * Draw the projectiles to the screen.
      */
     private void drawProjectiles() {
-        for (ClientProjectile p : parent.gameState.getProjectiles()) {
+        for (ClientProjectile p : parent.gameState.getProjectiles().values()) {
             p.getSprite().setRotation(p.getVelocity().angleDeg());
             p.getSprite().draw(stage.getBatch());
         }

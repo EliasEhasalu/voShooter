@@ -27,8 +27,10 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositio
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
+import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -122,11 +124,8 @@ public class VoClient {
                             projectileUpdate = null;
                         }
                         if (!projectilesCreatedSet.isEmpty()) {
-                            SoundPlayer.play("soundfx/ui/shoot.ogg");
-                            for (ProjectileCreated msg : projectilesCreatedSet) {
-                                createProjectile(msg);
-                                projectilesCreatedSet.remove(msg);
-                            }
+                            createProjectiles(projectilesCreatedSet);
+                            projectilesCreatedSet.clear();
                         }
                         if (!projectileDestroyedSet.isEmpty()) {
                             for (ProjectileDestroyed msg : projectileDestroyedSet) {
@@ -189,6 +188,26 @@ public class VoClient {
     }
 
     /**
+     * Update the players' view directions.
+     * @param msg The message describing the poses of the players.
+     */
+    private void updatePlayerViewDirections(PlayerViewUpdate msg) {
+        if (parent.gameState.players.containsKey(msg.id)) {
+            parent.gameState.players.get(msg.id).getSprite().setRotation(msg.viewDirection.angleDeg());
+        }
+    }
+
+    /**
+     * Update players' health.
+     * @param msg The message containing info about player health.
+     */
+    private void updatePlayerHealth(PlayerHealthUpdate msg) {
+        if (parent.gameState.players.containsKey(msg.id)) {
+            parent.gameState.players.get(msg.id).setHealth(msg.health);
+        }
+    }
+
+    /**
      * Update player respawn timer.
      * @param msg time until respawn.
      */
@@ -225,13 +244,47 @@ public class VoClient {
     }
 
     /**
-     * Update players' health.
-     * @param msg The message containing info about player health.
+     * Create new projectiles.
+     * @param messages Projectile created messages.
      */
-    private void updatePlayerHealth(PlayerHealthUpdate msg) {
-        if (parent.gameState.players.containsKey(msg.id)) {
-            parent.gameState.players.get(msg.id).setHealth(msg.health);
+    private void createProjectiles(Set<ProjectileCreated> messages) {
+        Set<Projectile.Type> projectileTypes = new HashSet<>();
+
+        for (ProjectileCreated msg : messages) {
+            if (!projectileTypes.contains(msg.type)) {
+                SoundPlayer.play("soundfx/ui/shoot.ogg", parent.gameState.userPlayer.getPosition(), msg.pos);
+            }
+
+            projectileTypes.add(msg.type);
+            parent.gameState.createProjectile(msg);
         }
+    }
+
+    /**
+     * Update the positions of the projectiles.
+     * @param msg Update message.
+     */
+    private void updateProjectilePositions(ProjectilePositions msg) {
+        parent.gameState.updateProjectiles(msg);
+    }
+
+    /**
+     * Destroy a projectile.
+     * @param msg Projectile destroyed message.
+     */
+    private void destroyProjectile(ProjectileDestroyed msg) {
+        /*SoundPlayer.play("soundfx/ui/shoot.ogg",
+                parent.gameState.userPlayer.getPosition(),
+                parent.gameState.getProjectiles().get((long) msg.id).getPosition());*/
+        parent.gameState.destroyProjectile(msg);
+    }
+
+    /**
+     * Switch weapons.
+     * @param msg Update message.
+     */
+    private void handleSwitchWeapon(PlayerAmmoUpdate msg) {
+        if (msg.weaponType != null) parent.gameState.userPlayer.setWeapon(msg.weaponType);
     }
 
     /**
@@ -244,47 +297,5 @@ public class VoClient {
             p.setKills(msg.kills);
             p.setDeaths(msg.deaths);
         }
-    }
-
-    /**
-     * Update the players' view directions.
-     * @param msg The message describing the poses of the players.
-     */
-    private void updatePlayerViewDirections(PlayerViewUpdate msg) {
-        if (parent.gameState.players.containsKey(msg.id)) {
-            parent.gameState.players.get(msg.id).getSprite().setRotation(msg.viewDirection.angleDeg());
-        }
-    }
-
-    /**
-     * Create a new projectile.
-     * @param msg Projectile created message.
-     */
-    private void createProjectile(ProjectileCreated msg) {
-        parent.gameState.createProjectile(msg);
-    }
-
-    /**
-     * Destroy a projectile.
-     * @param msg Projectile destroyed message.
-     */
-    private void destroyProjectile(ProjectileDestroyed msg) {
-        parent.gameState.destroyProjectile(msg);
-    }
-
-    /**
-     * Update the positions of the projectiles.
-     * @param msg Update message.
-     */
-    private void updateProjectilePositions(ProjectilePositions msg) {
-        parent.gameState.updateProjectiles(msg);
-    }
-
-    /**
-     * Switch weapons.
-     * @param msg Update message.
-     */
-    private void handleSwitchWeapon(PlayerAmmoUpdate msg) {
-        if (msg.weaponType != null) parent.gameState.userPlayer.setWeapon(msg.weaponType);
     }
 }
