@@ -4,6 +4,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
+import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.Network;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
@@ -116,13 +117,14 @@ public class VoServer {
     private void handleCreateLobby(VoConnection connection, CreateLobby msg) {
         String code = generateLobbyCode();
         User user = connection.user;
-        Lobby newLobby = new Lobby(msg.gameMode, msg.maxPlayers, code);
+        Lobby newLobby = new Lobby(msg.gameMode, msg.maxPlayers, code, msg.mapType);
         lobbies.put(code, newLobby);
 
         newLobby.addConnection(connection);
         newLobby.setHost(connection);
 
-        LobbyJoined res = new LobbyJoined(msg.gameMode, msg.maxPlayers, code, newLobby.getUsers(), user, user.id);
+        LobbyJoined res =
+                new LobbyJoined(msg.gameMode, msg.maxPlayers, code, newLobby.getUsers(), user, user.id, msg.mapType);
         connection.sendTCP(res);
     }
 
@@ -143,8 +145,10 @@ public class VoServer {
                 int maxPlayers = lobby.getMaxPlayers();
                 List<User> users = lobby.getUsers();
                 User host = lobby.getHost().user;
+                GameMap.MapType mapType = lobby.getMapType();
 
-                connection.sendTCP(new LobbyJoined(gameMode, maxPlayers, code, users, host, connection.user.id));
+                connection.sendTCP(
+                        new LobbyJoined(gameMode, maxPlayers, code, users, host, connection.user.id, mapType));
                 lobby.addConnection(connection);
             }
         } else {

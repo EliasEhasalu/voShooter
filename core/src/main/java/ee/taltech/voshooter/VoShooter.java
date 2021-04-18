@@ -33,6 +33,7 @@ public class VoShooter extends Game {
     private boolean cameFromGame;
     public VoClient client;
     public GameState gameState;
+    public Screen screen;
 
     public String HOST_ADDRESS = "193.40.255.29";
     public int PORT_NUMBER = 5001;
@@ -68,6 +69,10 @@ public class VoShooter extends Game {
      * @param screen An enumerable of type Screen.
      */
     public void changeScreen(Screen screen) {
+        if (screen != Screen.MAIN) {
+            this.screen = null;
+            gameState.ongoingGame = false;
+        }
         switch (screen) {
             case MENU:
                 if (menuScreen == null) menuScreen = new MenuScreen(this);
@@ -79,7 +84,10 @@ public class VoShooter extends Game {
                 break;
             case MAIN:
                 if (mainScreen == null) mainScreen = new MainScreen(this);
-                setScreen(mainScreen);
+                if (this.screen != screen) {
+                    setScreen(mainScreen);
+                    this.screen = screen;
+                }
                 break;
             case LOADING:
                 if (loadingScreen == null) loadingScreen = new LoadingScreen(this);

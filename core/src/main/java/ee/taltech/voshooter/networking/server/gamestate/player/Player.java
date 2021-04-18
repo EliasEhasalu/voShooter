@@ -131,9 +131,7 @@ public class Player {
         getStatisticsTracker().incrementDeaths(this);
     }
 
-    /**
-     * Respawn the player.
-     */
+    /** Respawn the player. */
     public void respawn() {
         if (respawnTime <= 0) {
             health = MAX_HEALTH;
@@ -144,51 +142,37 @@ public class Player {
         }
     }
 
-    /**
-     * @return A string representation.
-     */
+    /** @return A string representation. */
     public String toString() {
         return String.format("(%f, %f)", getPos().x, getPos().y);
     }
 
-    /**
-     * @return The position of this player.
-     */
+    /** @return The position of this player. */
     public Vector2 getPos() {
         return body.getPosition();
     }
 
-    /**
-     * @return The view direction of this player.
-     */
+    /** @return The view direction of this player. */
     public Vector2 getViewDirection() {
         return viewDirection;
     }
 
-    /**
-     * @return The id associated with this player.
-     */
+    /** @return The id associated with this player. */
     public long getId() {
         return id;
     }
 
-    /**
-     * @return This player's name.
-     */
+    /** @return This player's name. */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return This player's health.
-     */
+    /** @return This player's health. */
     public Integer getHealth() {
         return health;
     }
 
-    /**
-     * @param b The body that
-     */
+    /** @param b The body that. */
     public void setBody(Body b) {
         this.body = b;
     }
@@ -196,7 +180,6 @@ public class Player {
     public Body getBody() {
         return body;
     }
-
 
     private Vector2 getSpawnPoint() {
         return playerManager.getSpawnPoint();

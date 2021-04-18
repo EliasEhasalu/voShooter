@@ -106,6 +106,7 @@ public class VoClient {
                 Gdx.app.postRunnable(new Runnable() {
                     public void run() {
                         if (screenToChangeTo != null) {
+                            if (screenToChangeTo != VoShooter.Screen.MAIN) parent.screen = null;
                             parent.changeScreen(screenToChangeTo);
                             screenToChangeTo = null;
                         }

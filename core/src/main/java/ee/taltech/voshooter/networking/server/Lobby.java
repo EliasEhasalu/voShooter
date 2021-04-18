@@ -1,5 +1,6 @@
 package ee.taltech.voshooter.networking.server;
 
+import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
@@ -14,12 +15,13 @@ import java.util.stream.Collectors;
 
 public class Lobby {
 
-    public static final int MINIMUM_PLAYERS = 2;
+    public static final int MINIMUM_PLAYERS = 1;
 
     private final int maxUsers;
     private final int gameMode;
     private final String lobbyCode;
     private VoConnection host;
+    private GameMap.MapType mapType;
 
     private Game game;
     private final Set<VoConnection> connections = ConcurrentHashMap.newKeySet();
@@ -28,11 +30,13 @@ public class Lobby {
      * @param maxUsers The maximum amount of users that can be in this lobby.
      * @param gameMode An integer representing the game mode of this lobby.
      * @param lobbyCode The lobby code assigned to this lobby.
+     * @param mapType The game map used in this lobby.
      */
-    protected Lobby(int gameMode, int maxUsers, String lobbyCode) {
+    protected Lobby(int gameMode, int maxUsers, String lobbyCode, GameMap.MapType mapType) {
         this.maxUsers = maxUsers;
         this.gameMode = gameMode;
         this.lobbyCode = lobbyCode;
+        this.mapType = mapType;
     }
 
     /** Send updates of people joining / leaving to this lobby's members. */
@@ -46,7 +50,7 @@ public class Lobby {
 
     /** Send all users in this lobby a message that the game has started. */
     protected void sendGameStart() {
-        game = new Game(gameMode);
+        game = new Game(gameMode, mapType);
 
         for (VoConnection con : connections) {
             game.addConnection(con);
@@ -100,7 +104,8 @@ public class Lobby {
                 setHost(connections.iterator().next());
             }
 
-            System.out.printf("Removed ID %d: %s from lobby %s.%n", connection.user.id, connection.user.name, lobbyCode);
+            System.out.printf("Removed ID %d: %s from lobby %s.%n",
+                    connection.user.id, connection.user.name, lobbyCode);
             sendLobbyUpdates();
             return true;
         }
@@ -136,6 +141,11 @@ public class Lobby {
     /** @return The game mode. */
     protected int getGameMode() {
         return gameMode;
+    }
+
+    /** @return The game map used in this lobby. */
+    protected GameMap.MapType getMapType() {
+        return mapType;
     }
 
     /**

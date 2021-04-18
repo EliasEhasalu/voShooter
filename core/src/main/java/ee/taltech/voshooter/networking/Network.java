@@ -7,6 +7,7 @@ import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.geometry.Pos;
+import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
@@ -68,13 +69,14 @@ public final class Network {
         kryo.register(String.class);
         kryo.register(ArrayList.class);
         kryo.register(boolean.class);
+        kryo.register(Vector2.class);
 
         kryo.register(Player.class);
         kryo.register(Pos.class);
+        kryo.register(GameMap.MapType.class);
         kryo.register(PlayerInput.class);
         kryo.register(PlayerAction.class);
         kryo.register(MouseCoords.class);
-        kryo.register(Vector2.class);
         kryo.register(PlayerPositionUpdate.class);
         kryo.register(PlayerViewUpdate.class);
         kryo.register(PlayerHealthUpdate.class);

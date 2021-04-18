@@ -1,5 +1,6 @@
 package ee.taltech.voshooter.networking.messages.clientreceived;
 
+import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.User;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public class LobbyJoined {
     public List<User> users;
     public User host;
     public long id;
+    public GameMap.MapType mapType;
 
     /** For serialization. */
     public LobbyJoined() {
@@ -27,13 +29,16 @@ public class LobbyJoined {
      * @param users List of users in this lobby.
      * @param host The host of the lobby.
      * @param id The ID of the client user.
+     * @param mapType The game map used in this lobby.
      */
-    public LobbyJoined(int gameMode, int maxPlayers, String lobbyCode, List<User> users, User host, long id) {
+    public LobbyJoined(int gameMode, int maxPlayers, String lobbyCode, List<User> users,
+                       User host, long id, GameMap.MapType mapType) {
         this.gameMode = gameMode;
         this.maxPlayers = maxPlayers;
         this.lobbyCode = lobbyCode;
         this.users = users;
         this.host = host;
         this.id = id;
+        this.mapType = mapType;
     }
 }
