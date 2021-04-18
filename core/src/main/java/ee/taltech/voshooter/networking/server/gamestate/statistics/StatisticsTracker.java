@@ -39,7 +39,7 @@ public class StatisticsTracker {
 
         Object killer = lastDamageTakenFrom.get(dyingPlayer).getDamageSource();
 
-        if (killer instanceof Player) {
+        if (killer instanceof Player && killer != dyingPlayer) {
             Player killingPlayer = (Player) killer;
 
             killCount.put(killingPlayer, killCount.getOrDefault(killingPlayer, 0) + 1);
