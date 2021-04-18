@@ -14,7 +14,7 @@ public class PlayerSpawner {
      * @param mapType The map for which the spawn point will be returned.
      * @return A spawn point for a player.
      */
-    public Vector2 getSpawnPointForCurrentMap(GameMap.MapType mapType) {
+    public Vector2 getSpawnPointForMap(GameMap.MapType mapType) {
         List<Vector2> spawnPoints = GameMap.getSpawnLocations(mapType);
         return spawnPoints.get(R.nextInt(spawnPoints.size()));
     }
