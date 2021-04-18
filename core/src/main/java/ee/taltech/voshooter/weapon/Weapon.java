@@ -1,7 +1,10 @@
 package ee.taltech.voshooter.weapon;
 
-import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public abstract class Weapon implements AmmoWeapon {
 
@@ -35,7 +38,7 @@ public abstract class Weapon implements AmmoWeapon {
     }
 
     public void coolDown() {
-        remainingCoolDown = (float) Math.max(0, remainingCoolDown - (1 / Game.TICK_RATE_IN_HZ));
+        remainingCoolDown = (float) max(0, remainingCoolDown - (1 / Game.TICK_RATE_IN_HZ));
     }
 
     public Type getType() {
@@ -52,6 +55,10 @@ public abstract class Weapon implements AmmoWeapon {
 
     public void replenishAmmo() {
         remainingAmmo = getMaxAmmo();
+    }
+
+    public void replenishAmmoBy(float decimal) {
+        remainingAmmo = min(getMaxAmmo(), max(getRemainingAmmo(), getRemainingAmmo() + (int) Math.ceil(getMaxAmmo() * decimal)));
     }
 
     public int getRemainingAmmo() {

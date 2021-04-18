@@ -2,6 +2,7 @@ package ee.taltech.voshooter.networking.server.gamestate.entitymanager;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
@@ -14,6 +15,7 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToS
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,14 +31,17 @@ public class PlayerManager extends EntityManager {
 
     protected void createPlayer(VoConnection c) {
         Player p = new Player(this, c, c.user.id, c.user.getName());
-        Body body = ShapeFactory.getPlayer(world, playerSpawner.getSpawnPointForMap(game.getMapType()));
+        List<Object> fixtureAndBody = ShapeFactory.getPlayerFixtureAndBody(world, playerSpawner.getSpawnPointForMap(game.getMapType()));
+        Body playerBody = (Body) fixtureAndBody.get(1);
+        Fixture playerFixture = (Fixture) fixtureAndBody.get(0);
 
-        p.setBody(body);
-        body.setUserData(p);
+        p.setBody(playerBody);
+        p.setFixture(playerFixture);
+        playerBody.setUserData(p);
 
         // Set the player object on the connection.
         c.player = p;
-        c.player.initialPos = body.getPosition();
+        c.player.initialPos = playerBody.getPosition();
 
         players.add(p);
     }
@@ -53,7 +58,7 @@ public class PlayerManager extends EntityManager {
                 c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
                 c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
                 c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
-                c.sendTCP(new PlayerAmmoUpdate(p.getWeapon().getType(), p.getWeapon().getRemainingAmmo()));
+                if (p.getId() == c.user.id) c.sendTCP(new PlayerAmmoUpdate(p.getWeapon().getType(), p.getWeapon().getRemainingAmmo()));
                 if (!(p.isAlive())) c.sendTCP(new PlayerDead(p.getId(), p.getTimeToRespawn()));
             }
         }

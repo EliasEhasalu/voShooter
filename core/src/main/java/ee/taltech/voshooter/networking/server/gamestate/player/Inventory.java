@@ -9,10 +9,13 @@ import java.util.Map;
 public class Inventory {
 
     private static final Weapon.Type DEFAULT_WEAPON = Weapon.Type.PISTOL;
+    private static final int FREQ = 2400;
+    private static final float PASSIVE_AMMO_REGENERATION_FACTOR = 0.1f;
 
     private final Map<Weapon.Type, Weapon> weapons = new HashMap<>();
     private final Player parent;
     private Weapon currentWeapon;
+    private int ticks = 0;
 
     protected Inventory(Player parent) {
         this.parent = parent;
@@ -31,6 +34,27 @@ public class Inventory {
 
     protected void update() {
         getCurrentWeapon().coolDown();
+        passiveAmmoRegeneration();
+
+        modulo();
+    }
+
+    private void passiveAmmoRegeneration() {
+        final int frequency = 600;
+        if ((ticks % frequency) == 0) {
+            replenishWeaponAmmoBy(PASSIVE_AMMO_REGENERATION_FACTOR);
+        }
+    }
+
+    public void replenishWeaponAmmoBy(float replenishmentFactor) {
+        for (Weapon weapon : weapons.values()) {
+            if (weapon != null) weapon.replenishAmmoBy(replenishmentFactor);
+        }
+    }
+
+    private void modulo() {
+        ticks++;
+        ticks %= FREQ;
     }
 
     private boolean canSwapToWeaponOfType(Weapon.Type weaponType) {

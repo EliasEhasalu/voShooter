@@ -9,11 +9,10 @@ import java.util.Random;
 
 public class Flamethrower extends ProjectileWeapon {
 
-    private static final int STARTING_AMMO = 30;
+    private static final int STARTING_AMMO = 90;
     private static final int FLAME_COUNT = 5;
-    private static final float COOL_DOWN = 0.3f;
+    private static final float COOL_DOWN = 0.1f;
     private static final float CONE_ANGLE = 60f;
-    private static final float FIREBALL_SPAWN_DISTANCE_VARIANCE = 2 * Fireball.RADIUS;
     private final Random rand = new Random();
 
     /**
@@ -25,15 +24,16 @@ public class Flamethrower extends ProjectileWeapon {
 
     @Override
     protected void onFire() {
-        final float start = -(CONE_ANGLE) / 2;
-        final float end = (CONE_ANGLE) / 2;
-        final float inc = (end - start) / FLAME_COUNT;
         for (int i = 0; i < FLAME_COUNT; i++) {
+            final float start = -(CONE_ANGLE / 2);
+            final float end = (CONE_ANGLE / 2);
+            final float inc = (end - start) / FLAME_COUNT;
+
             Vector2 offset = wielder.getViewDirection().cpy().nor().rotateDeg(start + i * inc);
 
             Projectile p = new Fireball(
                     wielder,
-                    wielder.getPos().cpy().add(offset.cpy().setLength(Fireball.RADIUS)),
+                    wielder.getPos().cpy(),
                     offset.cpy()
             );
 

@@ -19,6 +19,8 @@ public class ClientPlayer extends Entity implements Drawable {
     private int kills;
     public float respawnTimer;
     private Weapon.Type weapon;
+    public int currentAmmo = 0;
+    public int maxAmmo = 0;
 
 
     /**

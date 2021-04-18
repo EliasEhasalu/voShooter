@@ -4,6 +4,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerDash;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
@@ -23,6 +24,8 @@ public class InputHandler {
                player.setViewDirection((MouseCoords) action);
             } else if (action instanceof ChangeWeapon) {
                 handleChangeWeapon(connection, (ChangeWeapon) action);
+            } else if (action instanceof PlayerDash) {
+                handleDash(connection);
             }
         }
     }
@@ -54,5 +57,9 @@ public class InputHandler {
                 // No-op.
         }
         if (weaponType != null) c.getPlayer().setWeapon(weaponType);
+    }
+
+    private void handleDash(VoConnection connection) {
+        connection.getPlayer().dash();
     }
 }

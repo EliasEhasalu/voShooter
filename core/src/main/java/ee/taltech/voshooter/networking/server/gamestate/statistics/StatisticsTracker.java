@@ -41,6 +41,7 @@ public class StatisticsTracker {
 
         if (killer instanceof Player && killer != dyingPlayer) {
             Player killingPlayer = (Player) killer;
+            KillRewards.applyKillRewards(killingPlayer);
 
             killCount.put(killingPlayer, killCount.getOrDefault(killingPlayer, 0) + 1);
             long[] deathEvent = new long[] {dyingPlayer.getId(), killingPlayer.getId()};
