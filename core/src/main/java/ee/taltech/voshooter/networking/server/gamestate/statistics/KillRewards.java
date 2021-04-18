@@ -7,5 +7,6 @@ public class KillRewards {
     protected static void applyKillRewards(Player killer) {
         killer.getStatusManager().resetCoolDowns();
         killer.getInventory().replenishWeaponAmmoBy(0.25f);
+        killer.increaseMaxVelocity(40f);
     }
 }

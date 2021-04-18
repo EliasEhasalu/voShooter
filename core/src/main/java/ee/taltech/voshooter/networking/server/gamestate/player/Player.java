@@ -21,7 +21,7 @@ public class Player {
 
     public static final Integer MAX_HEALTH = 100;
     private static final float RESPAWN_TIME = 5f;
-    private static final float DASH_FORCE = 2000f;
+    private static final float DASH_FORCE = 200f;
 
     private long id;
     private String name;
@@ -91,8 +91,12 @@ public class Player {
 
     public void dash() {
         if (statusManager.canDash()) {
-            maxPlayerVelocity = 40f;
-            body.applyLinearImpulse(body.getLinearVelocity().cpy().nor().setLength(DASH_FORCE), body.getPosition(), true);
+            maxPlayerVelocity = 30f;
+            if (body.getLinearVelocity().len() <= 0.1f) {
+                body.applyLinearImpulse(getViewDirection().cpy().nor().setLength(DASH_FORCE), body.getPosition(), true);
+            } else {
+                body.applyLinearImpulse(body.getLinearVelocity().cpy().nor().setLength(DASH_FORCE), body.getPosition(), true);
+            }
             statusManager.playerDashed();
         }
     }
@@ -254,5 +258,9 @@ public class Player {
 
     public Inventory getInventory() {
         return inventory;
+    }
+
+    public void increaseMaxVelocity(float increase) {
+        maxPlayerVelocity += increase;
     }
 }
