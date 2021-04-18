@@ -69,9 +69,6 @@ public class SoundPlayer {
      */
     private static float getAttenuation(Vector2 listenerPos, Vector2 senderPos, float minDist, float maxDist) {
         final float dist = listenerPos.dst(senderPos);
-
-        if (dist <= minDist) return 1f;
-        if (dist > maxDist) return 0f;
         return Math.min(Math.max(1f - (dist - minDist) / (maxDist - minDist), 0f), 1f);
     }
 
