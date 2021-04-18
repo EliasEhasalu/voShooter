@@ -180,10 +180,8 @@ public class Game extends Thread {
     }
 
     private void setCurrentMap(int gameMode) {
-        if (gameMode == 1) {
-            currentMap = new HijackedTmxLoader(fileName -> new HeadlessFileHandle(fileName, Files.FileType.Classpath))
-                    .load(GameMap.getTileSet(mapType));
-        }
+        currentMap = new HijackedTmxLoader(fileName -> new HeadlessFileHandle(fileName, Files.FileType.Classpath))
+                .load(GameMap.getTileSet(mapType));
 
         // TODO add set map to entity managers
     }
