@@ -1,6 +1,7 @@
 package ee.taltech.voshooter.networking.server.gamestate;
 
 import ee.taltech.voshooter.controller.ActionType;
+import ee.taltech.voshooter.networking.messages.clientreceived.WeaponChanged;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
@@ -63,6 +64,7 @@ public class InputHandler {
         }
         if (weapon != null) {
             c.getPlayer().setWeapon(weapon);
+            c.sendTCP(new WeaponChanged(a.weapon));
         }
     }
 }

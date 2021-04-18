@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.networking.messages.clientreceived.WeaponChanged;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
@@ -97,6 +98,8 @@ public class VoClient {
                     playerDeathSet.add((PlayerDeath) message);
                 } else if (message instanceof PlayerDead) {
                     updatePlayerDead((PlayerDead) message);
+                } else if (message instanceof WeaponChanged) {
+                    handleSwitchWeapon((WeaponChanged) message);
                 } else if (message instanceof PlayerStatistics) {
                     updatePlayerStatistics((PlayerStatistics) message);
                 }
@@ -272,5 +275,13 @@ public class VoClient {
      */
     private void updateProjectilePositions(ProjectilePositions msg) {
         parent.gameState.updateProjectiles(msg);
+    }
+
+    /**
+     * Switch weapons.
+     * @param msg Update message.
+     */
+    private void handleSwitchWeapon(WeaponChanged msg) {
+        parent.gameState.userPlayer.setWeapon(msg.weapon);
     }
 }

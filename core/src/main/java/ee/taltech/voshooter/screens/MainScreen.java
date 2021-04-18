@@ -47,7 +47,9 @@ import ee.taltech.voshooter.soundeffects.SoundPlayer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
@@ -83,6 +85,7 @@ public class MainScreen implements Screen {
     private final SpriteBatch hudBatch = new SpriteBatch();
     private final Texture selectedGunBackground
             = new Texture("textures/hud/background/selectedGunBackground.png");
+    private static Map<ActionType, Texture> WEAPON_TEXTURES;
     private final Texture handgun = new Texture("textures/hud/item/handgun.png");
     private final Texture healthEmpty = new Texture("textures/hud/background/healthBarEmpty.png");
     private final Texture healthFull = new Texture("textures/hud/background/healthBarFull.png");
@@ -107,6 +110,8 @@ public class MainScreen implements Screen {
 
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
+
+        createTextures();
     }
 
     /**
@@ -451,7 +456,7 @@ public class MainScreen implements Screen {
         }
 
         hudBatch.draw(selectedGunBackground, 64, 64);
-        hudBatch.draw(selectedGun, 64, 64);
+        hudBatch.draw(WEAPON_TEXTURES.getOrDefault(parent.gameState.userPlayer.getWeapon(), WEAPON_TEXTURES.get(ActionType.WEAPON_PISTOL)), 64, 64);
 
         hudBatch.draw(healthEmpty, 64, 128);
         hudBatch.draw(healthFull, 64, 128, 0, 0,
@@ -493,6 +498,17 @@ public class MainScreen implements Screen {
                 }
             }
         }
+    }
+
+    /**
+     * Create textures.
+     */
+    private void createTextures() {
+        WEAPON_TEXTURES = new HashMap<ActionType, Texture>() {{
+            for (ActionType weapon : ClientPlayer.WEAPON_TEXTURE.keySet()) {
+                put(weapon, new Texture(ClientPlayer.WEAPON_TEXTURE.get(weapon)));
+            }
+        }};
     }
 
     /**
