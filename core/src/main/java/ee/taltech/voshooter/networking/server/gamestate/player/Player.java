@@ -13,7 +13,6 @@ import ee.taltech.voshooter.networking.server.gamestate.player.status.PlayerStat
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectile.Fireball;
-import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
 
 public class Player {
 
@@ -28,9 +27,9 @@ public class Player {
 
     private transient VoConnection connection;
     private transient Body body;
-    private transient Weapon currentWeapon = new Pistol(this);
-    private final transient PlayerStatusManager statusManager = new PlayerStatusManager(this);
     private transient PlayerManager playerManager;
+    private final transient PlayerStatusManager statusManager = new PlayerStatusManager(this);
+    private final transient Inventory inventory = new Inventory(this);
 
     private final Vector2 playerAcc = new Vector2(0f, 0f);
     private Vector2 viewDirection = new Vector2(0f, 0f);
@@ -79,7 +78,7 @@ public class Player {
     public void update() {
         if (!(isAlive())) respawn();
         statusManager.update();
-        currentWeapon.coolDown();
+        inventory.update();
         move();
     }
 
@@ -101,7 +100,7 @@ public class Player {
      * Shoot the current weapon.
      */
     public void shoot() {
-       currentWeapon.fire();
+       inventory.attemptToFireCurrentWeapon();
     }
 
     /**
@@ -186,17 +185,17 @@ public class Player {
     }
 
     /**
-     * @param weapon to give the player.
+     * @param weaponType to give the player.
      */
-    public void setWeapon(Weapon weapon) {
-        currentWeapon = weapon;
+    public void setWeapon(Weapon.Type weaponType) {
+        inventory.swapToWeapon(weaponType);
     }
 
     /**
      * @return get the current weapon of the player.
      */
     public Weapon getWeapon() {
-        return currentWeapon;
+        return inventory.getCurrentWeapon();
     }
 
     public World getWorld() {
