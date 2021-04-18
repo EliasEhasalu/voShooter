@@ -64,7 +64,7 @@ public class InputHandler {
         }
         if (weapon != null) {
             c.getPlayer().setWeapon(weapon);
-            c.sendTCP(new WeaponChanged(a.weapon));
+            c.sendTCP(new WeaponChanged(weapon.getType()));
         }
     }
 }

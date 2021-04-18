@@ -3,12 +3,9 @@ package ee.taltech.voshooter.entity.player;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.rendering.Drawable;
-
-import java.util.HashMap;
-import java.util.Map;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public class ClientPlayer extends Entity implements Drawable {
 
@@ -21,15 +18,7 @@ public class ClientPlayer extends Entity implements Drawable {
     private int deaths;
     private int kills;
     public float respawnTimer;
-    private ActionType weapon;
-
-    public static final Map<ActionType, String> WEAPON_TEXTURE = new HashMap<ActionType, String>() {{
-        put(ActionType.WEAPON_PISTOL, "textures/hud/item/handgun.png");
-        put(ActionType.WEAPON_SHOTGUN, "textures/hud/item/shotgun.png");
-        put(ActionType.WEAPON_RPG, "textures/hud/item/rocketlauncher.png");
-        put(ActionType.WEAPON_FLAMETHROWER, "textures/hud/item/flamethrower.png");
-        put(ActionType.WEAPON_MACHINE_GUN, "textures/hud/item/machinegun.png");
-    }};
+    private Weapon.Type weapon;
 
 
     /**
@@ -154,11 +143,11 @@ public class ClientPlayer extends Entity implements Drawable {
     /**
      * @param weapon The weapon to change to.
      */
-    public void setWeapon(ActionType weapon) {
+    public void setWeapon(Weapon.Type weapon) {
         this.weapon = weapon;
     }
 
-    public ActionType getWeapon() {
+    public Weapon.Type getWeapon() {
         return weapon;
     }
 }

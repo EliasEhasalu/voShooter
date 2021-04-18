@@ -1,10 +1,10 @@
 package ee.taltech.voshooter.networking.messages.clientreceived;
 
-import ee.taltech.voshooter.controller.ActionType;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public class WeaponChanged {
 
-    public ActionType weapon;
+    public Weapon.Type weapon;
 
     public WeaponChanged() {
     }
@@ -12,7 +12,7 @@ public class WeaponChanged {
     /**
      * @param weapon The weapon to change to on the client.
      */
-    public WeaponChanged(ActionType weapon) {
+    public WeaponChanged(Weapon.Type weapon) {
         this.weapon = weapon;
     }
 }

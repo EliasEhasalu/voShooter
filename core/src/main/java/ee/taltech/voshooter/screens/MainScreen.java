@@ -43,6 +43,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
+import ee.taltech.voshooter.weapon.Weapon;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -83,15 +84,21 @@ public class MainScreen implements Screen {
     public static final float MINIMAP_SCALE = 0.22f;
 
     private final SpriteBatch hudBatch = new SpriteBatch();
+
+    public static final Map<Weapon.Type, Texture> WEAPON_TEXTURES = new HashMap<Weapon.Type, Texture>() {{
+        put(Weapon.Type.PISTOL,             new Texture("textures/hud/item/handgun.png"));
+        put(Weapon.Type.SHOTGUN,            new Texture("textures/hud/item/shotgun.png"));
+        put(Weapon.Type.ROCKET_LAUNCHER,    new Texture("textures/hud/item/rocketlauncher.png"));
+        put(Weapon.Type.FLAMETHROWER,       new Texture("textures/hud/item/flamethrower.png"));
+        put(Weapon.Type.MACHINE_GUN,        new Texture("textures/hud/item/machinegun.png"));
+    }};
     private final Texture selectedGunBackground
-            = new Texture("textures/hud/background/selectedGunBackground.png");
-    private static Map<ActionType, Texture> WEAPON_TEXTURES;
-    private final Texture handgun = new Texture("textures/hud/item/handgun.png");
-    private final Texture healthEmpty = new Texture("textures/hud/background/healthBarEmpty.png");
-    private final Texture healthFull = new Texture("textures/hud/background/healthBarFull.png");
-    private final Texture killIcon = new Texture("textures/hud/background/killicon.png");
-    private final Texture selfKillIcon = new Texture("textures/hud/background/selfkillicon.png");
-    private Texture selectedGun = handgun;
+                                        = new Texture("textures/hud/background/selectedGunBackground.png");
+    private final Texture healthEmpty   = new Texture("textures/hud/background/healthBarEmpty.png");
+    private final Texture healthFull    = new Texture("textures/hud/background/healthBarFull.png");
+    private final Texture killIcon      = new Texture("textures/hud/background/killicon.png");
+    private final Texture selfKillIcon  = new Texture("textures/hud/background/selfkillicon.png");
+
     private float healthFraction = 1.00f;
     private int currentAmmo = 16;
     private int maxAmmo = 20;
@@ -110,8 +117,6 @@ public class MainScreen implements Screen {
 
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
-
-        createTextures();
     }
 
     /**
@@ -456,7 +461,8 @@ public class MainScreen implements Screen {
         }
 
         hudBatch.draw(selectedGunBackground, 64, 64);
-        hudBatch.draw(WEAPON_TEXTURES.getOrDefault(parent.gameState.userPlayer.getWeapon(), WEAPON_TEXTURES.get(ActionType.WEAPON_PISTOL)), 64, 64);
+        hudBatch.draw(WEAPON_TEXTURES.getOrDefault(parent.gameState.userPlayer.getWeapon(),
+                WEAPON_TEXTURES.get(Weapon.Type.PISTOL)), 64, 64);
 
         hudBatch.draw(healthEmpty, 64, 128);
         hudBatch.draw(healthFull, 64, 128, 0, 0,
@@ -501,17 +507,6 @@ public class MainScreen implements Screen {
     }
 
     /**
-     * Create textures.
-     */
-    private void createTextures() {
-        WEAPON_TEXTURES = new HashMap<ActionType, Texture>() {{
-            for (ActionType weapon : ClientPlayer.WEAPON_TEXTURE.keySet()) {
-                put(weapon, new Texture(ClientPlayer.WEAPON_TEXTURE.get(weapon)));
-            }
-        }};
-    }
-
-    /**
      * Make sure the window doesn't break.
      */
     @Override
@@ -552,7 +547,7 @@ public class MainScreen implements Screen {
      */
     @Override
     public void dispose() {
-        stage.dispose();
         SoundPlayer.dispose();
+        stage.dispose();
     }
 }

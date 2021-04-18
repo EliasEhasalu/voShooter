@@ -36,6 +36,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
+import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.util.ArrayList;
@@ -85,6 +86,7 @@ public final class Network {
         kryo.register(ChangeWeapon.class);
         kryo.register(WeaponChanged.class);
         kryo.register(ActionType.class);
+        kryo.register(Weapon.Type.class);
 
         kryo.register(Shoot.class);
         kryo.register(MovePlayer.class);
