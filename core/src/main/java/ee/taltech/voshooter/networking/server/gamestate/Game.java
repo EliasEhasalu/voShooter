@@ -37,7 +37,7 @@ public class Game extends Thread {
         World.setVelocityThreshold(0.1f);
     }
 
-    private GameMap.MapType mapType;
+    private final GameMap.MapType mapType;
     private TiledMap currentMap;
     private final World world = new World(new Vector2(0, 0), false);
 
@@ -53,7 +53,7 @@ public class Game extends Thread {
      */
     public Game(int gameMode, GameMap.MapType mapType) {
         this.mapType = mapType;
-        setCurrentMap(gameMode);
+        setCurrentMap();
         LevelGenerator.generateLevel(world, currentMap);
 
         world.setContactListener(collisionHandler);
@@ -179,12 +179,8 @@ public class Game extends Thread {
         return statisticsTracker;
     }
 
-    private void setCurrentMap(int gameMode) {
-        if (gameMode == 1) {
-            currentMap = new HijackedTmxLoader(fileName -> new HeadlessFileHandle(fileName, Files.FileType.Classpath))
-                    .load(GameMap.getTileSet(mapType));
-        }
-
-        // TODO add set map to entity managers
+    private void setCurrentMap() {
+        currentMap = new HijackedTmxLoader(fileName -> new HeadlessFileHandle(fileName, Files.FileType.Classpath))
+                .load(GameMap.getTileSet(mapType));
     }
 }
