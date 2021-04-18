@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.rendering.Drawable;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public class ClientPlayer extends Entity implements Drawable {
 
@@ -17,6 +18,8 @@ public class ClientPlayer extends Entity implements Drawable {
     private int deaths;
     private int kills;
     public float respawnTimer;
+    private Weapon.Type weapon;
+
 
     /**
      * Construct player with specific sprite.
@@ -135,5 +138,16 @@ public class ClientPlayer extends Entity implements Drawable {
      */
     public void setKills(int kills) {
         this.kills = kills;
+    }
+
+    /**
+     * @param weapon The weapon to change to.
+     */
+    public void setWeapon(Weapon.Type weapon) {
+        this.weapon = weapon;
+    }
+
+    public Weapon.Type getWeapon() {
+        return weapon;
     }
 }

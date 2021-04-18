@@ -44,11 +44,14 @@ import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
+import ee.taltech.voshooter.weapon.Weapon;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
@@ -82,14 +85,21 @@ public class MainScreen implements Screen {
     public static final float MINIMAP_SCALE = 0.22f;
 
     private final SpriteBatch hudBatch = new SpriteBatch();
+
+    public static final Map<Weapon.Type, Texture> WEAPON_TEXTURES = new HashMap<Weapon.Type, Texture>() {{
+        put(Weapon.Type.PISTOL,             new Texture("textures/hud/item/handgun.png"));
+        put(Weapon.Type.SHOTGUN,            new Texture("textures/hud/item/shotgun.png"));
+        put(Weapon.Type.ROCKET_LAUNCHER,    new Texture("textures/hud/item/rocketlauncher.png"));
+        put(Weapon.Type.FLAMETHROWER,       new Texture("textures/hud/item/flamethrower.png"));
+        put(Weapon.Type.MACHINE_GUN,        new Texture("textures/hud/item/machinegun.png"));
+    }};
     private final Texture selectedGunBackground
-            = new Texture("textures/hud/background/selectedGunBackground.png");
-    private final Texture handgun = new Texture("textures/hud/item/handgun.png");
-    private final Texture healthEmpty = new Texture("textures/hud/background/healthBarEmpty.png");
-    private final Texture healthFull = new Texture("textures/hud/background/healthBarFull.png");
-    private final Texture killIcon = new Texture("textures/hud/background/killicon.png");
-    private final Texture selfKillIcon = new Texture("textures/hud/background/selfkillicon.png");
-    private Texture selectedGun = handgun;
+                                        = new Texture("textures/hud/background/selectedGunBackground.png");
+    private final Texture healthEmpty   = new Texture("textures/hud/background/healthBarEmpty.png");
+    private final Texture healthFull    = new Texture("textures/hud/background/healthBarFull.png");
+    private final Texture killIcon      = new Texture("textures/hud/background/killicon.png");
+    private final Texture selfKillIcon  = new Texture("textures/hud/background/selfkillicon.png");
+
     private float healthFraction = 1.00f;
     private int currentAmmo = 16;
     private int maxAmmo = 20;
@@ -406,6 +416,9 @@ public class MainScreen implements Screen {
      * Draw the HUD in the render cycle.
      */
     private void drawHUD() {
+        final int width = Gdx.graphics.getWidth();
+        final int height = Gdx.graphics.getHeight();
+
         hudBatch.begin();
 
         // Draw UI particles.
@@ -419,6 +432,7 @@ public class MainScreen implements Screen {
             }
         }
 
+        // Draw killfeed
         killfeedFont.setColor(Color.WHITE);
         int i = parent.gameState.deathMessages.size() - 1;
         Queue<DeathMessage> messages = new ArrayDeque<>(parent.gameState.deathMessages);
@@ -426,8 +440,8 @@ public class MainScreen implements Screen {
             GlyphLayout playerLayout = new GlyphLayout();
             playerLayout.setText(killfeedFont, msg.getPlayer().getName());
 
-            final int playerX = Gdx.graphics.getWidth() - (int) playerLayout.width - KILLFEED_RIGHT_MARGIN;
-            final int playerY = Gdx.graphics.getHeight() - (i * KILLFEED_GAP) - KILLFEED_TOP_MARGIN;
+            final int playerX = width - (int) playerLayout.width - KILLFEED_RIGHT_MARGIN;
+            final int playerY = height - (i * KILLFEED_GAP) - KILLFEED_TOP_MARGIN;
 
             if (msg.getKiller() != msg.getPlayer()) {
                 GlyphLayout killerLayout = new GlyphLayout();
@@ -457,14 +471,33 @@ public class MainScreen implements Screen {
             updateLeaderBoard();
         }
 
-        hudBatch.draw(selectedGunBackground, 64, 64);
-        hudBatch.draw(selectedGun, 64, 64);
+        hudBatch.draw(selectedGunBackground, 64, 32, 96, 96);
+        hudBatch.draw(WEAPON_TEXTURES.getOrDefault(parent.gameState.userPlayer.getWeapon(),
+                WEAPON_TEXTURES.get(Weapon.Type.PISTOL)), 64, 32, 96, 96);
 
-        hudBatch.draw(healthEmpty, 64, 128);
-        hudBatch.draw(healthFull, 64, 128, 0, 0,
+        hudBatch.draw(healthEmpty, width / 2f - (healthEmpty.getWidth() / 2f), 88);
+        hudBatch.draw(healthFull, width / 2f - (healthFull.getWidth() / 2f), 88, 0, 0,
                 Math.round(healthFull.getWidth() * Math.max(healthFraction, 0)), healthFull.getHeight());
 
-        font.draw(hudBatch, String.format("%d/%d", currentAmmo, maxAmmo), 138, 80);
+        // Draw ammo
+        final float fontScaleX = font.getScaleX();
+        final float fontScaleY = font.getScaleY();
+        final int ammoX = 164;
+        final int ammoY = 80;
+
+        font.getData().setScale(0.8f);
+        font.setColor(Color.WHITE);
+        GlyphLayout currentAmmoStr = new GlyphLayout(font, String.valueOf(currentAmmo));
+        font.draw(hudBatch, currentAmmoStr, ammoX, ammoY);
+
+        font.getData().setScale(0.6f);
+        font.setColor(Color.LIGHT_GRAY);
+        GlyphLayout maxAmmoStr = new GlyphLayout(font, "/" + maxAmmo);
+        font.draw(hudBatch, maxAmmoStr, ammoX + currentAmmoStr.width + 4, ammoY - maxAmmoStr.height / 1.5f);
+
+        font.getData().setScale(fontScaleX, fontScaleY);
+        font.setColor(Color.WHITE);
+
         hudBatch.end();
     }
 
@@ -543,7 +576,7 @@ public class MainScreen implements Screen {
      */
     @Override
     public void dispose() {
-        stage.dispose();
         SoundPlayer.dispose();
+        stage.dispose();
     }
 }
