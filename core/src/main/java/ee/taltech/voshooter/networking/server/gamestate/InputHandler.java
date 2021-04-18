@@ -1,6 +1,5 @@
 package ee.taltech.voshooter.networking.server.gamestate;
 
-import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
@@ -9,11 +8,6 @@ import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.weapon.Weapon;
-import ee.taltech.voshooter.weapon.projectileweapon.Flamethrower;
-import ee.taltech.voshooter.weapon.projectileweapon.MachineGun;
-import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
-import ee.taltech.voshooter.weapon.projectileweapon.RocketLauncher;
-import ee.taltech.voshooter.weapon.projectileweapon.Shotgun;
 
 public class InputHandler {
 
@@ -39,30 +33,26 @@ public class InputHandler {
      * @param a the weapon to change to.
      */
     private void handleChangeWeapon(VoConnection c, ChangeWeapon a) {
-        Weapon weapon = null;
-        if (a.weapon == ActionType.WEAPON_PISTOL) {
-            if (!(c.getPlayer().getWeapon() instanceof Pistol)) {
-                weapon = new Pistol(c.getPlayer());
-            }
-        } else if (a.weapon == ActionType.WEAPON_SHOTGUN) {
-            if (!(c.getPlayer().getWeapon() instanceof Shotgun)) {
-                weapon = new Shotgun(c.getPlayer());
-            }
-        } else if (a.weapon == ActionType.WEAPON_RPG) {
-            if (!(c.getPlayer().getWeapon() instanceof RocketLauncher)) {
-                weapon = new RocketLauncher(c.getPlayer());
-            }
-        } else if (a.weapon == ActionType.WEAPON_FLAMETHROWER) {
-            if (!(c.getPlayer().getWeapon() instanceof Flamethrower)) {
-                weapon = new Flamethrower(c.getPlayer());
-            }
-        } else if (a.weapon == ActionType.WEAPON_MACHINE_GUN) {
-            if (!(c.getPlayer().getWeapon() instanceof MachineGun)) {
-                weapon = new MachineGun(c.getPlayer());
-            }
+        Weapon.Type weaponType = null;
+        switch (a.weapon) {
+            case WEAPON_PISTOL:
+                weaponType = Weapon.Type.PISTOL;
+                break;
+            case WEAPON_SHOTGUN:
+                weaponType = Weapon.Type.SHOTGUN;
+                break;
+            case WEAPON_RPG:
+                weaponType = Weapon.Type.ROCKET_LAUNCHER;
+                break;
+            case WEAPON_FLAMETHROWER:
+                weaponType = Weapon.Type.FLAMETHROWER;
+                break;
+            case WEAPON_MACHINE_GUN:
+                weaponType = Weapon.Type.MACHINE_GUN;
+                break;
+            default:
+                // No-op.
         }
-        if (weapon != null) {
-            c.getPlayer().setWeapon(weapon);
-        }
+        if (weaponType != null) c.getPlayer().setWeapon(weaponType);
     }
 }

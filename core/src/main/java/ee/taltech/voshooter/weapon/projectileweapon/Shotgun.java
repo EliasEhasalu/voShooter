@@ -8,6 +8,7 @@ import ee.taltech.voshooter.weapon.projectile.ShotgunPellet;
 
 public class Shotgun extends ProjectileWeapon {
 
+    private static final int STARTING_AMMO = 20;
     private static final int PELLET_COUNT = 8;
     private static final float COOL_DOWN = 1f;
 
@@ -15,29 +16,30 @@ public class Shotgun extends ProjectileWeapon {
      * @param wielder The player who wields this weapon.
      */
     public Shotgun(Player wielder) {
-        super(wielder, COOL_DOWN, Type.SHOTGUN);
+        super(wielder, COOL_DOWN, STARTING_AMMO, Type.SHOTGUN);
     }
 
     @Override
-    public void fire() {
-        if (canFire()) {
-            remainingCoolDown = coolDown;
+    protected void onFire() {
+        for (int i = 0; i < PELLET_COUNT; i++) {
+            final float start = -45f / 2;
+            final float end = 45f / 2;
+            final float inc = (end - start) / PELLET_COUNT;
 
-            for (int i = 0; i < PELLET_COUNT; i++) {
-                final float start = -45f / 2;
-                final float end = 45f / 2;
-                final float inc = (end - start) / PELLET_COUNT;
+            Vector2 offset = wielder.getViewDirection().cpy().nor().rotateDeg(start + i * inc);
 
-                Vector2 offset = wielder.getViewDirection().cpy().nor().rotateDeg(start + i * inc);
+            Projectile p = new ShotgunPellet(
+                    wielder,
+                    wielder.getPos().cpy().add(offset.cpy().setLength(PistolBullet.RADIUS)),
+                    offset.cpy()
+            );
 
-                Projectile p = new ShotgunPellet(
-                        wielder,
-                        wielder.getPos().cpy().add(offset.cpy().setLength(PistolBullet.RADIUS)),
-                        offset.cpy()
-                );
-
-                wielder.getGame().getEntityManagerHub().add(p);
-            }
+            wielder.getGame().getEntityManagerHub().add(p);
         }
+    }
+
+    @Override
+    public int getMaxAmmo() {
+        return STARTING_AMMO;
     }
 }

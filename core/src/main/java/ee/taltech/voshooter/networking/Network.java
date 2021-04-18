@@ -8,6 +8,7 @@ import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.map.GameMap;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
@@ -36,6 +37,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
+import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.util.ArrayList;
@@ -70,6 +72,7 @@ public final class Network {
         kryo.register(ArrayList.class);
         kryo.register(boolean.class);
         kryo.register(Vector2.class);
+        kryo.register(Weapon.Type.class);
 
         kryo.register(Player.class);
         kryo.register(Pos.class);
@@ -80,6 +83,7 @@ public final class Network {
         kryo.register(PlayerPositionUpdate.class);
         kryo.register(PlayerViewUpdate.class);
         kryo.register(PlayerHealthUpdate.class);
+        kryo.register(PlayerAmmoUpdate.class);
         kryo.register(PlayerDeath.class);
         kryo.register(PlayerDead.class);
         kryo.register(PlayerStatistics.class);
