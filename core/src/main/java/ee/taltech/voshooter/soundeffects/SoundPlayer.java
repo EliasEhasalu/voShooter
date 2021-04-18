@@ -2,6 +2,7 @@ package ee.taltech.voshooter.soundeffects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.math.Vector2;
 import ee.taltech.voshooter.AppPreferences;
 
 import java.util.HashMap;
@@ -23,6 +24,15 @@ public class SoundPlayer {
             soundMap.put(path, sound);
             sound.play(AppPreferences.getSoundVolume());
         }
+    }
+
+    /**
+     * Play a sound effect at a location.
+     * @param path
+     * @param pos
+     */
+    public static void play(String path, Vector2 pos) {
+
     }
 
     /**
