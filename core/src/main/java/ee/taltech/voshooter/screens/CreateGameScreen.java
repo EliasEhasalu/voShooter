@@ -23,6 +23,8 @@ import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
@@ -31,9 +33,14 @@ public class CreateGameScreen implements Screen {
     private VoShooter parent;
     private Stage stage;
     private int playerCount = 4;
+    private int gameMode = 1;
     public VoShooter.Screen shouldChangeScreen;
     private Table popUpTable;
     private GameMap.MapType mapType = GameMap.PLAYER_MAPS[0];
+    public Map<Integer, String> gameModes = new HashMap<Integer, String>() {{
+        put(0, "Funky");
+        put(1, "FFA");
+    }};
 
     /**
      * Construct the menu screen.
@@ -79,20 +86,23 @@ public class CreateGameScreen implements Screen {
         Label chooseNameLabel = new Label("Choose name:", skin);
         Label playerNameHintLabel = new Label("Too short", skin);
         playerNameHintLabel.setColor(Color.RED);
-        Label playersLabel = new Label("Players:", skin);
-        Label playerCountLabel = new Label(String.valueOf(playerCount), skin);
         Label gameModeLabel = new Label("Gamemode:", skin);
         Label gameModeLabel2 = new Label("FFA", skin);
+        TextButton gameModeDecrease = new TextButton("<", skin);
+        TextButton gameModeIncrease = new TextButton(">", skin);
+        Table gameModeTable = new Table();
         Label mapLabel = new Label("Map", skin);
         TextField playerNameField = new TextField("", skin);
         playerNameField.setMaxLength(12);
         stage.setKeyboardFocus(playerNameField);
+        Label playersLabel = new Label("Players:", skin);
+        Label playerCountLabel = new Label(String.valueOf(playerCount), skin);
         TextButton playerCountDecrease = new TextButton("<", skin);
         TextButton playerCountIncrease = new TextButton(">", skin);
+        Table playerCountTable = new Table();
         TextButton changeMapButton = new TextButton(mapType.name(), skin);
         TextButton back = new TextButton("Back", skin);
         TextButton createGame = new TextButton("Create", skin);
-        Table playerCountTable = new Table();
 
         // Add the objects to the table.
         table.add(createLobbyTitle).left();
@@ -108,7 +118,10 @@ public class CreateGameScreen implements Screen {
         playerCountTable.add(playerCountIncrease).right();
         table.row().pad(10, 0, 0, 0);
         table.add(gameModeLabel).left();
-        table.add(gameModeLabel2).center();
+        gameModeTable.add(gameModeDecrease).left();
+        gameModeTable.add(gameModeLabel2).center().fillX();
+        gameModeTable.add(gameModeIncrease).right();
+        table.add(gameModeTable).center();
         table.row().pad(10, 0, 0, 0);
         table.add(mapLabel).left();
         table.add(changeMapButton).center();
@@ -168,6 +181,26 @@ public class CreateGameScreen implements Screen {
             }
         });
 
+        gameModeDecrease.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (gameMode > 0) {
+                    gameMode--;
+                    gameModeLabel2.setText(gameModes.get(gameMode));
+                }
+            }
+        });
+
+        gameModeIncrease.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (gameMode < gameModes.size() - 1) {
+                    gameMode++;
+                    gameModeLabel2.setText(gameModes.get(gameMode));
+                }
+            }
+        });
+
         playerNameField.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -207,7 +240,7 @@ public class CreateGameScreen implements Screen {
                         parent.gameState.clientUser.setName(playerNameField.getText());
                         parent.gameState.clientUser.setHost(true);
                         parent.getClient().sendTCP(new SetUsername(playerNameField.getText()));
-                        parent.getClient().sendTCP(new CreateLobby(1, playerCount, mapType));
+                        parent.getClient().sendTCP(new CreateLobby(gameMode, playerCount, mapType));
                     } catch (IOException e) {
                         popUpTable.setVisible(true);
                         table.setVisible(false);
