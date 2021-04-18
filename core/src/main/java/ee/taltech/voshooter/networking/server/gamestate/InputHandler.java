@@ -1,10 +1,5 @@
 package ee.taltech.voshooter.networking.server.gamestate;
 
-<<<<<<< HEAD
-import ee.taltech.voshooter.controller.ActionType;
-import ee.taltech.voshooter.networking.messages.clientreceived.WeaponChanged;
-=======
->>>>>>> aaf1335f3faf762c7a963bfcc751bcc8e043b9bf
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
