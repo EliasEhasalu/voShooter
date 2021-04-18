@@ -11,5 +11,6 @@ public enum ActionType {
     WEAPON_SHOTGUN,
     WEAPON_RPG,
     WEAPON_FLAMETHROWER,
-    WEAPON_MACHINE_GUN
+    WEAPON_MACHINE_GUN,
+    DASH
 }

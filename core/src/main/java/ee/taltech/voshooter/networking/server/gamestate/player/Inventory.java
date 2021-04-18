@@ -10,6 +10,7 @@ public class Inventory {
 
     private static final Weapon.Type DEFAULT_WEAPON = Weapon.Type.PISTOL;
     private static final int FREQ = 2400;
+    private static final float PASSIVE_AMMO_REGENERATION_FACTOR = 0.1f;
 
     private final Map<Weapon.Type, Weapon> weapons = new HashMap<>();
     private final Player parent;
@@ -33,17 +34,21 @@ public class Inventory {
 
     protected void update() {
         getCurrentWeapon().coolDown();
-        replenishAmmo();
+        passiveAmmoRegeneration();
 
         modulo();
     }
 
-    private void replenishAmmo() {
+    private void passiveAmmoRegeneration() {
         final int frequency = 600;
         if ((ticks % frequency) == 0) {
-            for (Weapon weapon : weapons.values()) {
-                if (weapon != null) weapon.replenishAmmoBy(0.1f);
-            }
+            replenishWeaponAmmoBy(PASSIVE_AMMO_REGENERATION_FACTOR);
+        }
+    }
+
+    public void replenishWeaponAmmoBy(float replenishmentFactor) {
+        for (Weapon weapon : weapons.values()) {
+            if (weapon != null) weapon.replenishAmmoBy(replenishmentFactor);
         }
     }
 

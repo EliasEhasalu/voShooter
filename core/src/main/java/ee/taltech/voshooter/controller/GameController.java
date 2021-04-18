@@ -51,6 +51,10 @@ public class GameController {
                 || (Gdx.input.isButtonPressed(AppPreferences.getNumberFive()) && !AppPreferences.getNumberFiveIsKey())) {
             actionsPerformed.add(ActionType.WEAPON_MACHINE_GUN);
         }
+        if ((Gdx.input.isKeyPressed(AppPreferences.getLShiftKey()) && AppPreferences.getLShiftKeyIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getLShiftKey()) && !AppPreferences.getLShiftKeyIsKey())) {
+            actionsPerformed.add(ActionType.DASH);
+        }
         // Mouse buttons
         if ((Gdx.input.isKeyPressed(AppPreferences.getMouseLeft()) && AppPreferences.getButtonLeftIsKey())
                 || (Gdx.input.isButtonPressed(AppPreferences.getMouseLeft()) && !AppPreferences.getButtonLeftIsKey())) {

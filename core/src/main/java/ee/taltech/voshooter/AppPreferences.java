@@ -26,6 +26,8 @@ public class AppPreferences {
     private static final String PREF_DOWN_IS_KEY = "down key is key";
     private static final String PREF_LEFT_IS_KEY = "left key is key";
     private static final String PREF_RIGHT_IS_KEY = "right key is key";
+    private static final String PREF_L_SHIFT_KEY = "left shift key";
+    private static final String PREF_L_SHIFT_KEY_IS_KEY = "left shift key is key";
     private static final String PREF_MOUSE_LEFT_IS_KEY = "left button is key";
     private static final String PREF_MOUSE_RIGHT_IS_KEY = "right button is key";
     private static final String PREF_NUMBER_1 = "number 1";
@@ -332,6 +334,17 @@ public class AppPreferences {
     /** @return Whether MOVE_RIGHT action is key. */
     public static boolean getRightKeyIsKey() {
         return getPrefs().getBoolean(PREF_RIGHT_IS_KEY, true);
+    }
+
+
+    /** @return Key that triggers MOVE_RIGHT action. */
+    public static int getLShiftKey() {
+        return getPrefs().getInteger(PREF_L_SHIFT_KEY, Input.Keys.SHIFT_LEFT);
+    }
+
+    /** @return Whether MOVE_RIGHT action is key. */
+    public static boolean getLShiftKeyIsKey() {
+        return getPrefs().getBoolean(PREF_L_SHIFT_KEY_IS_KEY, true);
     }
 
     /** @return Key that triggers MOUSE_LEFT action. */

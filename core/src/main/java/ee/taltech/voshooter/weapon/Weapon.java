@@ -58,7 +58,7 @@ public abstract class Weapon implements AmmoWeapon {
     }
 
     public void replenishAmmoBy(float decimal) {
-        remainingAmmo = min(getMaxAmmo(), max(getRemainingAmmo(), getRemainingAmmo() + (int) Math.floor(getMaxAmmo() * decimal)));
+        remainingAmmo = min(getMaxAmmo(), max(getRemainingAmmo(), getRemainingAmmo() + (int) Math.ceil(getMaxAmmo() * decimal)));
     }
 
     public int getRemainingAmmo() {

@@ -15,10 +15,13 @@ import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTra
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectile.Fireball;
 
+import static java.lang.Math.max;
+
 public class Player {
 
     public static final Integer MAX_HEALTH = 100;
     private static final float RESPAWN_TIME = 5f;
+    private static final float DASH_FORCE = 2000f;
 
     private long id;
     private String name;
@@ -35,6 +38,8 @@ public class Player {
 
     private final Vector2 playerAcc = new Vector2(0f, 0f);
     private Vector2 viewDirection = new Vector2(0f, 0f);
+    private float maxPlayerVelocity = 10f;
+    private static final float REGULAR_MAX_PLAYER_VELOCITY = 10f;
 
     /** Serialize. **/
     public Player() {
@@ -84,18 +89,25 @@ public class Player {
         move();
     }
 
+    public void dash() {
+        if (statusManager.canDash()) {
+            maxPlayerVelocity = 40f;
+            body.applyLinearImpulse(body.getLinearVelocity().cpy().nor().setLength(DASH_FORCE), body.getPosition(), true);
+            statusManager.playerDashed();
+        }
+    }
+
     /**
      * Update the player's position.
      */
     private void move() {
-        float maxPlayerVelocity = 10f;
-
         body.applyLinearImpulse(playerAcc, body.getPosition(), true);
 
         if (body.getLinearVelocity().len() > maxPlayerVelocity) {
             body.setLinearVelocity(body.getLinearVelocity().cpy().limit(maxPlayerVelocity));
         }
         playerAcc.limit(0);  // Reset player acceleration vector after application.
+        maxPlayerVelocity = max(REGULAR_MAX_PLAYER_VELOCITY, maxPlayerVelocity - 1f);
     }
 
     /**
@@ -138,6 +150,7 @@ public class Player {
     public void respawn() {
         if (respawnTime <= 0) {
             health = MAX_HEALTH;
+            statusManager.resetCoolDowns();
             fixture.setSensor(false);
             body.setTransform(getSpawnPoint(), 0f);
             respawnTime = RESPAWN_TIME;
@@ -233,5 +246,13 @@ public class Player {
 
     public float getTimeToRespawn() {
         return respawnTime;
+    }
+
+    public PlayerStatusManager getStatusManager() {
+        return statusManager;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
     }
 }

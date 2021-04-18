@@ -39,6 +39,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerDash;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
@@ -262,6 +263,9 @@ public class MainScreen implements Screen {
                     break;
                 case WEAPON_MACHINE_GUN:
                     inputsToSend.add(new ChangeWeapon(ActionType.WEAPON_MACHINE_GUN));
+                    break;
+                case DASH:
+                    inputsToSend.add(new PlayerDash());
                     break;
                 default:
                     break;
