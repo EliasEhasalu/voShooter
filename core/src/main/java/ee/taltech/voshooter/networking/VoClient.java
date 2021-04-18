@@ -285,6 +285,7 @@ public class VoClient {
      * @param msg Update message.
      */
     private void handleSwitchWeapon(PlayerAmmoUpdate msg) {
-        if (msg.weaponType != null) parent.gameState.userPlayer.setWeapon(msg.weaponType);
+        parent.gameState.userPlayer.setWeapon(msg.weaponType);
+        parent.gameState.userPlayer.currentAmmo = msg.remainingAmmo;
     }
 }
