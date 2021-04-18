@@ -22,6 +22,9 @@ import ee.taltech.voshooter.weapon.projectile.PistolBullet;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 import ee.taltech.voshooter.weapon.projectile.Rocket;
 
+import java.util.Arrays;
+import java.util.List;
+
 public final class ShapeFactory {
 
     public static PolygonShape getRectangle(RectangleMapObject rectangleObject) {
@@ -180,7 +183,7 @@ public final class ShapeFactory {
         return b;
     }
 
-    public static Body getPlayer(World world, Vector2 pos) {
+    public static List<Object> getPlayerFixtureAndBody(World world, Vector2 pos) {
         // Create a body definition.
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.DynamicBody;
@@ -201,6 +204,6 @@ public final class ShapeFactory {
         body.setLinearDamping(6f);
 
         shape.dispose();
-        return body;
+        return Arrays.asList(fixture, body);
     }
 }

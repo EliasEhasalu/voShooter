@@ -8,7 +8,7 @@ import ee.taltech.voshooter.weapon.projectile.ShotgunPellet;
 
 public class Shotgun extends ProjectileWeapon {
 
-    private static final int STARTING_AMMO = 20;
+    private static final int STARTING_AMMO = 10;
     private static final int PELLET_COUNT = 8;
     private static final float COOL_DOWN = 1f;
 
