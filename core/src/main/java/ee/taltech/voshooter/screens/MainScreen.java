@@ -176,9 +176,7 @@ public class MainScreen implements Screen {
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap FPS to 64.
         stage.draw();
-        if (parent.gameState.currentLobby.getGamemode() == 0) {
-            camera.rotate(1);
-        }
+        if (parent.gameState.currentLobby.getGamemode() == 0) camera.rotate(0.5f);
 
         stage.getBatch().setProjectionMatrix(camera.combined);
         stage.getBatch().begin();

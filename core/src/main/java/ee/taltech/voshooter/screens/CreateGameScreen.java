@@ -87,7 +87,7 @@ public class CreateGameScreen implements Screen {
         Label playerNameHintLabel = new Label("Too short", skin);
         playerNameHintLabel.setColor(Color.RED);
         Label gameModeLabel = new Label("Gamemode:", skin);
-        Label gameModeLabel2 = new Label("FFA", skin);
+        Label gameModeLabel2 = new Label(gameModes.get(gameMode), skin);
         TextButton gameModeDecrease = new TextButton("<", skin);
         TextButton gameModeIncrease = new TextButton(">", skin);
         Table gameModeTable = new Table();
