@@ -289,6 +289,7 @@ public class VoClient {
             p.setKills(msg.kills);
             p.setDeaths(msg.deaths);
         }
+    }
 
     /**
      * Switch weapons.
