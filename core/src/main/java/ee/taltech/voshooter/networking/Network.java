@@ -8,15 +8,13 @@ import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.map.GameMap;
-import ee.taltech.voshooter.networking.messages.clientreceived.WeaponChanged;
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
-import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
@@ -38,6 +36,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
@@ -89,7 +88,6 @@ public final class Network {
         kryo.register(PlayerDead.class);
         kryo.register(PlayerStatistics.class);
         kryo.register(ChangeWeapon.class);
-        kryo.register(WeaponChanged.class);
         kryo.register(ActionType.class);
         kryo.register(Weapon.Type.class);
 

@@ -9,13 +9,12 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
-import ee.taltech.voshooter.networking.messages.clientreceived.WeaponChanged;
-import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
@@ -25,6 +24,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
 
@@ -98,8 +98,8 @@ public class VoClient {
                     playerDeathSet.add((PlayerDeath) message);
                 } else if (message instanceof PlayerDead) {
                     updatePlayerDead((PlayerDead) message);
-                } else if (message instanceof WeaponChanged) {
-                    handleSwitchWeapon((WeaponChanged) message);
+                } else if (message instanceof PlayerAmmoUpdate) {
+                    handleSwitchWeapon((PlayerAmmoUpdate) message);
                 } else if (message instanceof PlayerStatistics) {
                     updatePlayerStatistics((PlayerStatistics) message);
                 }
@@ -284,7 +284,7 @@ public class VoClient {
      * Switch weapons.
      * @param msg Update message.
      */
-    private void handleSwitchWeapon(WeaponChanged msg) {
-        parent.gameState.userPlayer.setWeapon(msg.weapon);
+    private void handleSwitchWeapon(PlayerAmmoUpdate msg) {
+        if (msg.weaponType != null) parent.gameState.userPlayer.setWeapon(msg.weaponType);
     }
 }
