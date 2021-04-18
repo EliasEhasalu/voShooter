@@ -150,7 +150,7 @@ public class MainScreen implements Screen {
         minimapCamera.zoom = MINIMAP_ZOOM;
         minimapCamera.setToOrtho(false, Gdx.graphics.getWidth() / 10f,
                 Gdx.graphics.getHeight() / 10f);
-
+        minimapCamera.update();
         createMenuButtons();
     }
 
@@ -169,12 +169,16 @@ public class MainScreen implements Screen {
             moveCameraToPlayer();
         }
         camera.update();
+        minimapCamera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
         healthFraction = parent.gameState.userPlayer.getHealth() / 100f;
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap FPS to 64.
         stage.draw();
+        if (parent.gameState.currentLobby.getGamemode() == 0) {
+            camera.rotate(1);
+        }
 
         stage.getBatch().setProjectionMatrix(camera.combined);
         stage.getBatch().begin();
@@ -398,7 +402,7 @@ public class MainScreen implements Screen {
      * Draw the projectiles to the screen.
      */
     private void drawProjectiles() {
-        for (ClientProjectile p : parent.gameState.getProjectiles()) {
+        for (ClientProjectile p : parent.gameState.getProjectiles().values()) {
             p.getSprite().setRotation(p.getVelocity().angleDeg());
             p.getSprite().draw(stage.getBatch());
         }
