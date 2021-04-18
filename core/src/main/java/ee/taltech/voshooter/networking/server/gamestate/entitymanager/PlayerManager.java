@@ -81,7 +81,7 @@ public class PlayerManager extends EntityManager {
     }
 
     public Vector2 getSpawnPoint() {
-        return playerSpawner.getSpawnPointForCurrentMap(game.getMapType());
+        return playerSpawner.getSpawnPointForMap(game.getMapType());
     }
 
     public Set<Player> getPlayers() {
