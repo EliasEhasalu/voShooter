@@ -4,6 +4,7 @@ import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public abstract class Weapon implements AmmoWeapon {
 
@@ -57,7 +58,7 @@ public abstract class Weapon implements AmmoWeapon {
     }
 
     public void replenishAmmoBy(float decimal) {
-        remainingAmmo = max(getRemainingAmmo(), getRemainingAmmo() + (int) Math.floor(getMaxAmmo() * decimal));
+        remainingAmmo = min(getMaxAmmo(), max(getRemainingAmmo(), getRemainingAmmo() + (int) Math.floor(getMaxAmmo() * decimal)));
     }
 
     public int getRemainingAmmo() {
