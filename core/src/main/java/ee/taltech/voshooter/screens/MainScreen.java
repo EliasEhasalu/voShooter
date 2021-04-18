@@ -203,6 +203,10 @@ public class MainScreen implements Screen {
             }
             tableTop -= 20;
         }
+        font.getData().setScale(1f);
+        font.draw(hudBatch, parent.gameState.currentLobby.getLobbyCode(),
+                Gdx.graphics.getWidth() / (float) 2 - 80, 50);
+        font.getData().setScale(0.6f);
     }
 
     /**
@@ -332,6 +336,7 @@ public class MainScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 parent.setCameFromGame(true);
+                parent.screen = null;
                 parent.changeScreen(VoShooter.Screen.PREFERENCES);
             }
         });
@@ -341,6 +346,7 @@ public class MainScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 parent.gameState.clearDrawables();
                 pauseMenuActive = false;
+                parent.screen = null;
                 parent.getClient().sendTCP(new LeaveLobby());
                 parent.changeScreen(VoShooter.Screen.MENU);
             }

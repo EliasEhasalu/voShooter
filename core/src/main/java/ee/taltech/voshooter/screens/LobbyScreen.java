@@ -151,6 +151,10 @@ public class LobbyScreen implements Screen {
             }
         }
 
+        if (parent.gameState.ongoingGame) {
+            parent.changeScreen(VoShooter.Screen.MAIN);
+        }
+
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
