@@ -33,6 +33,7 @@ import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.gamestate.DeathMessage;
+import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
@@ -120,7 +121,7 @@ public class MainScreen implements Screen {
         camera.setToOrtho(false, width, height);
         camera.zoom = 0.8f;
         camera.update();
-        tiledMap = new TmxMapLoader().load("tileset/vo_shooter_map.tmx");
+        tiledMap = new TmxMapLoader().load(GameMap.getTileSet(parent.gameState.currentLobby.getMap()));
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         font = new BitmapFont(Gdx.files.internal("bitmapFont/commodore.fnt"),
                 Gdx.files.internal("bitmapFont/commodore.png"), false);

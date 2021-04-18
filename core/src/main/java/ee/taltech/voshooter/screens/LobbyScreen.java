@@ -65,6 +65,7 @@ public class LobbyScreen implements Screen {
         // Create the menu objects for our stage.
         Label lobbyTitleLabel = new Label("Lobby", skin);
         lobbyCodeLabel = new Label(parent.gameState.currentLobby.getLobbyCode(), skin);
+        Label mapLabel = new Label("Map: " + parent.gameState.currentLobby.getMap().name(), skin);
         TextButton leaveButton = new TextButton("Leave", skin);
         TextButton startGame = new TextButton("Start", skin);
         if (!parent.gameState.clientUser.isHost()) startGame.setVisible(false);
@@ -77,13 +78,16 @@ public class LobbyScreen implements Screen {
         // Add the objects to the table.
         table.add(lobbyTitleLabel);
         table.add(lobbyCodeLabel);
-        table.row();
+        table.row().pad(10, 0, 0, 0);
+        table.add(mapLabel).left();
+        table.row().pad(60, 0, 0, 0);
         for (Label playerName : playerNameLabels) {
             table.add(playerName).left();
             table.row().pad(10, 0, 0, 0);
         }
-        table.add(leaveButton);
-        table.add(startGame);
+        table.row().pad(50, 0, 0, 0);
+        table.add(leaveButton).left();
+        table.add(startGame).right();
 
         // Music.
         MusicPlayer.setMusic("soundfx/bensound-theelevatorbossanova.mp3");

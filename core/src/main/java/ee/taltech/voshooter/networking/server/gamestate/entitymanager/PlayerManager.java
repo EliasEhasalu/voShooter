@@ -28,7 +28,7 @@ public class PlayerManager extends EntityManager {
 
     protected void createPlayer(VoConnection c) {
         Player p = new Player(this, c, c.user.id, c.user.getName());
-        Body body = ShapeFactory.getPlayer(world, playerSpawner.getSpawnPointForCurrentMap());
+        Body body = ShapeFactory.getPlayer(world, playerSpawner.getSpawnPointForMap(game.getMapType()));
 
         p.setBody(body);
         body.setUserData(p);
@@ -81,7 +81,7 @@ public class PlayerManager extends EntityManager {
     }
 
     public Vector2 getSpawnPoint() {
-        return playerSpawner.getSpawnPointForCurrentMap();
+        return playerSpawner.getSpawnPointForCurrentMap(game.getMapType());
     }
 
     public Set<Player> getPlayers() {
