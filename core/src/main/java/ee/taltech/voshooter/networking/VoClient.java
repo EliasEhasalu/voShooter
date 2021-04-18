@@ -289,13 +289,14 @@ public class VoClient {
             p.setKills(msg.kills);
             p.setDeaths(msg.deaths);
         }
+    }
 
     /**
      * Switch weapons.
      * @param msg Update message.
      */
     private void handleSwitchWeapon(PlayerAmmoUpdate msg) {
-        parent.gameState.userPlayer.setWeapon(msg.weaponType);
+        if (msg.weaponType != null) parent.gameState.userPlayer.setWeapon(msg.weaponType);
         parent.gameState.userPlayer.currentAmmo = msg.remainingAmmo;
     }
 }
