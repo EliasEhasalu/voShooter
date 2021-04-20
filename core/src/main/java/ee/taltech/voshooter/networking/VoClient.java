@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.gamestate.gamemode.ClientKingOfTheHillManager;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
@@ -18,6 +19,8 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKothChange;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKothScores;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
@@ -104,6 +107,10 @@ public class VoClient {
                     handleSwitchWeapon((PlayerAmmoUpdate) message);
                 } else if (message instanceof PlayerStatistics) {
                     updatePlayerStatistics((PlayerStatistics) message);
+                } else if (message instanceof PlayerKothChange) {
+                    System.out.println(((PlayerKothChange) message).player.getName());
+                } else if (message instanceof PlayerKothScores) {
+                    updateKingOfTheHillStatistics((PlayerKothScores) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -145,6 +152,16 @@ public class VoClient {
         }));
 
         client.connect(MILLISECONDS_BEFORE_TIMEOUT, address, port);
+    }
+
+    private void updateKingOfTheHillStatistics(PlayerKothScores msg) {
+        if (parent.gameState.userPlayer.clientGameModeManager instanceof ClientKingOfTheHillManager) {
+            ((ClientKingOfTheHillManager) parent.gameState.userPlayer.clientGameModeManager).players = msg.players;
+        }
+    }
+
+    private void updateKingOfTheHillAreaHolder(PlayerKothChange msg) {
+        System.out.println(msg.player.getName());
     }
 
     /**
@@ -296,7 +313,9 @@ public class VoClient {
      * @param msg Update message.
      */
     private void handleSwitchWeapon(PlayerAmmoUpdate msg) {
-        if (msg.weaponType != null) parent.gameState.userPlayer.setWeapon(msg.weaponType);
-        parent.gameState.userPlayer.currentAmmo = msg.remainingAmmo;
+        if (parent.gameState.userPlayer != null) {
+            if (msg.weaponType != null) parent.gameState.userPlayer.setWeapon(msg.weaponType);
+            parent.gameState.userPlayer.currentAmmo = msg.remainingAmmo;
+        }
     }
 }
