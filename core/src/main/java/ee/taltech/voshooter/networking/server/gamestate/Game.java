@@ -13,7 +13,8 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.CollisionHandl
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.HijackedTmxLoader;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.LevelGenerator;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
-import ee.taltech.voshooter.networking.server.gamestate.gamemodes.GameModeManager;
+import ee.taltech.voshooter.networking.server.gamestate.gamemodes.GameMode;
+import ee.taltech.voshooter.networking.server.gamestate.gamemodes.GameModeManagerFactory;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
@@ -46,7 +47,7 @@ public class Game extends Thread {
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
     private final InputHandler inputHandler = new InputHandler();
     private final StatisticsTracker statisticsTracker = new StatisticsTracker(this);
-    private final GameModeManager gameModeManager;
+    private final GameMode gameModeManager;
 
     /**
      * Construct the game.
@@ -56,7 +57,7 @@ public class Game extends Thread {
     public Game(int gameMode, GameMap.MapType mapType) {
         this.mapType = mapType;
         setCurrentMap();
-        gameModeManager = new GameModeManager(this, statisticsTracker, gameMode);
+        gameModeManager = GameModeManagerFactory.makeGameModeManager(this, statisticsTracker, gameMode);
         LevelGenerator.generateLevel(world, currentMap);
 
         world.setContactListener(collisionHandler);

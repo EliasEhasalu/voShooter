@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class KingOfTheHillManager implements GameMode {
+public class KingOfTheHillManager extends GameMode {
 
     private final Game parent;
     private final StatisticsTracker statisticsTracker;
@@ -28,7 +28,7 @@ public class KingOfTheHillManager implements GameMode {
 
     @Override
     public void update() {
-        areaPlayerUpdates();
+        sendKothAreaUpdates();
         statisticsUpdates();
     }
 
@@ -38,13 +38,16 @@ public class KingOfTheHillManager implements GameMode {
         kingOfTheHillStatistics.sendUpdates();
     }
 
-    private void areaPlayerUpdates() {
+    private void sendKothAreaUpdates() {
         List<Player> playersInArea = new ArrayList<>();
         for (Player player : parent.getPlayers()) {
-            if (player.getPos().x > location.get(0) && player.getPos().x < location.get(1)
+            if (
+                    player.getPos().x > location.get(0) && player.getPos().x < location.get(1)
                     && player.getPos().y > location.get(2) && player.getPos().y < location.get(3)
-                    && player.isAlive()) {
+                    && player.isAlive()
+            ) {
                 playersInArea.add(player);
+                if (playersInArea.size() > 1) break;
             }
         }
         if (playersInArea.size() == 1) {
