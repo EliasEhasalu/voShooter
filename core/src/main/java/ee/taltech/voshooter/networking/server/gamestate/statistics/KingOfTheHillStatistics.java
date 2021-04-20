@@ -21,6 +21,7 @@ public class KingOfTheHillStatistics {
     }
 
     public void sendUpdates() {
+        updateTicker++;
         refreshPlayers();
         updatePlayerScoreKoth();
         sendPlayerScoreKoth();
@@ -35,11 +36,13 @@ public class KingOfTheHillStatistics {
     }
 
     public void updatePlayerScoreKoth() {
-        if (playerInArea != null) kothPlayers.put(playerInArea, kothPlayers.get(playerInArea) + 1 / (double) FREQUENCY);
+        if (playerInArea != null) {
+            kothPlayers.put(playerInArea, kothPlayers.get(playerInArea) + 1 / (double) FREQUENCY);
+        }
     }
 
     public void sendPlayerScoreKoth() {
-        if (updateTicker % FREQUENCY == 0) {
+        if (updateTicker % (FREQUENCY / 3) == 0) {
             for (VoConnection c : parent.getConnections()) {
                 c.sendTCP(new PlayerKothScores(kothPlayers));
             }
