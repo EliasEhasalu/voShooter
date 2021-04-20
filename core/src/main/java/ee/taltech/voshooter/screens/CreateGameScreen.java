@@ -40,6 +40,7 @@ public class CreateGameScreen implements Screen {
     public Map<Integer, String> gameModes = new HashMap<Integer, String>() {{
         put(0, "Funky");
         put(1, "FFA");
+        put(2, "King Of The Hill");
     }};
 
     /**
