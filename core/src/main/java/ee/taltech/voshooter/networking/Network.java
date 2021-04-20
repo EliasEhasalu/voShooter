@@ -18,7 +18,8 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKingOfTheHill;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKothChange;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKothScores;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
@@ -43,6 +44,7 @@ import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -75,6 +77,8 @@ public final class Network {
         kryo.register(boolean.class);
         kryo.register(Vector2.class);
         kryo.register(Weapon.Type.class);
+        kryo.register(HashMap.class);
+        kryo.register(Long.class);
 
         kryo.register(Player.class);
         kryo.register(Pos.class);
@@ -82,7 +86,8 @@ public final class Network {
         kryo.register(PlayerInput.class);
         kryo.register(PlayerAction.class);
         kryo.register(MouseCoords.class);
-        kryo.register(PlayerKingOfTheHill.class);
+        kryo.register(PlayerKothChange.class);
+        kryo.register(PlayerKothScores.class);
         kryo.register(PlayerPositionUpdate.class);
         kryo.register(PlayerViewUpdate.class);
         kryo.register(PlayerHealthUpdate.class);

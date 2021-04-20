@@ -2,15 +2,15 @@ package ee.taltech.voshooter.networking.messages.clientreceived;
 
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
-public class PlayerKingOfTheHill {
+public class PlayerKothChange {
 
     public Player player;
 
     /** Serialization. */
-    public PlayerKingOfTheHill() {
+    public PlayerKothChange() {
     }
 
-    public PlayerKingOfTheHill(Player player) {
+    public PlayerKothChange(Player player) {
         this.player = player;
     }
 }

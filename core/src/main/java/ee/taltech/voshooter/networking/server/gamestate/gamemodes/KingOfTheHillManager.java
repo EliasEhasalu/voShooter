@@ -1,10 +1,11 @@
 package ee.taltech.voshooter.networking.server.gamestate.gamemodes;
 
-import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKingOfTheHill;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKothChange;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.LevelGenerator;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.networking.server.gamestate.statistics.KingOfTheHillStatistics;
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
 import java.util.ArrayList;
@@ -14,11 +15,14 @@ import java.util.Map;
 public class KingOfTheHillManager extends GameMode {
 
     private final Game parent;
+    private final StatisticsTracker statisticsTracker;
+    private final KingOfTheHillStatistics kingOfTheHillStatistics;
     public Map<Integer, Float> location;
 
     public KingOfTheHillManager(Game parent, StatisticsTracker statisticsTracker) {
         this.parent = parent;
         this.statisticsTracker = statisticsTracker;
+        this.kingOfTheHillStatistics = new KingOfTheHillStatistics(parent);
         this.location = LevelGenerator.getKothLocation(parent.getCurrentMap());
     }
 
@@ -31,6 +35,7 @@ public class KingOfTheHillManager extends GameMode {
     @Override
     public void statisticsUpdates() {
         statisticsTracker.sendUpdates();
+        kingOfTheHillStatistics.sendUpdates();
     }
 
     private void sendKothAreaUpdates() {
@@ -46,9 +51,15 @@ public class KingOfTheHillManager extends GameMode {
             }
         }
         if (playersInArea.size() == 1) {
-            for (VoConnection c : parent.getConnections()) {
-                c.sendTCP(new PlayerKingOfTheHill(playersInArea.get(0)));
+            if (kingOfTheHillStatistics.playerInArea == null
+                    || !kingOfTheHillStatistics.playerInArea.equals(playersInArea.get(0))) {
+                kingOfTheHillStatistics.playerInArea = playersInArea.get(0);
+                for (VoConnection c : parent.getConnections()) {
+                    c.sendTCP(new PlayerKothChange(playersInArea.get(0)));
+                }
             }
+        } else {
+            kingOfTheHillStatistics.playerInArea = null;
         }
     }
 }

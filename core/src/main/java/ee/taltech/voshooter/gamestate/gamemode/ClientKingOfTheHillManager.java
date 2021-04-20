@@ -1,44 +1,46 @@
 package ee.taltech.voshooter.gamestate.gamemode;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
-import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.screens.MainScreen;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ee.taltech.voshooter.screens.MainScreen.STATS_ROW_PAD;
 
-public class ClientGameModeManager {
+public class ClientKingOfTheHillManager extends ClientGameModeManager {
 
-    protected MainScreen mainScreen;
-    protected SpriteBatch hudBatch;
-    protected BitmapFont font = new BitmapFont(Gdx.files.internal("bitmapFont/commodore.fnt"),
-                Gdx.files.internal("bitmapFont/commodore.png"), false);
+    public Map<Long, Double> players = new HashMap<>();
 
-    public ClientGameModeManager(MainScreen screen, SpriteBatch batch) {
-        this.mainScreen = screen;
-        this.hudBatch = batch;
+    public ClientKingOfTheHillManager(MainScreen screen, SpriteBatch batch) {
+        super(screen, batch);
     }
 
+    @Override
     public void update() {
         if (mainScreen.isStatsTabOpen) drawStatistics();
     }
 
+    @Override
     public void drawStatistics() {
         hudBatch.begin();
+        System.out.println(mainScreen.parent.gameState.getPlayers().values());
+        System.out.println(players.values());
         int tableTop = Gdx.graphics.getHeight() - 30;
-        int tableLeft = Gdx.graphics.getWidth() / 2 - 2 * STATS_ROW_PAD;
+        int tableLeft = Gdx.graphics.getWidth() / 2 - 3 * STATS_ROW_PAD;
         font.draw(hudBatch, "Player names", tableLeft, tableTop);
         font.draw(hudBatch, "Kills", tableLeft + (STATS_ROW_PAD * 2), tableTop);
         font.draw(hudBatch, "Deaths", tableLeft + (STATS_ROW_PAD * 3), tableTop);
         font.draw(hudBatch, "KDR", tableLeft + (STATS_ROW_PAD * 4), tableTop);
+        font.draw(hudBatch, "Seconds held", tableLeft + (STATS_ROW_PAD * 5), tableTop);
         tableTop -= 20;
         for (ClientPlayer player : mainScreen.parent.gameState.getPlayers().values().stream()
-                .sorted(Comparator.comparing(Drawable::getKills).reversed()).collect(Collectors.toList())) {
+                .sorted(Comparator.comparing(player -> players.get(((ClientPlayer) player).getId()))
+                        .reversed()).collect(Collectors.toList())) {
             font.draw(hudBatch, player.getName(), tableLeft, tableTop);
             font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 2), tableTop);
             font.draw(hudBatch, String.valueOf(player.getDeaths()), tableLeft + (STATS_ROW_PAD * 3), tableTop);
@@ -50,6 +52,8 @@ public class ClientGameModeManager {
             } else {
                 font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 4), tableTop);
             }
+            font.draw(hudBatch, String.valueOf(Math.round(players.get(player.getId()) * 10) / 10.0),
+                    tableLeft + (STATS_ROW_PAD * 5), tableTop);
             tableTop -= 20;
         }
         font.getData().setScale(1f);
