@@ -18,6 +18,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKingOfTheHill;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
@@ -104,6 +105,8 @@ public class VoClient {
                     handleSwitchWeapon((PlayerAmmoUpdate) message);
                 } else if (message instanceof PlayerStatistics) {
                     updatePlayerStatistics((PlayerStatistics) message);
+                } else if (message instanceof PlayerKingOfTheHill) {
+                    System.out.println(((PlayerKingOfTheHill) message).player.getName());
                 }
 
                 // Define actions to be taken on the next cycle

@@ -18,6 +18,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKingOfTheHill;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
@@ -81,6 +82,7 @@ public final class Network {
         kryo.register(PlayerInput.class);
         kryo.register(PlayerAction.class);
         kryo.register(MouseCoords.class);
+        kryo.register(PlayerKingOfTheHill.class);
         kryo.register(PlayerPositionUpdate.class);
         kryo.register(PlayerViewUpdate.class);
         kryo.register(PlayerHealthUpdate.class);
