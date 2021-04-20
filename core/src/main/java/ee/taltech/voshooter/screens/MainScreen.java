@@ -33,6 +33,7 @@ import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.gamestate.DeathMessage;
+import ee.taltech.voshooter.gamestate.gamemode.ClientGameModeManager;
 import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
@@ -49,19 +50,17 @@ import ee.taltech.voshooter.weapon.Weapon;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 
 public class MainScreen implements Screen {
 
     public static final float MINIMAP_ZOOM = 20f;
     public static final int STATS_ROW_PAD = 120;
-    private final VoShooter parent;
+    public final VoShooter parent;
     private final Stage stage;
     private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     public VoShooter.Screen shouldChangeScreen;
@@ -71,7 +70,7 @@ public class MainScreen implements Screen {
     private final TextButton exitButton = new TextButton("Exit", skin);
     private TextButton resumeButton;
     private final TextButton settingsButton = new TextButton("Settings", skin);
-    private OrthographicCamera camera;
+    private final OrthographicCamera camera = new OrthographicCamera();
     private OrthographicCamera minimapCamera;
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
@@ -104,7 +103,8 @@ public class MainScreen implements Screen {
     private float healthFraction = 1.00f;
     private int currentAmmo = 16;
     private int maxAmmo = 20;
-    private boolean isStatsTabOpen = false;
+    public boolean isStatsTabOpen = false;
+    private ClientGameModeManager clientGameModeManager;
     public static final int KILLFEED_TOP_MARGIN = 50;
     private static final int KILLFEED_RIGHT_MARGIN = 50;
     private static final int KILLFEED_GAP = 38;
@@ -119,6 +119,8 @@ public class MainScreen implements Screen {
 
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
+        clientGameModeManager = new ClientGameModeManager(parent.gameState.currentLobby.getGamemode(), camera,
+                this, hudBatch);
     }
 
     /**
@@ -128,7 +130,6 @@ public class MainScreen implements Screen {
     public void show() {
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
-        camera = new OrthographicCamera();
         camera.setToOrtho(false, width, height);
         camera.zoom = 0.8f;
         camera.update();
@@ -176,7 +177,6 @@ public class MainScreen implements Screen {
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap FPS to 64.
         stage.draw();
-        if (parent.gameState.currentLobby.getGamemode() == 0) camera.rotate(0.5f);
 
         stage.getBatch().setProjectionMatrix(camera.combined);
         stage.getBatch().begin();
@@ -185,41 +185,10 @@ public class MainScreen implements Screen {
         drawParticles();
         drawRespawnTimer();
         stage.getBatch().end();
+        clientGameModeManager.render();
 
         drawMiniMap();
         drawHUD();
-    }
-
-    /**
-     * Draw the players statistics.
-     */
-    private void updateLeaderBoard() {
-        int tableTop = Gdx.graphics.getHeight() - 30;
-        int tableLeft = Gdx.graphics.getWidth() / 2 - 2 * STATS_ROW_PAD;
-        font.draw(hudBatch, "Player names", tableLeft, tableTop);
-        font.draw(hudBatch, "Kills", tableLeft + (STATS_ROW_PAD * 2), tableTop);
-        font.draw(hudBatch, "Deaths", tableLeft + (STATS_ROW_PAD * 3), tableTop);
-        font.draw(hudBatch, "KDR", tableLeft + (STATS_ROW_PAD * 4), tableTop);
-        tableTop -= 20;
-        for (ClientPlayer player : parent.gameState.getPlayers().values().stream()
-                .sorted(Comparator.comparing(Drawable::getKills).reversed()).collect(Collectors.toList())) {
-            font.draw(hudBatch, player.getName(), tableLeft, tableTop);
-            font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 2), tableTop);
-            font.draw(hudBatch, String.valueOf(player.getDeaths()), tableLeft + (STATS_ROW_PAD * 3), tableTop);
-            if (player.getDeaths() > 0) {
-                font.draw(hudBatch,
-                        String.valueOf((double) Math.round((player.getKills()
-                                / (double) player.getDeaths()) * 100) / 100),
-                        tableLeft + (STATS_ROW_PAD * 4), tableTop);
-            } else {
-                font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 4), tableTop);
-            }
-            tableTop -= 20;
-        }
-        font.getData().setScale(1f);
-        font.draw(hudBatch, parent.gameState.currentLobby.getLobbyCode(),
-                Gdx.graphics.getWidth() / (float) 2 - 80, 50);
-        font.getData().setScale(0.6f);
     }
 
     /**
@@ -471,10 +440,6 @@ public class MainScreen implements Screen {
                 parent.gameState.removeDeathMessage(msg);
             }
             i--;
-        }
-
-        if (isStatsTabOpen) {
-            updateLeaderBoard();
         }
 
         hudBatch.draw(selectedGunBackground, 64, 32, 96, 96);
