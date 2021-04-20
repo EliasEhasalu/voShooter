@@ -28,8 +28,6 @@ public class ClientKingOfTheHillManager extends ClientGameModeManager {
     @Override
     public void drawStatistics() {
         hudBatch.begin();
-        System.out.println(mainScreen.parent.gameState.getPlayers().values());
-        System.out.println(players.values());
         int tableTop = Gdx.graphics.getHeight() - 30;
         int tableLeft = Gdx.graphics.getWidth() / 2 - 3 * STATS_ROW_PAD;
         font.draw(hudBatch, "Player names", tableLeft, tableTop);

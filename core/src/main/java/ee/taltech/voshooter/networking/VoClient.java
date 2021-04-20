@@ -108,7 +108,7 @@ public class VoClient {
                 } else if (message instanceof PlayerStatistics) {
                     updatePlayerStatistics((PlayerStatistics) message);
                 } else if (message instanceof PlayerKothChange) {
-                    System.out.println(((PlayerKothChange) message).player.getName());
+                    updateKingOfTheHillAreaHolder((PlayerKothChange) message);
                 } else if (message instanceof PlayerKothScores) {
                     updateKingOfTheHillStatistics((PlayerKothScores) message);
                 }
