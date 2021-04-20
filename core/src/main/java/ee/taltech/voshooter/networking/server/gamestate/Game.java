@@ -40,14 +40,13 @@ public class Game extends Thread {
 
     private final GameMap.MapType mapType;
     private TiledMap currentMap;
-    private int gameMode;
     private final World world = new World(new Vector2(0, 0), false);
 
     private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this);
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
     private final InputHandler inputHandler = new InputHandler();
     private final StatisticsTracker statisticsTracker = new StatisticsTracker(this);
-    private final GameModeManager gameModeManager = new GameModeManager(this, statisticsTracker, gameMode);
+    private final GameModeManager gameModeManager;
 
     /**
      * Construct the game.
@@ -57,8 +56,8 @@ public class Game extends Thread {
     public Game(int gameMode, GameMap.MapType mapType) {
         this.mapType = mapType;
         setCurrentMap();
+        gameModeManager = new GameModeManager(this, statisticsTracker, gameMode);
         LevelGenerator.generateLevel(world, currentMap);
-        this.gameMode = gameMode;
 
         world.setContactListener(collisionHandler);
     }
@@ -186,5 +185,9 @@ public class Game extends Thread {
     private void setCurrentMap() {
         currentMap = new HijackedTmxLoader(fileName -> new HeadlessFileHandle(fileName, Files.FileType.Classpath))
                 .load(GameMap.getTileSet(mapType));
+    }
+
+    public TiledMap getCurrentMap() {
+        return currentMap;
     }
 }

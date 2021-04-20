@@ -14,6 +14,9 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class LevelGenerator {
 
     public static void generateLevel(World world, TiledMap map) {
@@ -53,5 +56,24 @@ public class LevelGenerator {
                 break;
             }
         }
+    }
+
+    public static Map<Integer, Float> getKothLocation(TiledMap map) {
+        for (MapLayer l : map.getLayers()) {
+            if (l.getName().equals("koth")) {
+                MapObject object = l.getObjects().get(0);
+                Map<Integer, Float> corners = new LinkedHashMap<>();
+                if (object instanceof RectangleMapObject) {
+                    corners.put(0, PixelToSimulation.toUnits(((RectangleMapObject) object).getRectangle().x));
+                    corners.put(1, PixelToSimulation.toUnits((((RectangleMapObject) object).getRectangle().x
+                            + ((RectangleMapObject) object).getRectangle().width)));
+                    corners.put(2, PixelToSimulation.toUnits(((RectangleMapObject) object).getRectangle().y));
+                    corners.put(3, PixelToSimulation.toUnits((((RectangleMapObject) object).getRectangle().y
+                            + ((RectangleMapObject) object).getRectangle().height)));
+                }
+                return corners;
+            }
+        }
+        return null;
     }
 }
