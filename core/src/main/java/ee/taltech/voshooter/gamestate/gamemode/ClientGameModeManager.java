@@ -30,7 +30,7 @@ public class ClientGameModeManager {
         this.hudBatch = batch;
     }
 
-    public void render() {
+    public void update() {
         if (gameMode == 0) camera.rotate(ROTATION_SPEED);
         if (mainScreen.isStatsTabOpen) drawStatistics();
     }

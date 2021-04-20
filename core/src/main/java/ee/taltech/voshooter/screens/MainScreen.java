@@ -185,7 +185,7 @@ public class MainScreen implements Screen {
         drawParticles();
         drawRespawnTimer();
         stage.getBatch().end();
-        clientGameModeManager.render();
+        clientGameModeManager.update();
 
         drawMiniMap();
         drawHUD();
