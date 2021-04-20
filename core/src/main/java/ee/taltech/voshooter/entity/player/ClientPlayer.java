@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import ee.taltech.voshooter.entity.Entity;
+import ee.taltech.voshooter.gamestate.gamemode.ClientGameModeManager;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.weapon.Weapon;
 
@@ -21,7 +22,7 @@ public class ClientPlayer extends Entity implements Drawable {
     private Weapon.Type weapon;
     public int currentAmmo = 0;
     public int maxAmmo = 0;
-
+    public ClientGameModeManager clientGameModeManager;
 
     /**
      * Construct player with specific sprite.

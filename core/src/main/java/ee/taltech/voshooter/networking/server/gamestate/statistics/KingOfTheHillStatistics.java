@@ -14,7 +14,7 @@ public class KingOfTheHillStatistics {
     private static final int FREQUENCY = 60;
     private Game parent;
     public Player playerInArea;
-    private Map<Player, Double> kothPlayers = new HashMap<>();
+    private Map<Long, Double> kothPlayers = new HashMap<>();
 
     public KingOfTheHillStatistics(Game parent) {
         this.parent = parent;
@@ -28,16 +28,16 @@ public class KingOfTheHillStatistics {
     }
 
     public void refreshPlayers() {
-        Map<Player, Double> newMap = new HashMap<>();
+        Map<Long, Double> newMap = new HashMap<>();
         for (Player player : parent.getPlayers()) {
-            newMap.put(player, kothPlayers.getOrDefault(player, 0.0));
+            newMap.put(player.getId(), kothPlayers.getOrDefault(player.getId(), 0.0));
         }
         kothPlayers = newMap;
     }
 
     public void updatePlayerScoreKoth() {
         if (playerInArea != null) {
-            kothPlayers.put(playerInArea, kothPlayers.get(playerInArea) + 1 / (double) FREQUENCY);
+            kothPlayers.put(playerInArea.getId(), kothPlayers.get(playerInArea.getId()) + 1 / (double) FREQUENCY);
         }
     }
 

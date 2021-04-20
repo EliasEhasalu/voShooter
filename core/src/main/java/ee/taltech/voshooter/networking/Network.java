@@ -78,6 +78,7 @@ public final class Network {
         kryo.register(Vector2.class);
         kryo.register(Weapon.Type.class);
         kryo.register(HashMap.class);
+        kryo.register(Long.class);
 
         kryo.register(Player.class);
         kryo.register(Pos.class);

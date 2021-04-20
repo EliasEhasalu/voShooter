@@ -34,6 +34,7 @@ import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.gamestate.DeathMessage;
 import ee.taltech.voshooter.gamestate.gamemode.ClientGameModeManager;
+import ee.taltech.voshooter.gamestate.gamemode.ManagerBuilder;
 import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
@@ -104,7 +105,7 @@ public class MainScreen implements Screen {
     private int currentAmmo = 16;
     private int maxAmmo = 20;
     public boolean isStatsTabOpen = false;
-    private ClientGameModeManager clientGameModeManager;
+    public ClientGameModeManager clientGameModeManager;
     public static final int KILLFEED_TOP_MARGIN = 50;
     private static final int KILLFEED_RIGHT_MARGIN = 50;
     private static final int KILLFEED_GAP = 38;
@@ -119,8 +120,11 @@ public class MainScreen implements Screen {
 
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
-        clientGameModeManager = new ClientGameModeManager(parent.gameState.currentLobby.getGamemode(), camera,
+        clientGameModeManager = ManagerBuilder.getGameModeManager(parent.gameState.currentLobby.getGamemode(), camera,
                 this, hudBatch);
+        if (this.parent.gameState.userPlayer != null) {
+            this.parent.gameState.userPlayer.clientGameModeManager = this.clientGameModeManager;
+        }
     }
 
     /**
@@ -155,6 +159,12 @@ public class MainScreen implements Screen {
         createMenuButtons();
     }
 
+    private void setClientGameModeManager() {
+        if (this.parent.gameState.userPlayer.clientGameModeManager == null) {
+            this.parent.gameState.userPlayer.clientGameModeManager = this.clientGameModeManager;
+        }
+    }
+
     /**
      * Render the elements defined in the show() method.
      */
@@ -169,6 +179,7 @@ public class MainScreen implements Screen {
             handlePlayerInputs();
             moveCameraToPlayer();
         }
+        setClientGameModeManager();
         camera.update();
         minimapCamera.update();
         tiledMapRenderer.setView(camera);
