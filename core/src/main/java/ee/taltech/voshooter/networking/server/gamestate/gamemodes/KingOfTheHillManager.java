@@ -24,7 +24,7 @@ public class KingOfTheHillManager extends GameMode {
 
     @Override
     public void update() {
-        checkIfAnyoneInArea();
+        sendKothAreaUpdates();
         statisticsUpdates();
     }
 
@@ -33,13 +33,16 @@ public class KingOfTheHillManager extends GameMode {
         statisticsTracker.sendUpdates();
     }
 
-    private void checkIfAnyoneInArea() {
+    private void sendKothAreaUpdates() {
         List<Player> playersInArea = new ArrayList<>();
         for (Player player : parent.getPlayers()) {
-            if (player.getPos().x > location.get(0) && player.getPos().x < location.get(1)
+            if (
+                    player.getPos().x > location.get(0) && player.getPos().x < location.get(1)
                     && player.getPos().y > location.get(2) && player.getPos().y < location.get(3)
-                    && player.isAlive()) {
+                    && player.isAlive()
+            ) {
                 playersInArea.add(player);
+                if (playersInArea.size() > 1) break;
             }
         }
         if (playersInArea.size() == 1) {
