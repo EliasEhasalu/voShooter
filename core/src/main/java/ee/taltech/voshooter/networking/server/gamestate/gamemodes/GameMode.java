@@ -1,8 +1,12 @@
 package ee.taltech.voshooter.networking.server.gamestate.gamemodes;
 
-public interface GameMode {
+import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
-    public void update();
+public abstract class GameMode {
 
-    public void statisticsUpdates();
+    protected StatisticsTracker statisticsTracker;
+
+    public abstract void update();
+
+    public abstract void statisticsUpdates();
 }

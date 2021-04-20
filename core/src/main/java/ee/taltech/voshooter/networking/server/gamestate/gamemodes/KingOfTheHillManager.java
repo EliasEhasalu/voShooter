@@ -11,10 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class KingOfTheHillManager implements GameMode {
+public class KingOfTheHillManager extends GameMode {
 
     private final Game parent;
-    private final StatisticsTracker statisticsTracker;
     public Map<Integer, Float> location;
 
     public KingOfTheHillManager(Game parent, StatisticsTracker statisticsTracker) {
