@@ -13,6 +13,7 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.CollisionHandl
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.HijackedTmxLoader;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.LevelGenerator;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
+import ee.taltech.voshooter.networking.server.gamestate.gamemodes.GameModeManager;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
@@ -39,12 +40,14 @@ public class Game extends Thread {
 
     private final GameMap.MapType mapType;
     private TiledMap currentMap;
+    private int gameMode;
     private final World world = new World(new Vector2(0, 0), false);
 
     private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this);
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
     private final InputHandler inputHandler = new InputHandler();
     private final StatisticsTracker statisticsTracker = new StatisticsTracker(this);
+    private final GameModeManager gameModeManager = new GameModeManager(this, statisticsTracker, gameMode);
 
     /**
      * Construct the game.
@@ -55,6 +58,7 @@ public class Game extends Thread {
         this.mapType = mapType;
         setCurrentMap();
         LevelGenerator.generateLevel(world, currentMap);
+        this.gameMode = gameMode;
 
         world.setContactListener(collisionHandler);
     }
@@ -86,11 +90,11 @@ public class Game extends Thread {
     private void tick() {
         connectionInputs.forEach(this::handleInputs);     // Handle inputs.
         entityManagerHub.update();                        // Update logic.
+        gameModeManager.update();                         // Update game mode logic.
 
         world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);  // Update physics simulation.
 
         entityManagerHub.sendUpdates();                   // Send updates to players.
-        statisticsTracker.sendUpdates();
         clearPlayerInputs();                              // Clear inputs.
     }
 
