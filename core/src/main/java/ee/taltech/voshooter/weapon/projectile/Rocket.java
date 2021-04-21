@@ -21,6 +21,7 @@ public class Rocket extends Projectile {
     public void handleCollision(Fixture fix) {
         if (
                 !(fix.getBody().getUserData() == owner)
+                && !(fix.isSensor())
                 && (!(fix.getBody().getUserData() instanceof Projectile))
         ) {
             destroy();
