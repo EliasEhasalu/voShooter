@@ -7,9 +7,11 @@ import com.esotericsoftware.minlog.Log;
 import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.Network;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.ChatSendMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
@@ -103,6 +105,14 @@ public class VoServer {
             public void run(VoConnection c, PlayerInput msg) {
                 handlePlayerInput(c, msg);
             }
+        });
+
+        server.addListener(
+            new RunMethodListener<ChatSendMessage>(ChatSendMessage.class) {
+                @Override
+                public void run(VoConnection c, ChatSendMessage msg) {
+                    handleSendMessage(c, msg);
+                }
         });
 
         server.bind(port);
@@ -240,6 +250,27 @@ public class VoServer {
                }
            }
        }
+    }
+
+    /**
+     * Handle sending chat messages.
+     * @param connection The connection that sent the chat message.
+     * @param msg The message object.
+     */
+    private void handleSendMessage(VoConnection connection, ChatSendMessage msg) {
+        Optional<Lobby> optLobby = getUserLobby(connection.user);
+
+        if (optLobby.isPresent()) {
+            Lobby lobby = optLobby.get();
+
+            if (lobby.getGame() != null) {
+                ChatReceiveMessage chatMsg = new ChatReceiveMessage(connection.user.id, msg.message);
+                System.out.println(msg.message);
+                for (Connection c : lobby.getConnections()) {
+                    c.sendTCP(chatMsg);
+                }
+            }
+        }
     }
 
     /**

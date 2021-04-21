@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.AppPreferences;
@@ -32,11 +33,13 @@ import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.gamestate.ChatEntry;
 import ee.taltech.voshooter.gamestate.DeathMessage;
 import ee.taltech.voshooter.gamestate.gamemode.ClientGameModeManager;
 import ee.taltech.voshooter.gamestate.gamemode.ManagerBuilder;
 import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
+import ee.taltech.voshooter.networking.messages.serverreceived.ChatSendMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
@@ -71,6 +74,8 @@ public class MainScreen implements Screen {
     private final TextButton exitButton = new TextButton("Exit", skin);
     private TextButton resumeButton;
     private final TextButton settingsButton = new TextButton("Settings", skin);
+    private final TextField chatTextField = new TextField("", skin);
+    private boolean chatActive = false;
     private final OrthographicCamera camera = new OrthographicCamera();
     private OrthographicCamera minimapCamera;
     private TiledMap tiledMap;
@@ -286,6 +291,8 @@ public class MainScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
+        stage.addActor(chatTextField);
+        chatTextField.setVisible(false);
 
         // Create the objects in the scene.
         resumeButton = new TextButton("Resume", skin);
@@ -308,6 +315,8 @@ public class MainScreen implements Screen {
                     setPauseTableVisibility(!resumeButton.isVisible());
                 } else if (keycode == Input.Keys.TAB) {
                     isStatsTabOpen = true;
+                } else if (keycode == Input.Keys.ENTER) {
+                    handleChatInput();
                 }
                 return true;
             }
@@ -448,7 +457,7 @@ public class MainScreen implements Screen {
             killfeedFont.draw(hudBatch, playerLayout, playerX, playerY);
 
             if (msg.tick()) {
-                parent.gameState.removeDeathMessage(msg);
+                parent.gameState.removeDeathMessage();
             }
             i--;
         }
@@ -483,7 +492,33 @@ public class MainScreen implements Screen {
         font.getData().setScale(fontScaleX, fontScaleY);
         font.setColor(Color.WHITE);
 
+        drawChat();
+
         hudBatch.end();
+    }
+
+    private void drawChat() {
+        final int width = Gdx.graphics.getWidth();
+        final int height = Gdx.graphics.getHeight();
+        BitmapFont chatFont = killfeedFont;
+        chatFont.setColor(Color.CYAN);
+
+        int i = parent.gameState.chatEntries.size() - 1;
+        Queue<ChatEntry> messages = new ArrayDeque<>(parent.gameState.chatEntries);
+
+        for (ChatEntry entry : messages) {
+            float opacity = Math.min(Math.max(
+                    entry.getDuration() / (ChatEntry.MAX_DURATION / 10f), 0f), 1f);
+            chatFont.setColor(0, 1, 1, opacity);
+
+            GlyphLayout wholeMessage = new GlyphLayout();
+            wholeMessage.setText(chatFont, entry.getPrefix() + entry.getText());
+
+            chatFont.draw(hudBatch, wholeMessage, 16, 300 + i * 20);
+
+            if (entry.tick()) parent.gameState.removeChatEntry();
+            i--;
+        }
     }
 
     /**
@@ -517,6 +552,25 @@ public class MainScreen implements Screen {
                     parent.gameState.particleEffectFinished(pe);
                 }
             }
+        }
+    }
+
+    /**
+     * Handle chat input. Method called when ENTER key is pressed.
+     */
+    private void handleChatInput() {
+        if (!pauseMenuActive) {
+            if (chatActive) {
+                if (!chatTextField.getText().equals("")) {
+                    ChatSendMessage msg = new ChatSendMessage(chatTextField.getText());
+                    parent.getClient().sendTCP(msg);
+                }
+                stage.setKeyboardFocus(null);
+            } else {
+                stage.setKeyboardFocus(chatTextField);
+            }
+            chatTextField.setText("");
+            chatActive = !chatActive;
         }
     }
 
