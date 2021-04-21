@@ -120,11 +120,6 @@ public class MainScreen implements Screen {
 
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
-        clientGameModeManager = ManagerBuilder.getGameModeManager(parent.gameState.currentLobby.getGamemode(), camera,
-                this, hudBatch);
-        if (this.parent.gameState.userPlayer != null) {
-            this.parent.gameState.userPlayer.clientGameModeManager = this.clientGameModeManager;
-        }
     }
 
     /**
@@ -132,6 +127,11 @@ public class MainScreen implements Screen {
      */
     @Override
     public void show() {
+        clientGameModeManager = ManagerBuilder.getGameModeManager(parent.gameState.currentLobby.getGamemode(), camera,
+                this, hudBatch);
+        if (this.parent.gameState.userPlayer != null) {
+            this.parent.gameState.userPlayer.clientGameModeManager = this.clientGameModeManager;
+        }
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
         camera.setToOrtho(false, width, height);
