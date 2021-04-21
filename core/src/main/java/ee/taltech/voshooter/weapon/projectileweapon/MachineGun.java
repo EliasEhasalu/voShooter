@@ -2,6 +2,7 @@ package ee.taltech.voshooter.weapon.projectileweapon;
 
 import com.badlogic.gdx.math.Vector2;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.weapon.projectile.MachineGunBullet;
 import ee.taltech.voshooter.weapon.projectile.PistolBullet;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
@@ -9,10 +10,10 @@ import java.util.Random;
 
 public class MachineGun extends ProjectileWeapon {
 
-    private static final int STARTING_AMMO = 80;
-    private static final float BASE_COOL_DOWN = 0.06f;
+    private static final int STARTING_AMMO = 120;
+    private static final float BASE_COOL_DOWN = 0.03f;
     private static final Random random = new Random();
-    public static final int BULLET_SPREAD = 5;
+    public static final int BULLET_SPREAD = 4;
 
     public MachineGun(Player owner) {
         super(owner, BASE_COOL_DOWN, STARTING_AMMO, Type.MACHINE_GUN);
@@ -30,7 +31,7 @@ public class MachineGun extends ProjectileWeapon {
 
         Vector2 offset = wielder.getViewDirection().cpy().nor().rotateDeg(randomAngle);
 
-        Projectile p = new PistolBullet(
+        Projectile p = new MachineGunBullet(
                 wielder,
                 wielder.getPos().cpy().add(wielder.getViewDirection().cpy().setLength(PistolBullet.RADIUS)),
                 offset.cpy()

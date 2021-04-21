@@ -8,7 +8,7 @@ import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDeal
 public class MachineGunBullet extends Bullet implements DamageDealer {
 
     public static final float RADIUS = 0.05f;
-    private static final float SPEED = 80f;
+    private static final float SPEED = 150f;
     private static final float LIFE_TIME = 1f;
     private static final int DAMAGE = 10;
 
@@ -20,7 +20,8 @@ public class MachineGunBullet extends Bullet implements DamageDealer {
     public void handleCollision(Fixture fix) {
         if (
                 !(fix.getBody().getUserData() == owner)
-                        && (!(fix.getBody().getUserData() instanceof Projectile))
+                && (!(fix.isSensor()))
+                && (!(fix.getBody().getUserData() instanceof Projectile))
         ) {
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();

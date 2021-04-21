@@ -19,11 +19,14 @@ public class PistolBullet extends Bullet {
     public void handleCollision(Fixture fix) {
         if (
                 !(fix.getBody().getUserData() == owner)
+                && (!(fix.isSensor()))
                 && (!(fix.getBody().getUserData() instanceof Projectile))
         ) {
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
                 p.takeDamage(DAMAGE, this);
+                System.out.printf("isalive: %b%n", p.isAlive());
+                System.out.printf("issensor: %b%n", fix.isSensor());
             }
             destroy();
         }
