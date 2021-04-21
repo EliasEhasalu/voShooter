@@ -25,8 +25,6 @@ public class PistolBullet extends Bullet {
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
                 p.takeDamage(DAMAGE, this);
-                System.out.printf("isalive: %b%n", p.isAlive());
-                System.out.printf("issensor: %b%n", fix.isSensor());
             }
             destroy();
         }
