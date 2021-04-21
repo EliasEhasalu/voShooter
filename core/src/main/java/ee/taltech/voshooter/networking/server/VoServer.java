@@ -265,7 +265,6 @@ public class VoServer {
 
             if (lobby.getGame() != null) {
                 ChatReceiveMessage chatMsg = new ChatReceiveMessage(connection.user.id, msg.message);
-                System.out.println(msg.message);
                 for (Connection c : lobby.getConnections()) {
                     c.sendTCP(chatMsg);
                 }
