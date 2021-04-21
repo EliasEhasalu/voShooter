@@ -9,6 +9,7 @@ import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
@@ -28,6 +29,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroy
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
+import ee.taltech.voshooter.networking.messages.serverreceived.ChatSendMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
@@ -122,5 +124,7 @@ public final class Network {
         kryo.register(ProjectilePositions.class);
         kryo.register(ProjectileCreated.class);
         kryo.register(ProjectileDestroyed.class);
+        kryo.register(ChatSendMessage.class);
+        kryo.register(ChatReceiveMessage.class);
     }
 }

@@ -42,6 +42,7 @@ public class GameState {
     private final Set<ParticleEffect> uiParticles = ConcurrentHashMap.newKeySet();
 
     public Queue<DeathMessage> deathMessages = new ArrayDeque<>();
+    public Queue<ChatEntry> chatEntries = new ArrayDeque<>();
 
     /**
      * @return The list of drawable entities.
@@ -219,8 +220,16 @@ public class GameState {
      * Remove a message from the set of death messages.
      * @param msg The message to remove.
      */
-    public void removeDeathMessage(DeathMessage msg) {
+    public void removeDeathMessage() {
         deathMessages.poll();
+    }
+
+    public void addChatEntry(ChatEntry entry) {
+        chatEntries.offer(entry);
+    }
+
+    public void removeChatEntry() {
+        chatEntries.poll();
     }
 
     /** @return Set of particle effects currently in the game. */

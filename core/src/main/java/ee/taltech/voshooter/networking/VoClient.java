@@ -9,8 +9,10 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.gamestate.ChatEntry;
 import ee.taltech.voshooter.gamestate.gamemode.ClientKingOfTheHillManager;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
@@ -66,6 +68,7 @@ public class VoClient {
             private Set<ProjectileDestroyed> projectileDestroyedSet = ConcurrentHashMap.newKeySet();
             private Set<PlayerDeath> playerDeathSet = ConcurrentHashMap.newKeySet();
             private ProjectilePositions projectileUpdate;
+            private Set<ChatReceiveMessage> receivedMessages = ConcurrentHashMap.newKeySet();
 
             @Override
             public void connected(Connection connection) {
@@ -111,6 +114,8 @@ public class VoClient {
                     updateKingOfTheHillAreaHolder((PlayerKothChange) message);
                 } else if (message instanceof PlayerKothScores) {
                     updateKingOfTheHillStatistics((PlayerKothScores) message);
+                } else if (message instanceof ChatReceiveMessage) {
+                    receivedMessages.add((ChatReceiveMessage) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -144,6 +149,12 @@ public class VoClient {
                             for (PlayerDeath msg : playerDeathSet) {
                                 handlePlayerDeath(msg);
                                 playerDeathSet.remove(msg);
+                            }
+                        }
+                        if (!receivedMessages.isEmpty()) {
+                            for (ChatReceiveMessage msg : receivedMessages) {
+                                handleReceivedMessages(msg);
+                                receivedMessages.remove(msg);
                             }
                         }
                     }
@@ -290,9 +301,6 @@ public class VoClient {
      * @param msg Projectile destroyed message.
      */
     private void destroyProjectile(ProjectileDestroyed msg) {
-        /*SoundPlayer.play("soundfx/ui/shoot.ogg",
-                parent.gameState.userPlayer.getPosition(),
-                parent.gameState.getProjectiles().get((long) msg.id).getPosition());*/
         parent.gameState.destroyProjectile(msg);
     }
 
@@ -317,5 +325,20 @@ public class VoClient {
             if (msg.weaponType != null) parent.gameState.userPlayer.setWeapon(msg.weaponType);
             parent.gameState.userPlayer.currentAmmo = msg.remainingAmmo;
         }
+    }
+
+    /**
+     * Receive a chat message.
+     * @param msg The message.
+     */
+    private void handleReceivedMessages(ChatReceiveMessage msg) {
+        System.out.println(msg.message);
+        ChatEntry entry = new ChatEntry();
+        entry.setText(msg.message);
+
+        if (parent.gameState.getPlayers().containsKey(msg.playerId)) {
+            entry.setPrefix(parent.gameState.getPlayers().get(msg.playerId).getName());
+        } else entry.setPrefix("unknown");
+        parent.gameState.addChatEntry(entry);
     }
 }
