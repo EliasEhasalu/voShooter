@@ -43,6 +43,7 @@ public class GameState {
 
     public Queue<DeathMessage> deathMessages = new ArrayDeque<>();
     public Queue<ChatEntry> chatEntries = new ArrayDeque<>();
+    public static final int MAX_CHAT_SIZE = 25;
 
     /**
      * @return The list of drawable entities.
@@ -218,7 +219,6 @@ public class GameState {
 
     /**
      * Remove a message from the set of death messages.
-     * @param msg The message to remove.
      */
     public void removeDeathMessage() {
         deathMessages.poll();
@@ -226,6 +226,8 @@ public class GameState {
 
     public void addChatEntry(ChatEntry entry) {
         chatEntries.offer(entry);
+
+        if (chatEntries.size() > MAX_CHAT_SIZE) removeChatEntry();
     }
 
     public void removeChatEntry() {
