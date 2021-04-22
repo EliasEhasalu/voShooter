@@ -110,6 +110,7 @@ public class MainScreen implements Screen {
     private int maxAmmo = 20;
     public boolean statsTabOpen = false;
     public boolean chatActive = false;
+    public boolean chatOpen = false;
     public ClientGameModeManager clientGameModeManager;
     public static final int KILLFEED_TOP_MARGIN = 50;
     private static final int KILLFEED_RIGHT_MARGIN = 50;
@@ -179,7 +180,7 @@ public class MainScreen implements Screen {
         Gdx.gl.glClearColor(0.0862745f, 0.0862745f, 0.0862745f, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (!pauseMenuActive && !chatActive) {
+        if (!pauseMenuActive && !chatOpen) {
             // Send player inputs to server every render loop.
             handlePlayerInputs();
             moveCameraToPlayer();
@@ -317,7 +318,7 @@ public class MainScreen implements Screen {
                 } else if (keycode == Input.Keys.TAB) {
                     statsTabOpen = true;
                 } else if (keycode == Input.Keys.ENTER) {
-                    chatActive = !chatActive;
+                    chatOpen = !chatOpen;
                     handleChatInput();
                 }
                 return true;
