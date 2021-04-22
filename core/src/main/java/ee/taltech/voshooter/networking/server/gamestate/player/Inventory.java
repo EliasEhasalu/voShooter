@@ -26,6 +26,7 @@ public class Inventory {
         pickUpWeapon(Weapon.Type.FLAMETHROWER);
         pickUpWeapon(Weapon.Type.ROCKET_LAUNCHER);
         pickUpWeapon(Weapon.Type.SHOTGUN);
+        pickUpWeapon(Weapon.Type.GRENADE_LAUNCHER);
         swapToDefaultWeapon();
     }
 

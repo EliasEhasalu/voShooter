@@ -93,7 +93,7 @@ public class Game extends Thread {
             for (VoConnection c : connectionInputs.keySet()) {
                 if (!c.equals(connection)) {
                     c.sendTCP(new ChatGamePlayerChange(String.format("Player %s has left the game.",
-                            connection.player.getName())));
+                    connection.player.getName())));
                 }
             }
         }

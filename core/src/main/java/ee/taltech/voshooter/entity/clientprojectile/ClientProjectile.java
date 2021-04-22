@@ -19,7 +19,8 @@ public class ClientProjectile extends Entity implements Drawable {
     private static final Map<Projectile.Type, String> SPRITE_MAP = Stream.of(
             new AbstractMap.SimpleEntry<>(Projectile.Type.PISTOL_BULLET, "textures/projectiles/pistolProjectile.png"),
             new AbstractMap.SimpleEntry<>(Projectile.Type.ROCKET, "textures/projectiles/rocketProjectile.png"),
-            new AbstractMap.SimpleEntry<>(Projectile.Type.FIREBALL, "textures/projectiles/flame.png")
+            new AbstractMap.SimpleEntry<>(Projectile.Type.FIREBALL, "textures/projectiles/flame.png"),
+            new AbstractMap.SimpleEntry<>(Projectile.Type.GRENADE, "textures/projectiles/grenade.png")
             )
             .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 

@@ -18,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.weapon.projectile.Fireball;
+import ee.taltech.voshooter.weapon.projectile.Grenade;
 import ee.taltech.voshooter.weapon.projectile.PistolBullet;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 import ee.taltech.voshooter.weapon.projectile.Rocket;
@@ -109,20 +110,22 @@ public final class ShapeFactory {
         return circleShape;
     }
 
-    public static Body getProjectileBody(Projectile.Type type, World world, Vector2 pos, Vector2 vel) {
+    public static Body constructProjectileBody(Projectile.Type type, World world, Vector2 pos, Vector2 vel) {
         switch (type) {
             case ROCKET:
-                return getRocket(world, pos, vel);
+                return constructRocket(world, pos, vel);
             case PISTOL_BULLET:
-                return getPistolBullet(world, pos, vel);
+                return constructPistolBullet(world, pos, vel);
             case FIREBALL:
-                return getFireball(world, pos, vel);
+                return constructFireball(world, pos, vel);
+            case GRENADE:
+                return constructGrenade(world, pos, vel);
             default:
                 throw new IllegalArgumentException();
         }
     }
 
-    public static Body getFireball(World world, Vector2 pos, Vector2 vel) {
+    private static Body constructFireball(World world, Vector2 pos, Vector2 vel) {
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.DynamicBody;
         def.position.set(pos);
@@ -143,7 +146,7 @@ public final class ShapeFactory {
         return b;
     }
 
-    public static Body getRocket(World world, Vector2 pos, Vector2 vel) {
+    private static Body constructRocket(World world, Vector2 pos, Vector2 vel) {
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.DynamicBody;
         def.position.set(pos);
@@ -163,7 +166,7 @@ public final class ShapeFactory {
         return b;
     }
 
-    public static Body getPistolBullet(World world, Vector2 pos, Vector2 vel) {
+    private static Body constructPistolBullet(World world, Vector2 pos, Vector2 vel) {
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.DynamicBody;
         def.position.set(pos);
@@ -175,10 +178,34 @@ public final class ShapeFactory {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 5f;
+        fixtureDef.restitution = 1f;
 
         Fixture fixture = b.createFixture(fixtureDef);
 
         b.applyLinearImpulse(vel.cpy().nor(), b.getPosition(), true);
+        shape.dispose();
+        return b;
+    }
+
+    private static Body constructGrenade(World world, Vector2 pos, Vector2 vel) {
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.DynamicBody;
+        def.position.set(pos);
+
+        Body b = world.createBody(def);
+        CircleShape shape = new CircleShape();
+        shape.setRadius(Grenade.RADIUS);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 10f;
+        fixtureDef.friction = 0f;
+        fixtureDef.restitution = 0.25f;
+
+        Fixture fixture = b.createFixture(fixtureDef);
+
+        b.setLinearDamping(1.3f);
+        b.applyLinearImpulse(vel.cpy(), b.getPosition(), true);
         shape.dispose();
         return b;
     }
@@ -199,6 +226,7 @@ public final class ShapeFactory {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 10f;
+        fixtureDef.restitution = 0f;
 
         Fixture fixture = body.createFixture(fixtureDef);
         body.setLinearDamping(6f);

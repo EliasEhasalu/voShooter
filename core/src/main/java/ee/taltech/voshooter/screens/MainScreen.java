@@ -261,6 +261,9 @@ public class MainScreen implements Screen {
                 case WEAPON_MACHINE_GUN:
                     inputsToSend.add(new ChangeWeapon(ActionType.WEAPON_MACHINE_GUN));
                     break;
+                case WEAPON_GRENADE_LAUNCHER:
+                    inputsToSend.add(new ChangeWeapon(ActionType.WEAPON_GRENADE_LAUNCHER));
+                    break;
                 case DASH:
                     inputsToSend.add(new PlayerDash());
                     break;
