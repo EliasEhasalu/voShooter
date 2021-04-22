@@ -1,5 +1,6 @@
 package ee.taltech.voshooter.networking.server.gamestate.player;
 
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerSwappedWeapon;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.WeaponBuilder;
 
@@ -15,6 +16,7 @@ public class Inventory {
     private final Map<Weapon.Type, Weapon> weapons = new HashMap<>();
     private final Player parent;
     private Weapon currentWeapon;
+    private Weapon swappedWeapon;
     private int ticks = 0;
 
     protected Inventory(Player parent) {
@@ -39,6 +41,18 @@ public class Inventory {
         modulo();
     }
 
+    public void sendUpdates() {
+        if (swappedWeapon != null) parent.getGame().getConnections().forEach(
+                c -> c.sendTCP(new PlayerSwappedWeapon(parent.getId(), swappedWeapon.getType()))
+        );
+
+        clearTemporaryData();
+    }
+
+    private void clearTemporaryData() {
+        swappedWeapon = null;
+    }
+
     private void passiveAmmoRegeneration() {
         final int frequency = 600;
         if ((ticks % frequency) == 0) {
@@ -59,13 +73,17 @@ public class Inventory {
 
     private boolean canSwapToWeaponOfType(Weapon.Type weaponType) {
         return (
-            weapons.containsKey(weaponType)
+            (currentWeapon == null || currentWeapon.getType() != weaponType)
+            && weapons.containsKey(weaponType)
             && weapons.get(weaponType).getRemainingAmmo() > 0
         );
     }
 
     public void swapToWeapon(Weapon.Type weaponType) {
-        if (canSwapToWeaponOfType(weaponType)) currentWeapon = weapons.get(weaponType);
+        if (canSwapToWeaponOfType(weaponType)) {
+            currentWeapon = weapons.get(weaponType);
+            swappedWeapon = currentWeapon;
+        }
     }
 
     public void swapToDefaultWeapon() {
