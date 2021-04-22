@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class MachineGun extends ProjectileWeapon {
 
-    private static final int STARTING_AMMO = 120;
+    private static final int STARTING_AMMO = 75;
     private static final float BASE_COOL_DOWN = 0.06f;
     private static final Random random = new Random();
     public static final int BULLET_SPREAD = 5;
