@@ -183,8 +183,8 @@ public class MainScreen implements Screen {
         if (!pauseMenuActive && !chatOpen) {
             // Send player inputs to server every render loop.
             handlePlayerInputs();
-            moveCameraToPlayer();
         }
+        moveCameraToPlayer();
         setClientGameModeManager();
         camera.update();
         minimapCamera.update();
@@ -275,8 +275,13 @@ public class MainScreen implements Screen {
 
         Vector2 vecToPanPoint = new Vector2(mousePos.x - playerPos.x, mousePos.y - playerPos.y);
         vecToPanPoint.limit(maxCameraDist);
-        final Vector2 vecFromCamera = new Vector2(playerPos.x + vecToPanPoint.x - camera.position.x,
-                playerPos.y + vecToPanPoint.y - camera.position.y);
+        final Vector2 vecFromCamera;
+        if (chatOpen || pauseMenuActive) {
+            vecFromCamera = new Vector2(playerPos.x - camera.position.x, playerPos.y - camera.position.y);
+        } else {
+            vecFromCamera = new Vector2(playerPos.x + vecToPanPoint.x - camera.position.x,
+                    playerPos.y + vecToPanPoint.y - camera.position.y);
+        }
 
         float xTranslate = vecFromCamera.x / 15;
         float yTranslate = vecFromCamera.y / 15;
