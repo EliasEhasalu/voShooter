@@ -2,6 +2,7 @@ package ee.taltech.voshooter.weapon;
 
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.weapon.projectileweapon.Flamethrower;
+import ee.taltech.voshooter.weapon.projectileweapon.GrenadeLauncher;
 import ee.taltech.voshooter.weapon.projectileweapon.MachineGun;
 import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
 import ee.taltech.voshooter.weapon.projectileweapon.RocketLauncher;
@@ -21,9 +22,11 @@ public class WeaponBuilder {
                 return new Flamethrower(owner);
             case ROCKET_LAUNCHER:
                 return new RocketLauncher(owner);
+            case GRENADE_LAUNCHER:
+                return new GrenadeLauncher(owner);
             default:
                 // No-op
         }
-        throw new RuntimeException("No such weapon type.");
+        throw new RuntimeException("No such weapon type defined in WeaponBuilder.");
     }
 }

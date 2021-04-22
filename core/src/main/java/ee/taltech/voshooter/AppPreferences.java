@@ -35,11 +35,13 @@ public class AppPreferences {
     private static final String PREF_NUMBER_3 = "number 3";
     private static final String PREF_NUMBER_4 = "number 4";
     private static final String PREF_NUMBER_5 = "number 5";
+    private static final String PREF_NUMBER_6 = "number 6";
     private static final String PREF_1_IS_KEY = "number 1 is key";
     private static final String PREF_2_IS_KEY = "number 2 is key";
     private static final String PREF_3_IS_KEY = "number 3 is key";
     private static final String PREF_4_IS_KEY = "number 4 is key";
     private static final String PREF_5_IS_KEY = "number 5 is key";
+    private static final String PREF_6_IS_KEY = "number 6 is key";
     private static final List<String> BUTTONS_LIST = Arrays.asList("Left Button", "Right Button", "Middle Button", "Back", "Forward");
 
     /** @return A preferences object containing the player's preferences */
@@ -415,6 +417,16 @@ public class AppPreferences {
     /** @return Whether NUMBER_5 action is key. */
     public static boolean getNumberFiveIsKey() {
         return getPrefs().getBoolean(PREF_5_IS_KEY, true);
+    }
+
+    /** @return Key that triggers NUMBER_6 action. */
+    public static int getNumberSix() {
+        return getPrefs().getInteger(PREF_NUMBER_6, Input.Keys.NUM_6);
+    }
+
+    /** @return Whether NUMBER_6 action is key. */
+    public static boolean getNumberSixIsKey() {
+        return getPrefs().getBoolean(PREF_6_IS_KEY, true);
     }
 
     /**

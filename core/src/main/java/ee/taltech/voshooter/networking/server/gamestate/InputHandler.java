@@ -53,6 +53,9 @@ public class InputHandler {
             case WEAPON_MACHINE_GUN:
                 weaponType = Weapon.Type.MACHINE_GUN;
                 break;
+            case WEAPON_GRENADE_LAUNCHER:
+                weaponType = Weapon.Type.GRENADE_LAUNCHER;
+                break;
             default:
                 // No-op.
         }
