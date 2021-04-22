@@ -43,7 +43,7 @@ public class VoServer {
      * Construct the server.
      */
     public VoServer(int port) throws IOException {
-        server = new Server() {
+        server = new Server(16384, 4096) {
             @Override
             protected VoConnection newConnection() {
                 return new VoConnection();
