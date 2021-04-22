@@ -47,7 +47,7 @@ public abstract class Projectile implements DamageDealer {
         this.lifeTime = lifeTime;
         this.id = ID_GENERATOR++;
 
-        this.body = ShapeFactory.getProjectileBody(type, owner.getWorld(), pos, vel);
+        this.body = ShapeFactory.constructProjectileBody(type, owner.getWorld(), pos, vel);
         this.body.setUserData(this);  // Have the body remember this rocket object.
     }
 

@@ -49,7 +49,7 @@ public class LevelGenerator {
                     Body body = world.createBody(bodyDef);
                     Fixture f = body.createFixture(shape, 1);
                     f.setFriction(0f);
-                    f.setRestitution(1f);
+                    f.setRestitution(0f);
 
                     shape.dispose();
                 }

@@ -7,7 +7,7 @@ import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 public class Grenade extends Projectile {
 
     public static final float RADIUS = 0.1f;
-    private static final float SPEED = 15f;
+    private static final float SPEED = 10f;
     private static final float EXPLOSION_RADIUS = 3.2f;
     private static final float EXPLOSION_FORCE = 100f;
     private static final float LIFE_TIME = 2f;
