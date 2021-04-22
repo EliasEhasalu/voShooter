@@ -9,27 +9,29 @@ import java.util.HashSet;
 
 public class Raycaster {
 
+    private static final float PLAYER_RADIUS = 0.2f;
+
     public static Body getFirstCollision(World world, Vector2 initialPos, Vector2 rayDirection, HashSet<Body> excluded) {
-        final float epsilon = 0.05f;
-        final float hitTolerance = 0.01f;
-        final float maxDist = 2.5f;
+        final float epsilon = 0.01f;
+        final float hitTolerance = PLAYER_RADIUS;
+        final float maxDist = 50f;
 
         final int n = (int) Math.ceil(maxDist / epsilon);
-        final Vector2 hop = initialPos.cpy().setAngleDeg(rayDirection.angleDeg()).setLength(epsilon);
+        Vector2 hop = new Vector2().add(rayDirection.cpy().setLength(epsilon));
+        Vector2 currentPos = initialPos.cpy();
 
         for (int i = 0; i < n; i++) {
             Array<Body> bodies = new Array<>();
             world.getBodies(bodies);
 
             for (Body body : bodies) {
-                if (body.getPosition().dst(initialPos) < hitTolerance && !excluded.contains(body)) {
+                if (body.getPosition().dst(currentPos) < PLAYER_RADIUS && !excluded.contains(body)) {
                     System.out.println(body.toString());
-                    System.out.println(body.getUserData().toString());
                     return body;
                 }
             }
 
-            initialPos.add(hop);
+            currentPos.add(hop);
         }
 
         return null;
