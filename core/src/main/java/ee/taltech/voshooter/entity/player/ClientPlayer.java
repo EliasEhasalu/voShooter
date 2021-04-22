@@ -19,7 +19,7 @@ public class ClientPlayer extends Entity implements Drawable {
     private int deaths;
     private int kills;
     public float respawnTimer;
-    private Weapon.Type weapon;
+    private Weapon.Type weapon = Weapon.Type.PISTOL;
     public int currentAmmo = 0;
     public int maxAmmo = 0;
     public ClientGameModeManager clientGameModeManager;
@@ -49,7 +49,7 @@ public class ClientPlayer extends Entity implements Drawable {
         this.id = id;
         this.name = name;
         this.health = MAX_HEALTH;
-        this.sprite = new Sprite(new Texture("proxy-image.png"));
+        this.sprite = new Sprite(new Texture("textures/player/player.png"));
         this.sprite.scale(spriteScale);
     }
 

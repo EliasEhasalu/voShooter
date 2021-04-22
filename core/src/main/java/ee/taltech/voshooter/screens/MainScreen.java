@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -75,7 +76,6 @@ public class MainScreen implements Screen {
     private TextButton resumeButton;
     private final TextButton settingsButton = new TextButton("Settings", skin);
     private final TextField chatTextField = new TextField("", skin);
-    private boolean chatActive = false;
     private final OrthographicCamera camera = new OrthographicCamera();
     private OrthographicCamera minimapCamera;
     private TiledMap tiledMap;
@@ -89,6 +89,14 @@ public class MainScreen implements Screen {
     public static final int MINIMAP_MARGIN = 50;
     public static final int MARKER_SIZE = 20;
     public static final float MINIMAP_SCALE = 0.22f;
+
+    public static final Map<Weapon.Type, Sprite> WEAPON_SPRITES = new HashMap<Weapon.Type, Sprite>() {{
+        put(Weapon.Type.PISTOL,             new Sprite(new Texture("textures/player/playerpistol.png")));
+        put(Weapon.Type.SHOTGUN,            new Sprite(new Texture("textures/player/playershotgun.png")));
+        put(Weapon.Type.ROCKET_LAUNCHER,    new Sprite(new Texture("textures/player/playerrocketlauncher.png")));
+        put(Weapon.Type.FLAMETHROWER,       new Sprite(new Texture("textures/player/playerflamethrower.png")));
+        put(Weapon.Type.MACHINE_GUN,        new Sprite(new Texture("textures/player/playermachinegun.png")));
+    }};
 
     private final SpriteBatch hudBatch = new SpriteBatch();
 
@@ -109,7 +117,9 @@ public class MainScreen implements Screen {
     private float healthFraction = 1.00f;
     private int currentAmmo = 16;
     private int maxAmmo = 20;
-    public boolean isStatsTabOpen = false;
+    public boolean statsTabOpen = false;
+    public boolean chatActive = false;
+    public boolean chatOpen = false;
     public ClientGameModeManager clientGameModeManager;
     public static final int KILLFEED_TOP_MARGIN = 50;
     private static final int KILLFEED_RIGHT_MARGIN = 50;
@@ -179,11 +189,11 @@ public class MainScreen implements Screen {
         Gdx.gl.glClearColor(0.0862745f, 0.0862745f, 0.0862745f, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (!pauseMenuActive) {
+        if (!pauseMenuActive && !chatOpen) {
             // Send player inputs to server every render loop.
             handlePlayerInputs();
-            moveCameraToPlayer();
         }
+        moveCameraToPlayer();
         setClientGameModeManager();
         camera.update();
         minimapCamera.update();
@@ -274,8 +284,13 @@ public class MainScreen implements Screen {
 
         Vector2 vecToPanPoint = new Vector2(mousePos.x - playerPos.x, mousePos.y - playerPos.y);
         vecToPanPoint.limit(maxCameraDist);
-        final Vector2 vecFromCamera = new Vector2(playerPos.x + vecToPanPoint.x - camera.position.x,
-                playerPos.y + vecToPanPoint.y - camera.position.y);
+        final Vector2 vecFromCamera;
+        if (chatOpen || pauseMenuActive) {
+            vecFromCamera = new Vector2(playerPos.x - camera.position.x, playerPos.y - camera.position.y);
+        } else {
+            vecFromCamera = new Vector2(playerPos.x + vecToPanPoint.x - camera.position.x,
+                    playerPos.y + vecToPanPoint.y - camera.position.y);
+        }
 
         float xTranslate = vecFromCamera.x / 15;
         float yTranslate = vecFromCamera.y / 15;
@@ -315,8 +330,9 @@ public class MainScreen implements Screen {
                 if (keycode == Input.Keys.ESCAPE) {
                     setPauseTableVisibility(!resumeButton.isVisible());
                 } else if (keycode == Input.Keys.TAB) {
-                    isStatsTabOpen = true;
+                    statsTabOpen = true;
                 } else if (keycode == Input.Keys.ENTER) {
+                    chatOpen = !chatOpen;
                     handleChatInput();
                 }
                 return true;
@@ -325,7 +341,7 @@ public class MainScreen implements Screen {
             @Override
             public boolean keyUp(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.TAB) {
-                    isStatsTabOpen = false;
+                    statsTabOpen = false;
                 }
                 return true;
             }
@@ -379,6 +395,12 @@ public class MainScreen implements Screen {
                 drawable.getSprite().draw(stage.getBatch());
             }
             if (drawable instanceof ClientPlayer) {
+                final Sprite sprite = WEAPON_SPRITES.get(((ClientPlayer) drawable).getWeapon());
+                sprite.setPosition(drawable.getSprite().getX(), drawable.getSprite().getY());
+                sprite.setRotation(drawable.getSprite().getRotation());
+                sprite.setScale(drawable.getSprite().getScaleX(), drawable.getSprite().getScaleY());
+                sprite.draw(stage.getBatch());
+
                 font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
                         drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
                         drawable.getPosition().y + 40);
@@ -515,7 +537,9 @@ public class MainScreen implements Screen {
             if (chatActive) opacity = 1;
             else opacity = Math.min(Math.max(
                     entry.getDuration() / (ChatEntry.MAX_DURATION / 10f), 0f), 1f);
-            chatFont.setColor(0, 1, 1, opacity);
+            if (entry.getPrefix().equals("[Server]: ")) chatFont.setColor(Color.LIGHT_GRAY.r, Color.LIGHT_GRAY.g,
+                    Color.LIGHT_GRAY.b, opacity);
+            else chatFont.setColor(0, 1, 1, opacity);
 
             GlyphLayout wholeMessage = new GlyphLayout();
             wholeMessage.setText(chatFont, entry.getPrefix() + entry.getText());

@@ -9,6 +9,7 @@ import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.geometry.Pos;
 import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerChange;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
@@ -23,6 +24,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKothChange;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKothScores;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerSwappedWeapon;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
@@ -88,6 +90,7 @@ public final class Network {
         kryo.register(PlayerInput.class);
         kryo.register(PlayerAction.class);
         kryo.register(MouseCoords.class);
+        kryo.register(ChatGamePlayerChange.class);
         kryo.register(PlayerKothChange.class);
         kryo.register(PlayerKothScores.class);
         kryo.register(PlayerPositionUpdate.class);
@@ -100,6 +103,7 @@ public final class Network {
         kryo.register(ChangeWeapon.class);
         kryo.register(ActionType.class);
         kryo.register(Weapon.Type.class);
+        kryo.register(PlayerSwappedWeapon.class);
 
         kryo.register(Shoot.class);
         kryo.register(MovePlayer.class);
