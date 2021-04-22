@@ -19,7 +19,8 @@ public abstract class Weapon implements AmmoWeapon {
         FLAMETHROWER,
         ROCKET_LAUNCHER,
         SHOTGUN,
-        MACHINE_GUN
+        MACHINE_GUN,
+        GRENADE_LAUNCHER
     }
 
     /**

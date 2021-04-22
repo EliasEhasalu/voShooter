@@ -29,7 +29,8 @@ public abstract class Projectile implements DamageDealer {
     public enum Type {
         ROCKET,
         PISTOL_BULLET,
-        FIREBALL
+        FIREBALL,
+        GRENADE,
     }
 
     /**
