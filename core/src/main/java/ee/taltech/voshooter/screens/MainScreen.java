@@ -293,6 +293,7 @@ public class MainScreen implements Screen {
         stage.addActor(table);
         stage.addActor(chatTextField);
         chatTextField.setVisible(false);
+        chatTextField.setMaxLength(60);
 
         // Create the objects in the scene.
         resumeButton = new TextButton("Resume", skin);
@@ -500,24 +501,39 @@ public class MainScreen implements Screen {
     private void drawChat() {
         final int width = Gdx.graphics.getWidth();
         final int height = Gdx.graphics.getHeight();
+        final int chatX = 16;
+        final int chatY = 300;
+        final int chatGap = 20;
         BitmapFont chatFont = killfeedFont;
-        chatFont.setColor(Color.CYAN);
+        chatFont.setColor(0, 1, 1, 1);
 
         int i = parent.gameState.chatEntries.size() - 1;
         Queue<ChatEntry> messages = new ArrayDeque<>(parent.gameState.chatEntries);
 
         for (ChatEntry entry : messages) {
-            float opacity = Math.min(Math.max(
+            final float opacity;
+            if (chatActive) opacity = 1;
+            else opacity = Math.min(Math.max(
                     entry.getDuration() / (ChatEntry.MAX_DURATION / 10f), 0f), 1f);
             chatFont.setColor(0, 1, 1, opacity);
 
             GlyphLayout wholeMessage = new GlyphLayout();
             wholeMessage.setText(chatFont, entry.getPrefix() + entry.getText());
 
-            chatFont.draw(hudBatch, wholeMessage, 16, 300 + i * 20);
+            chatFont.draw(hudBatch, wholeMessage, chatX, chatY + i * chatGap);
 
-            if (entry.tick()) parent.gameState.removeChatEntry();
+            entry.tick();
+//            if (entry.tick()) parent.gameState.removeChatEntry();
             i--;
+        }
+
+        if (chatActive) {
+            chatFont.setColor(0, 1, 1, 1);
+
+            String inputString = "[Type]: " + chatTextField.getText();
+            GlyphLayout inputRow = new GlyphLayout();
+            inputRow.setText(chatFont, inputString);
+            chatFont.draw(hudBatch, inputRow, chatX, chatY - chatX);
         }
     }
 
