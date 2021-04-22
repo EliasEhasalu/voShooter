@@ -25,7 +25,7 @@ public class ClientGameModeManager {
     }
 
     public void update() {
-        if (mainScreen.isStatsTabOpen) drawStatistics();
+        if (mainScreen.statsTabOpen) drawStatistics();
     }
 
     public void drawStatistics() {

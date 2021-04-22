@@ -23,6 +23,7 @@ public class ClientPlayer extends Entity implements Drawable {
     public int currentAmmo = 0;
     public int maxAmmo = 0;
     public ClientGameModeManager clientGameModeManager;
+    private Weapon.Type heldWeapon = Weapon.Type.PISTOL;
 
     /**
      * Construct player with specific sprite.
@@ -49,7 +50,7 @@ public class ClientPlayer extends Entity implements Drawable {
         this.id = id;
         this.name = name;
         this.health = MAX_HEALTH;
-        this.sprite = new Sprite(new Texture("proxy-image.png"));
+        this.sprite = new Sprite(new Texture("textures/player/player.png"));
         this.sprite.scale(spriteScale);
     }
 
@@ -152,5 +153,13 @@ public class ClientPlayer extends Entity implements Drawable {
 
     public Weapon.Type getWeapon() {
         return weapon;
+    }
+
+    public Weapon.Type getHeldWeapon() {
+        return heldWeapon;
+    }
+
+    public void setHeldWeapon(Weapon.Type heldWeapon) {
+        this.heldWeapon = heldWeapon;
     }
 }

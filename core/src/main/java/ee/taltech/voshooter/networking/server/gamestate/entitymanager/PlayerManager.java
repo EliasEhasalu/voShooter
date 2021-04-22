@@ -53,14 +53,15 @@ public class PlayerManager extends EntityManager {
 
     @Override
     protected void sendUpdates() {
-        for (VoConnection c : game.getConnections()) {
-            for (Player p : players) {
+        for (Player p : players) {
+            for (VoConnection c : game.getConnections()) {
                 c.sendTCP(new PlayerHealthUpdate(p.getHealth(), p.getId()));
                 c.sendTCP(new PlayerPositionUpdate(PixelToSimulation.toPixels(p.getPos()), p.getId()));
                 c.sendTCP(new PlayerViewUpdate(p.getViewDirection(), p.getId()));
                 if (p.getId() == c.user.id) c.sendTCP(new PlayerAmmoUpdate(p.getWeapon().getType(), p.getWeapon().getRemainingAmmo()));
                 if (!(p.isAlive())) c.sendTCP(new PlayerDead(p.getId(), p.getTimeToRespawn()));
             }
+            p.getInventory().sendUpdates();
         }
     }
 
