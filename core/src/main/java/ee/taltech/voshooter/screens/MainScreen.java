@@ -395,7 +395,7 @@ public class MainScreen implements Screen {
                 drawable.getSprite().draw(stage.getBatch());
             }
             if (drawable instanceof ClientPlayer) {
-                final Sprite sprite = WEAPON_SPRITES.get(((ClientPlayer) drawable).getHeldWeapon());
+                final Sprite sprite = WEAPON_SPRITES.get(((ClientPlayer) drawable).getWeapon());
                 sprite.setPosition(drawable.getSprite().getX(), drawable.getSprite().getY());
                 sprite.setRotation(drawable.getSprite().getRotation());
                 sprite.setScale(drawable.getSprite().getScaleX(), drawable.getSprite().getScaleY());

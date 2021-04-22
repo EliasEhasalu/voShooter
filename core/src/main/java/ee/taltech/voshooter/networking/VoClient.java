@@ -122,7 +122,7 @@ public class VoClient {
                 } else if (message instanceof ChatGamePlayerChange) {
                     receivedPlayerChanges.add((ChatGamePlayerChange) message);
                 } else if (message instanceof PlayerSwappedWeapon) {
-                    System.out.println(((PlayerSwappedWeapon) message).weaponType.toString());
+                    handlePlayerWeaponUpdate((PlayerSwappedWeapon) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -337,6 +337,16 @@ public class VoClient {
         if (parent.gameState.userPlayer != null) {
             if (msg.weaponType != null) parent.gameState.userPlayer.setWeapon(msg.weaponType);
             parent.gameState.userPlayer.currentAmmo = msg.remainingAmmo;
+        }
+    }
+
+    /**
+     * Switch player weapon types.
+     * @param msg
+     */
+    private void handlePlayerWeaponUpdate(PlayerSwappedWeapon msg) {
+        if (parent.gameState.getPlayers().containsKey(msg.id)) {
+            parent.gameState.getPlayers().get(msg.id).setWeapon(msg.weaponType);
         }
     }
 

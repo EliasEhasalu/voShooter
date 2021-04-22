@@ -19,11 +19,10 @@ public class ClientPlayer extends Entity implements Drawable {
     private int deaths;
     private int kills;
     public float respawnTimer;
-    private Weapon.Type weapon;
+    private Weapon.Type weapon = Weapon.Type.PISTOL;
     public int currentAmmo = 0;
     public int maxAmmo = 0;
     public ClientGameModeManager clientGameModeManager;
-    private Weapon.Type heldWeapon = Weapon.Type.PISTOL;
 
     /**
      * Construct player with specific sprite.
@@ -153,13 +152,5 @@ public class ClientPlayer extends Entity implements Drawable {
 
     public Weapon.Type getWeapon() {
         return weapon;
-    }
-
-    public Weapon.Type getHeldWeapon() {
-        return heldWeapon;
-    }
-
-    public void setHeldWeapon(Weapon.Type heldWeapon) {
-        this.heldWeapon = heldWeapon;
     }
 }
