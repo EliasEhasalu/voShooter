@@ -22,7 +22,7 @@ public class ClientKingOfTheHillManager extends ClientGameModeManager {
 
     @Override
     public void update() {
-        if (mainScreen.isStatsTabOpen) drawStatistics();
+        if (mainScreen.statsTabOpen) drawStatistics();
     }
 
     @Override

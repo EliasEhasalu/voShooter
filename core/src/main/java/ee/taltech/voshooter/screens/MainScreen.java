@@ -75,7 +75,6 @@ public class MainScreen implements Screen {
     private TextButton resumeButton;
     private final TextButton settingsButton = new TextButton("Settings", skin);
     private final TextField chatTextField = new TextField("", skin);
-    private boolean chatActive = false;
     private final OrthographicCamera camera = new OrthographicCamera();
     private OrthographicCamera minimapCamera;
     private TiledMap tiledMap;
@@ -109,7 +108,9 @@ public class MainScreen implements Screen {
     private float healthFraction = 1.00f;
     private int currentAmmo = 16;
     private int maxAmmo = 20;
-    public boolean isStatsTabOpen = false;
+    public boolean statsTabOpen = false;
+    public boolean chatActive = false;
+    public boolean chatOpen = false;
     public ClientGameModeManager clientGameModeManager;
     public static final int KILLFEED_TOP_MARGIN = 50;
     private static final int KILLFEED_RIGHT_MARGIN = 50;
@@ -179,11 +180,11 @@ public class MainScreen implements Screen {
         Gdx.gl.glClearColor(0.0862745f, 0.0862745f, 0.0862745f, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (!pauseMenuActive) {
+        if (!pauseMenuActive && !chatOpen) {
             // Send player inputs to server every render loop.
             handlePlayerInputs();
-            moveCameraToPlayer();
         }
+        moveCameraToPlayer();
         setClientGameModeManager();
         camera.update();
         minimapCamera.update();
@@ -274,8 +275,13 @@ public class MainScreen implements Screen {
 
         Vector2 vecToPanPoint = new Vector2(mousePos.x - playerPos.x, mousePos.y - playerPos.y);
         vecToPanPoint.limit(maxCameraDist);
-        final Vector2 vecFromCamera = new Vector2(playerPos.x + vecToPanPoint.x - camera.position.x,
-                playerPos.y + vecToPanPoint.y - camera.position.y);
+        final Vector2 vecFromCamera;
+        if (chatOpen || pauseMenuActive) {
+            vecFromCamera = new Vector2(playerPos.x - camera.position.x, playerPos.y - camera.position.y);
+        } else {
+            vecFromCamera = new Vector2(playerPos.x + vecToPanPoint.x - camera.position.x,
+                    playerPos.y + vecToPanPoint.y - camera.position.y);
+        }
 
         float xTranslate = vecFromCamera.x / 15;
         float yTranslate = vecFromCamera.y / 15;
@@ -315,8 +321,9 @@ public class MainScreen implements Screen {
                 if (keycode == Input.Keys.ESCAPE) {
                     setPauseTableVisibility(!resumeButton.isVisible());
                 } else if (keycode == Input.Keys.TAB) {
-                    isStatsTabOpen = true;
+                    statsTabOpen = true;
                 } else if (keycode == Input.Keys.ENTER) {
+                    chatOpen = !chatOpen;
                     handleChatInput();
                 }
                 return true;
@@ -325,7 +332,7 @@ public class MainScreen implements Screen {
             @Override
             public boolean keyUp(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.TAB) {
-                    isStatsTabOpen = false;
+                    statsTabOpen = false;
                 }
                 return true;
             }

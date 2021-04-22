@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class Flamethrower extends ProjectileWeapon {
 
-    private static final int STARTING_AMMO = 60;
+    private static final int STARTING_AMMO = 50;
     private static final int FLAME_COUNT = 5;
     private static final float COOL_DOWN = 0.1f;
     private static final float CONE_ANGLE = 60f;
