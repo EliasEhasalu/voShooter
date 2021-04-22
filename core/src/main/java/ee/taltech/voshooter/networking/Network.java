@@ -23,6 +23,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKothChange;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKothScores;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerSwappedWeapon;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
@@ -100,6 +101,7 @@ public final class Network {
         kryo.register(ChangeWeapon.class);
         kryo.register(ActionType.class);
         kryo.register(Weapon.Type.class);
+        kryo.register(PlayerSwappedWeapon.class);
 
         kryo.register(Shoot.class);
         kryo.register(MovePlayer.class);

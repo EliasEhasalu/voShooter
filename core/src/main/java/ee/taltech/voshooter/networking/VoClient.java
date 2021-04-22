@@ -25,6 +25,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKothChange;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerKothScores;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerPositionUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerSwappedWeapon;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
@@ -116,6 +117,8 @@ public class VoClient {
                     updateKingOfTheHillStatistics((PlayerKothScores) message);
                 } else if (message instanceof ChatReceiveMessage) {
                     receivedMessages.add((ChatReceiveMessage) message);
+                } else if (message instanceof PlayerSwappedWeapon) {
+                    System.out.println(((PlayerSwappedWeapon) message).weaponType.toString());
                 }
 
                 // Define actions to be taken on the next cycle
