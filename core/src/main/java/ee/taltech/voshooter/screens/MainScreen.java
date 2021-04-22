@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -89,6 +90,14 @@ public class MainScreen implements Screen {
     public static final int MINIMAP_MARGIN = 50;
     public static final int MARKER_SIZE = 20;
     public static final float MINIMAP_SCALE = 0.22f;
+
+    public static final Map<Weapon.Type, Sprite> WEAPON_SPRITES = new HashMap<Weapon.Type, Sprite>() {{
+        put(Weapon.Type.PISTOL,             new Sprite(new Texture("textures/player/playerpistol.png")));
+        put(Weapon.Type.SHOTGUN,            new Sprite(new Texture("textures/player/playershotgun.png")));
+        put(Weapon.Type.ROCKET_LAUNCHER,    new Sprite(new Texture("textures/player/playerrocketlauncher.png")));
+        put(Weapon.Type.FLAMETHROWER,       new Sprite(new Texture("textures/player/playerflamethrower.png")));
+        put(Weapon.Type.MACHINE_GUN,        new Sprite(new Texture("textures/player/playermachinegun.png")));
+    }};
 
     private final SpriteBatch hudBatch = new SpriteBatch();
 
@@ -379,6 +388,12 @@ public class MainScreen implements Screen {
                 drawable.getSprite().draw(stage.getBatch());
             }
             if (drawable instanceof ClientPlayer) {
+                final Sprite sprite = WEAPON_SPRITES.get(((ClientPlayer) drawable).getHeldWeapon());
+                sprite.setPosition(drawable.getSprite().getX(), drawable.getSprite().getY());
+                sprite.setRotation(drawable.getSprite().getRotation());
+                sprite.setScale(drawable.getSprite().getScaleX(), drawable.getSprite().getScaleY());
+                sprite.draw(stage.getBatch());
+
                 font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
                         drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
                         drawable.getPosition().y + 40);
