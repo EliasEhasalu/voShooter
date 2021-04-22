@@ -8,7 +8,7 @@ public class Burning extends Debuff implements DamageDealer {
     private static final int FREQUENCY = 30;
     private static final int DAMAGE = 2;
 
-    public Burning(Player target, DamageDealer source) {
+    public Burning(Player target, Object source) {
         super(Type.BURNING, target, source, TIME, FREQUENCY);
     }
 

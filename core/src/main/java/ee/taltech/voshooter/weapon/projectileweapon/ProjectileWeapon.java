@@ -7,7 +7,7 @@ public abstract class ProjectileWeapon extends Weapon {
     /**
      * @param coolDown The time between fired shots.
      */
-    public ProjectileWeapon(Player wielder, float coolDown, Weapon.Type type) {
-        super(wielder, coolDown, type);
+    public ProjectileWeapon(Player wielder, float coolDown, int startingAmmo, Weapon.Type type) {
+        super(wielder, coolDown, startingAmmo, type);
     }
 }

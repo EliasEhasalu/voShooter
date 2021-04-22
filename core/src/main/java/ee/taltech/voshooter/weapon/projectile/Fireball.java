@@ -7,9 +7,9 @@ import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 public class Fireball extends Bullet {
 
     public static final float RADIUS = 0.5f;
-    private static final float SPEED = 10f;
-    private static final float LIFE_TIME = 0.7f;
-    private static final int DAMAGE = 5;
+    private static final float SPEED = 30f;
+    private static final float LIFE_TIME = 0.23f;
+    private static final int DAMAGE = 3;
 
     /**
      * Construct the projectile.
@@ -24,6 +24,7 @@ public class Fireball extends Bullet {
     public void handleCollision(Fixture fix) {
         if (
                 !(fix.getBody().getUserData() == owner)
+                && !(fix.isSensor())
                 && (!(fix.getBody().getUserData() instanceof Projectile))
         ) {
             if (fix.getBody().getUserData() instanceof Player) {

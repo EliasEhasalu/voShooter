@@ -2,6 +2,7 @@ package ee.taltech.voshooter.networking.server.gamestate.player;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.VoConnection;
@@ -13,12 +14,14 @@ import ee.taltech.voshooter.networking.server.gamestate.player.status.PlayerStat
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectile.Fireball;
-import ee.taltech.voshooter.weapon.projectileweapon.Pistol;
+
+import static java.lang.Math.max;
 
 public class Player {
 
     public static final Integer MAX_HEALTH = 100;
     private static final float RESPAWN_TIME = 5f;
+    private static final float DASH_FORCE = 200f;
 
     private long id;
     private String name;
@@ -28,12 +31,15 @@ public class Player {
 
     private transient VoConnection connection;
     private transient Body body;
-    private transient Weapon currentWeapon = new Pistol(this);
-    private final transient PlayerStatusManager statusManager = new PlayerStatusManager(this);
+    private transient Fixture fixture;
     private transient PlayerManager playerManager;
+    private final transient PlayerStatusManager statusManager = new PlayerStatusManager(this);
+    private final transient Inventory inventory = new Inventory(this);
 
     private final Vector2 playerAcc = new Vector2(0f, 0f);
     private Vector2 viewDirection = new Vector2(0f, 0f);
+    private float maxPlayerVelocity = 10f;
+    private static final float REGULAR_MAX_PLAYER_VELOCITY = 10f;
 
     /** Serialize. **/
     public Player() {
@@ -79,29 +85,40 @@ public class Player {
     public void update() {
         if (!(isAlive())) respawn();
         statusManager.update();
-        currentWeapon.coolDown();
+        inventory.update();
         move();
+    }
+
+    public void dash() {
+        if (statusManager.canDash()) {
+            maxPlayerVelocity = 30f;
+            if (body.getLinearVelocity().len() <= 0.1f) {
+                body.applyLinearImpulse(getViewDirection().cpy().nor().setLength(DASH_FORCE), body.getPosition(), true);
+            } else {
+                body.applyLinearImpulse(body.getLinearVelocity().cpy().nor().setLength(DASH_FORCE), body.getPosition(), true);
+            }
+            statusManager.playerDashed();
+        }
     }
 
     /**
      * Update the player's position.
      */
     private void move() {
-        float maxPlayerVelocity = 10f;
-
         body.applyLinearImpulse(playerAcc, body.getPosition(), true);
 
         if (body.getLinearVelocity().len() > maxPlayerVelocity) {
             body.setLinearVelocity(body.getLinearVelocity().cpy().limit(maxPlayerVelocity));
         }
         playerAcc.limit(0);  // Reset player acceleration vector after application.
+        maxPlayerVelocity = max(REGULAR_MAX_PLAYER_VELOCITY, maxPlayerVelocity - 1f);
     }
 
     /**
      * Shoot the current weapon.
      */
     public void shoot() {
-       currentWeapon.fire();
+       inventory.attemptToFireCurrentWeapon();
     }
 
     /**
@@ -116,7 +133,7 @@ public class Player {
     }
 
     public void takeDamage(int amount, DamageDealer source) {
-        if (source instanceof Fireball) statusManager.applyDebuff(new Burning(this, source));
+        if (source instanceof Fireball) statusManager.applyDebuff(new Burning(this, source.getDamageSource()));
         getStatisticsTracker().setLastDamageTakenFrom(this, source);
 
         takeDamage(amount);
@@ -125,16 +142,20 @@ public class Player {
     public void purge() {
         getWorld().destroyBody(body);
         body = null;
+        fixture = null;
     }
 
     private void die() {
         getStatisticsTracker().incrementDeaths(this);
+        fixture.setSensor(true);
     }
 
     /** Respawn the player. */
     public void respawn() {
         if (respawnTime <= 0) {
             health = MAX_HEALTH;
+            statusManager.resetCoolDowns();
+            fixture.setSensor(false);
             body.setTransform(getSpawnPoint(), 0f);
             respawnTime = RESPAWN_TIME;
         } else {
@@ -177,6 +198,10 @@ public class Player {
         this.body = b;
     }
 
+    public void setFixture(Fixture f) {
+        this.fixture = f;
+    }
+
     public Body getBody() {
         return body;
     }
@@ -186,17 +211,17 @@ public class Player {
     }
 
     /**
-     * @param weapon to give the player.
+     * @param weaponType to give the player.
      */
-    public void setWeapon(Weapon weapon) {
-        currentWeapon = weapon;
+    public void setWeapon(Weapon.Type weaponType) {
+        inventory.swapToWeapon(weaponType);
     }
 
     /**
      * @return get the current weapon of the player.
      */
     public Weapon getWeapon() {
-        return currentWeapon;
+        return inventory.getCurrentWeapon();
     }
 
     public World getWorld() {
@@ -225,5 +250,17 @@ public class Player {
 
     public float getTimeToRespawn() {
         return respawnTime;
+    }
+
+    public PlayerStatusManager getStatusManager() {
+        return statusManager;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public void increaseMaxVelocity(float increase) {
+        maxPlayerVelocity += increase;
     }
 }

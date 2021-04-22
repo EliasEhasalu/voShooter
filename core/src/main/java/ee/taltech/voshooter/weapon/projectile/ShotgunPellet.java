@@ -17,6 +17,7 @@ public class ShotgunPellet extends Bullet {
     public void handleCollision(Fixture fix) {
         if (
                 !(fix.getBody().getUserData() == owner)
+                && !(fix.isSensor())
                 && (!(fix.getBody().getUserData() instanceof Projectile))
         ) {
             reduceLifeTime(BOUNCE_COST);

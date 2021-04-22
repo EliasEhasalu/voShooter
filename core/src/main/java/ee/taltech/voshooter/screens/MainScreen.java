@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.AppPreferences;
@@ -32,32 +33,38 @@ import ee.taltech.voshooter.controller.ActionType;
 import ee.taltech.voshooter.controller.GameController;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
+import ee.taltech.voshooter.gamestate.ChatEntry;
 import ee.taltech.voshooter.gamestate.DeathMessage;
+import ee.taltech.voshooter.gamestate.gamemode.ClientGameModeManager;
+import ee.taltech.voshooter.gamestate.gamemode.ManagerBuilder;
 import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
+import ee.taltech.voshooter.networking.messages.serverreceived.ChatSendMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
+import ee.taltech.voshooter.networking.messages.serverreceived.PlayerDash;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.rendering.Drawable;
 import ee.taltech.voshooter.soundeffects.MusicPlayer;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
+import ee.taltech.voshooter.weapon.Weapon;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 
 public class MainScreen implements Screen {
 
     public static final float MINIMAP_ZOOM = 20f;
     public static final int STATS_ROW_PAD = 120;
-    private final VoShooter parent;
+    public final VoShooter parent;
     private final Stage stage;
     private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     public VoShooter.Screen shouldChangeScreen;
@@ -67,7 +74,9 @@ public class MainScreen implements Screen {
     private final TextButton exitButton = new TextButton("Exit", skin);
     private TextButton resumeButton;
     private final TextButton settingsButton = new TextButton("Settings", skin);
-    private OrthographicCamera camera;
+    private final TextField chatTextField = new TextField("", skin);
+    private boolean chatActive = false;
+    private final OrthographicCamera camera = new OrthographicCamera();
     private OrthographicCamera minimapCamera;
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
@@ -82,18 +91,26 @@ public class MainScreen implements Screen {
     public static final float MINIMAP_SCALE = 0.22f;
 
     private final SpriteBatch hudBatch = new SpriteBatch();
+
+    public static final Map<Weapon.Type, Texture> WEAPON_TEXTURES = new HashMap<Weapon.Type, Texture>() {{
+        put(Weapon.Type.PISTOL,             new Texture("textures/hud/item/handgun.png"));
+        put(Weapon.Type.SHOTGUN,            new Texture("textures/hud/item/shotgun.png"));
+        put(Weapon.Type.ROCKET_LAUNCHER,    new Texture("textures/hud/item/rocketlauncher.png"));
+        put(Weapon.Type.FLAMETHROWER,       new Texture("textures/hud/item/flamethrower.png"));
+        put(Weapon.Type.MACHINE_GUN,        new Texture("textures/hud/item/machinegun.png"));
+    }};
     private final Texture selectedGunBackground
-            = new Texture("textures/hud/background/selectedGunBackground.png");
-    private final Texture handgun = new Texture("textures/hud/item/handgun.png");
-    private final Texture healthEmpty = new Texture("textures/hud/background/healthBarEmpty.png");
-    private final Texture healthFull = new Texture("textures/hud/background/healthBarFull.png");
-    private final Texture killIcon = new Texture("textures/hud/background/killicon.png");
-    private final Texture selfKillIcon = new Texture("textures/hud/background/selfkillicon.png");
-    private Texture selectedGun = handgun;
+                                        = new Texture("textures/hud/background/selectedGunBackground.png");
+    private final Texture healthEmpty   = new Texture("textures/hud/background/healthBarEmpty.png");
+    private final Texture healthFull    = new Texture("textures/hud/background/healthBarFull.png");
+    private final Texture killIcon      = new Texture("textures/hud/background/killicon.png");
+    private final Texture selfKillIcon  = new Texture("textures/hud/background/selfkillicon.png");
+
     private float healthFraction = 1.00f;
     private int currentAmmo = 16;
     private int maxAmmo = 20;
-    private boolean isStatsTabOpen = false;
+    public boolean isStatsTabOpen = false;
+    public ClientGameModeManager clientGameModeManager;
     public static final int KILLFEED_TOP_MARGIN = 50;
     private static final int KILLFEED_RIGHT_MARGIN = 50;
     private static final int KILLFEED_GAP = 38;
@@ -115,9 +132,13 @@ public class MainScreen implements Screen {
      */
     @Override
     public void show() {
+        clientGameModeManager = ManagerBuilder.getGameModeManager(parent.gameState.currentLobby.getGamemode(), camera,
+                this, hudBatch);
+        if (this.parent.gameState.userPlayer != null) {
+            this.parent.gameState.userPlayer.clientGameModeManager = this.clientGameModeManager;
+        }
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
-        camera = new OrthographicCamera();
         camera.setToOrtho(false, width, height);
         camera.zoom = 0.8f;
         camera.update();
@@ -139,8 +160,14 @@ public class MainScreen implements Screen {
         minimapCamera.zoom = MINIMAP_ZOOM;
         minimapCamera.setToOrtho(false, Gdx.graphics.getWidth() / 10f,
                 Gdx.graphics.getHeight() / 10f);
-
+        minimapCamera.update();
         createMenuButtons();
+    }
+
+    private void setClientGameModeManager() {
+        if (this.parent.gameState.userPlayer.clientGameModeManager == null) {
+            this.parent.gameState.userPlayer.clientGameModeManager = this.clientGameModeManager;
+        }
     }
 
     /**
@@ -157,7 +184,9 @@ public class MainScreen implements Screen {
             handlePlayerInputs();
             moveCameraToPlayer();
         }
+        setClientGameModeManager();
         camera.update();
+        minimapCamera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
         healthFraction = parent.gameState.userPlayer.getHealth() / 100f;
@@ -172,41 +201,10 @@ public class MainScreen implements Screen {
         drawParticles();
         drawRespawnTimer();
         stage.getBatch().end();
+        clientGameModeManager.update();
 
         drawMiniMap();
         drawHUD();
-    }
-
-    /**
-     * Draw the players statistics.
-     */
-    private void updateLeaderBoard() {
-        int tableTop = Gdx.graphics.getHeight() - 30;
-        int tableLeft = Gdx.graphics.getWidth() / 2 - 2 * STATS_ROW_PAD;
-        font.draw(hudBatch, "Player names", tableLeft, tableTop);
-        font.draw(hudBatch, "Kills", tableLeft + (STATS_ROW_PAD * 2), tableTop);
-        font.draw(hudBatch, "Deaths", tableLeft + (STATS_ROW_PAD * 3), tableTop);
-        font.draw(hudBatch, "KDR", tableLeft + (STATS_ROW_PAD * 4), tableTop);
-        tableTop -= 20;
-        for (ClientPlayer player : parent.gameState.getPlayers().values().stream()
-                .sorted(Comparator.comparing(Drawable::getKills).reversed()).collect(Collectors.toList())) {
-            font.draw(hudBatch, player.getName(), tableLeft, tableTop);
-            font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 2), tableTop);
-            font.draw(hudBatch, String.valueOf(player.getDeaths()), tableLeft + (STATS_ROW_PAD * 3), tableTop);
-            if (player.getDeaths() > 0) {
-                font.draw(hudBatch,
-                        String.valueOf((double) Math.round((player.getKills()
-                                / (double) player.getDeaths()) * 100) / 100),
-                        tableLeft + (STATS_ROW_PAD * 4), tableTop);
-            } else {
-                font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 4), tableTop);
-            }
-            tableTop -= 20;
-        }
-        font.getData().setScale(1f);
-        font.draw(hudBatch, parent.gameState.currentLobby.getLobbyCode(),
-                Gdx.graphics.getWidth() / (float) 2 - 80, 50);
-        font.getData().setScale(0.6f);
     }
 
     /**
@@ -253,6 +251,9 @@ public class MainScreen implements Screen {
                 case WEAPON_MACHINE_GUN:
                     inputsToSend.add(new ChangeWeapon(ActionType.WEAPON_MACHINE_GUN));
                     break;
+                case DASH:
+                    inputsToSend.add(new PlayerDash());
+                    break;
                 default:
                     break;
             }
@@ -290,6 +291,9 @@ public class MainScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
+        stage.addActor(chatTextField);
+        chatTextField.setVisible(false);
+        chatTextField.setMaxLength(60);
 
         // Create the objects in the scene.
         resumeButton = new TextButton("Resume", skin);
@@ -312,6 +316,8 @@ public class MainScreen implements Screen {
                     setPauseTableVisibility(!resumeButton.isVisible());
                 } else if (keycode == Input.Keys.TAB) {
                     isStatsTabOpen = true;
+                } else if (keycode == Input.Keys.ENTER) {
+                    handleChatInput();
                 }
                 return true;
             }
@@ -384,7 +390,7 @@ public class MainScreen implements Screen {
      * Draw the projectiles to the screen.
      */
     private void drawProjectiles() {
-        for (ClientProjectile p : parent.gameState.getProjectiles()) {
+        for (ClientProjectile p : parent.gameState.getProjectiles().values()) {
             p.getSprite().setRotation(p.getVelocity().angleDeg());
             p.getSprite().draw(stage.getBatch());
         }
@@ -406,6 +412,9 @@ public class MainScreen implements Screen {
      * Draw the HUD in the render cycle.
      */
     private void drawHUD() {
+        final int width = Gdx.graphics.getWidth();
+        final int height = Gdx.graphics.getHeight();
+
         hudBatch.begin();
 
         // Draw UI particles.
@@ -419,6 +428,7 @@ public class MainScreen implements Screen {
             }
         }
 
+        // Draw killfeed
         killfeedFont.setColor(Color.WHITE);
         int i = parent.gameState.deathMessages.size() - 1;
         Queue<DeathMessage> messages = new ArrayDeque<>(parent.gameState.deathMessages);
@@ -426,8 +436,8 @@ public class MainScreen implements Screen {
             GlyphLayout playerLayout = new GlyphLayout();
             playerLayout.setText(killfeedFont, msg.getPlayer().getName());
 
-            final int playerX = Gdx.graphics.getWidth() - (int) playerLayout.width - KILLFEED_RIGHT_MARGIN;
-            final int playerY = Gdx.graphics.getHeight() - (i * KILLFEED_GAP) - KILLFEED_TOP_MARGIN;
+            final int playerX = width - (int) playerLayout.width - KILLFEED_RIGHT_MARGIN;
+            final int playerY = height - (i * KILLFEED_GAP) - KILLFEED_TOP_MARGIN;
 
             if (msg.getKiller() != msg.getPlayer()) {
                 GlyphLayout killerLayout = new GlyphLayout();
@@ -448,24 +458,83 @@ public class MainScreen implements Screen {
             killfeedFont.draw(hudBatch, playerLayout, playerX, playerY);
 
             if (msg.tick()) {
-                parent.gameState.removeDeathMessage(msg);
+                parent.gameState.removeDeathMessage();
             }
             i--;
         }
 
-        if (isStatsTabOpen) {
-            updateLeaderBoard();
-        }
+        hudBatch.draw(selectedGunBackground, 64, 32, 96, 96);
+        hudBatch.draw(WEAPON_TEXTURES.getOrDefault(parent.gameState.userPlayer.getWeapon(),
+                WEAPON_TEXTURES.get(Weapon.Type.PISTOL)), 64, 32, 96, 96);
 
-        hudBatch.draw(selectedGunBackground, 64, 64);
-        hudBatch.draw(selectedGun, 64, 64);
-
-        hudBatch.draw(healthEmpty, 64, 128);
-        hudBatch.draw(healthFull, 64, 128, 0, 0,
+        hudBatch.draw(healthEmpty, width / 2f - (healthEmpty.getWidth() / 2f), 88);
+        hudBatch.draw(healthFull, width / 2f - (healthFull.getWidth() / 2f), 88, 0, 0,
                 Math.round(healthFull.getWidth() * Math.max(healthFraction, 0)), healthFull.getHeight());
 
-        font.draw(hudBatch, String.format("%d/%d", currentAmmo, maxAmmo), 138, 80);
+        // Draw ammo
+        final float fontScaleX = font.getScaleX();
+        final float fontScaleY = font.getScaleY();
+        final int ammoX = 164;
+        final int ammoY = 80;
+
+        font.getData().setScale(0.8f);
+        font.setColor(Color.WHITE);
+        GlyphLayout currentAmmoStr = new GlyphLayout(font, String.valueOf(parent.gameState.userPlayer.currentAmmo));
+        if (parent.gameState.userPlayer.currentAmmo == Integer.MAX_VALUE) {
+            currentAmmoStr.setText(font, "INF");
+        }
+        font.draw(hudBatch, currentAmmoStr, ammoX, ammoY);
+
+//        font.getData().setScale(0.6f);
+//        font.setColor(Color.LIGHT_GRAY);
+//        GlyphLayout maxAmmoStr = new GlyphLayout(font, "/" + parent.gameState.userPlayer.maxAmmo);
+//        font.draw(hudBatch, maxAmmoStr, ammoX + currentAmmoStr.width + 4, ammoY - maxAmmoStr.height / 1.5f);
+
+        font.getData().setScale(fontScaleX, fontScaleY);
+        font.setColor(Color.WHITE);
+
+        drawChat();
+
         hudBatch.end();
+    }
+
+    private void drawChat() {
+        final int width = Gdx.graphics.getWidth();
+        final int height = Gdx.graphics.getHeight();
+        final int chatX = 16;
+        final int chatY = 300;
+        final int chatGap = 20;
+        BitmapFont chatFont = killfeedFont;
+        chatFont.setColor(0, 1, 1, 1);
+
+        int i = parent.gameState.chatEntries.size() - 1;
+        Queue<ChatEntry> messages = new ArrayDeque<>(parent.gameState.chatEntries);
+
+        for (ChatEntry entry : messages) {
+            final float opacity;
+            if (chatActive) opacity = 1;
+            else opacity = Math.min(Math.max(
+                    entry.getDuration() / (ChatEntry.MAX_DURATION / 10f), 0f), 1f);
+            chatFont.setColor(0, 1, 1, opacity);
+
+            GlyphLayout wholeMessage = new GlyphLayout();
+            wholeMessage.setText(chatFont, entry.getPrefix() + entry.getText());
+
+            chatFont.draw(hudBatch, wholeMessage, chatX, chatY + i * chatGap);
+
+            entry.tick();
+//            if (entry.tick()) parent.gameState.removeChatEntry();
+            i--;
+        }
+
+        if (chatActive) {
+            chatFont.setColor(0, 1, 1, 1);
+
+            String inputString = "[Type]: " + chatTextField.getText();
+            GlyphLayout inputRow = new GlyphLayout();
+            inputRow.setText(chatFont, inputString);
+            chatFont.draw(hudBatch, inputRow, chatX, chatY - chatX);
+        }
     }
 
     /**
@@ -499,6 +568,25 @@ public class MainScreen implements Screen {
                     parent.gameState.particleEffectFinished(pe);
                 }
             }
+        }
+    }
+
+    /**
+     * Handle chat input. Method called when ENTER key is pressed.
+     */
+    private void handleChatInput() {
+        if (!pauseMenuActive) {
+            if (chatActive) {
+                if (!chatTextField.getText().equals("")) {
+                    ChatSendMessage msg = new ChatSendMessage(chatTextField.getText());
+                    parent.getClient().sendTCP(msg);
+                }
+                stage.setKeyboardFocus(null);
+            } else {
+                stage.setKeyboardFocus(chatTextField);
+            }
+            chatTextField.setText("");
+            chatActive = !chatActive;
         }
     }
 
@@ -543,7 +631,7 @@ public class MainScreen implements Screen {
      */
     @Override
     public void dispose() {
-        stage.dispose();
         SoundPlayer.dispose();
+        stage.dispose();
     }
 }

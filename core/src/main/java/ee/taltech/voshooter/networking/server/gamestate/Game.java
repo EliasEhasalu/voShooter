@@ -13,6 +13,8 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.CollisionHandl
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.HijackedTmxLoader;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.LevelGenerator;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
+import ee.taltech.voshooter.networking.server.gamestate.gamemodes.GameMode;
+import ee.taltech.voshooter.networking.server.gamestate.gamemodes.GameModeManagerFactory;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
@@ -37,7 +39,7 @@ public class Game extends Thread {
         World.setVelocityThreshold(0.1f);
     }
 
-    private GameMap.MapType mapType;
+    private final GameMap.MapType mapType;
     private TiledMap currentMap;
     private final World world = new World(new Vector2(0, 0), false);
 
@@ -45,6 +47,7 @@ public class Game extends Thread {
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
     private final InputHandler inputHandler = new InputHandler();
     private final StatisticsTracker statisticsTracker = new StatisticsTracker(this);
+    private final GameMode gameModeManager;
 
     /**
      * Construct the game.
@@ -53,7 +56,8 @@ public class Game extends Thread {
      */
     public Game(int gameMode, GameMap.MapType mapType) {
         this.mapType = mapType;
-        setCurrentMap(gameMode);
+        setCurrentMap();
+        gameModeManager = GameModeManagerFactory.makeGameModeManager(this, statisticsTracker, gameMode);
         LevelGenerator.generateLevel(world, currentMap);
 
         world.setContactListener(collisionHandler);
@@ -86,11 +90,11 @@ public class Game extends Thread {
     private void tick() {
         connectionInputs.forEach(this::handleInputs);     // Handle inputs.
         entityManagerHub.update();                        // Update logic.
+        gameModeManager.update();                         // Update game mode logic.
 
         world.step((float) (1 / TICK_RATE_IN_HZ), 8, 4);  // Update physics simulation.
 
         entityManagerHub.sendUpdates();                   // Send updates to players.
-        statisticsTracker.sendUpdates();
         clearPlayerInputs();                              // Clear inputs.
     }
 
@@ -179,12 +183,12 @@ public class Game extends Thread {
         return statisticsTracker;
     }
 
-    private void setCurrentMap(int gameMode) {
-        if (gameMode == 1) {
-            currentMap = new HijackedTmxLoader(fileName -> new HeadlessFileHandle(fileName, Files.FileType.Classpath))
-                    .load(GameMap.getTileSet(mapType));
-        }
+    private void setCurrentMap() {
+        currentMap = new HijackedTmxLoader(fileName -> new HeadlessFileHandle(fileName, Files.FileType.Classpath))
+                .load(GameMap.getTileSet(mapType));
+    }
 
-        // TODO add set map to entity managers
+    public TiledMap getCurrentMap() {
+        return currentMap;
     }
 }
