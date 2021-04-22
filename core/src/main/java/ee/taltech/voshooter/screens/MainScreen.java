@@ -96,6 +96,7 @@ public class MainScreen implements Screen {
         put(Weapon.Type.ROCKET_LAUNCHER,    new Sprite(new Texture("textures/player/playerrocketlauncher.png")));
         put(Weapon.Type.FLAMETHROWER,       new Sprite(new Texture("textures/player/playerflamethrower.png")));
         put(Weapon.Type.MACHINE_GUN,        new Sprite(new Texture("textures/player/playermachinegun.png")));
+        put(Weapon.Type.RAILGUN,            new Sprite(new Texture("textures/player/playermachinegun.png")));
     }};
 
     private final SpriteBatch hudBatch = new SpriteBatch();
@@ -106,6 +107,7 @@ public class MainScreen implements Screen {
         put(Weapon.Type.ROCKET_LAUNCHER,    new Texture("textures/hud/item/rocketlauncher.png"));
         put(Weapon.Type.FLAMETHROWER,       new Texture("textures/hud/item/flamethrower.png"));
         put(Weapon.Type.MACHINE_GUN,        new Texture("textures/hud/item/machinegun.png"));
+        put(Weapon.Type.RAILGUN,        new Texture("textures/hud/item/machinegun.png"));
     }};
     private final Texture selectedGunBackground
                                         = new Texture("textures/hud/background/selectedGunBackground.png");

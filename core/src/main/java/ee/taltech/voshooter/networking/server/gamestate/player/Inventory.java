@@ -2,7 +2,7 @@ package ee.taltech.voshooter.networking.server.gamestate.player;
 
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerSwappedWeapon;
 import ee.taltech.voshooter.weapon.Weapon;
-import ee.taltech.voshooter.weapon.WeaponBuilder;
+import ee.taltech.voshooter.weapon.WeaponFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,8 @@ public class Inventory {
         pickUpWeapon(Weapon.Type.ROCKET_LAUNCHER);
         pickUpWeapon(Weapon.Type.SHOTGUN);
         pickUpWeapon(Weapon.Type.GRENADE_LAUNCHER);
-        swapToDefaultWeapon();
+        pickUpWeapon(Weapon.Type.RAILGUN);
+        swapToWeapon(Weapon.Type.RAILGUN);
     }
 
     protected void attemptToFireCurrentWeapon() {
@@ -97,6 +98,6 @@ public class Inventory {
 
     public void pickUpWeapon(Weapon.Type weaponType) {
         if (weapons.containsKey(weaponType)) weapons.get(weaponType).replenishAmmo();
-        else weapons.put(weaponType, WeaponBuilder.getWeaponOfType(weaponType, parent));
+        else weapons.put(weaponType, WeaponFactory.getWeaponOfType(weaponType, parent));
     }
 }
