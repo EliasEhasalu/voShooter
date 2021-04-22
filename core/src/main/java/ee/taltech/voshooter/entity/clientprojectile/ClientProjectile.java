@@ -27,6 +27,7 @@ public class ClientProjectile extends Entity implements Drawable {
     private static final Map<Projectile.Type, String> PARTICLE_MAP = new HashMap<Projectile.Type, String>() {{
        put(Projectile.Type.PISTOL_BULLET, "particleeffects/projectile/bullethit");
        put(Projectile.Type.ROCKET, "particleeffects/projectile/explosionmedium");
+       put(Projectile.Type.GRENADE, "particleeffects/projectile/grenadelauncher");
     }};
 
     private final int id;
