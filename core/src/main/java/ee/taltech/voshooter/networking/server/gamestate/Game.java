@@ -6,6 +6,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.map.GameMap;
+import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerChange;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.server.VoConnection;
@@ -73,6 +74,12 @@ public class Game extends Thread {
 
         // Create a player object with a physics body which will be tracked in the world.
         entityManagerHub.createPlayer(connection);
+        for (VoConnection c : connectionInputs.keySet()) {
+            if (!c.equals(connection)) {
+                c.sendTCP(new ChatGamePlayerChange(String.format("Player %s has joined the game.",
+                        connection.player.getName())));
+            }
+        }
     }
 
     /**
@@ -83,6 +90,12 @@ public class Game extends Thread {
         if (connectionInputs.containsKey(connection)) {
             connectionInputs.remove(connection);
             entityManagerHub.removePlayer(connection.user.id);
+            for (VoConnection c : connectionInputs.keySet()) {
+                if (!c.equals(connection)) {
+                    c.sendTCP(new ChatGamePlayerChange(String.format("Player %s has left the game.",
+                            connection.player.getName())));
+                }
+            }
         }
     }
 
