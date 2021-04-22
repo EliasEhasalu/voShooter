@@ -217,7 +217,6 @@ public class MainScreen implements Screen {
 
         drawMiniMap();
         drawHUD();
-        System.out.println(parent.gameState.userPlayer.getWeapon().name());
     }
 
     /**
