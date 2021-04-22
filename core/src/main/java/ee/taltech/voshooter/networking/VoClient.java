@@ -12,6 +12,7 @@ import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.gamestate.ChatEntry;
 import ee.taltech.voshooter.gamestate.gamemode.ClientKingOfTheHillManager;
 import ee.taltech.voshooter.networking.messages.User;
+import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerChange;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
@@ -70,6 +71,7 @@ public class VoClient {
             private Set<PlayerDeath> playerDeathSet = ConcurrentHashMap.newKeySet();
             private ProjectilePositions projectileUpdate;
             private Set<ChatReceiveMessage> receivedMessages = ConcurrentHashMap.newKeySet();
+            private Set<ChatGamePlayerChange> receivedPlayerChanges = ConcurrentHashMap.newKeySet();
 
             @Override
             public void connected(Connection connection) {
@@ -117,6 +119,8 @@ public class VoClient {
                     updateKingOfTheHillStatistics((PlayerKothScores) message);
                 } else if (message instanceof ChatReceiveMessage) {
                     receivedMessages.add((ChatReceiveMessage) message);
+                } else if (message instanceof ChatGamePlayerChange) {
+                    receivedPlayerChanges.add((ChatGamePlayerChange) message);
                 } else if (message instanceof PlayerSwappedWeapon) {
                     System.out.println(((PlayerSwappedWeapon) message).weaponType.toString());
                 }
@@ -158,6 +162,12 @@ public class VoClient {
                             for (ChatReceiveMessage msg : receivedMessages) {
                                 handleReceivedMessages(msg);
                                 receivedMessages.remove(msg);
+                            }
+                        }
+                        if (!receivedPlayerChanges.isEmpty()) {
+                            for (ChatGamePlayerChange msg : receivedPlayerChanges) {
+                                handleReceivedPlayerChanges(msg);
+                                receivedPlayerChanges.remove(msg);
                             }
                         }
                     }
@@ -342,6 +352,19 @@ public class VoClient {
         if (parent.gameState.getPlayers().containsKey(msg.playerId)) {
             entry.setPrefix(parent.gameState.getPlayers().get(msg.playerId).getName());
         } else entry.setPrefix("unknown");
+        parent.gameState.addChatEntry(entry);
+    }
+
+    /**
+     * Receive a chat message.
+     * @param msg The message.
+     */
+    private void handleReceivedPlayerChanges(ChatGamePlayerChange msg) {
+        System.out.println(msg.message);
+        ChatEntry entry = new ChatEntry();
+        entry.setText(msg.message);
+
+        entry.setPrefix("Server");
         parent.gameState.addChatEntry(entry);
     }
 }
