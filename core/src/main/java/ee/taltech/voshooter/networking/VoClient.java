@@ -57,7 +57,7 @@ public class VoClient {
      */
     public VoClient(VoShooter parent, String address, int port) throws IOException {
         this.parent = parent;
-        client = new Client(8192, 4096);
+        client = new Client();
         client.start();
 
         // Agree on what messages should be passed.
