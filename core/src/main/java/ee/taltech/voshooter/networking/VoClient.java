@@ -8,6 +8,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.gamestate.ChatEntry;
 import ee.taltech.voshooter.gamestate.gamemode.ClientKingOfTheHillManager;
@@ -273,6 +274,7 @@ public class VoClient {
                         false,
                         true);
             } else if (msg.playerId == parent.gameState.userPlayer.getId()) {
+                SoundPlayer.play("soundfx/ui/player_death.ogg");
                 parent.gameState.addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
                                 Gdx.graphics.getHeight() - MainScreen.KILLFEED_TOP_MARGIN - 18),
                         "particleeffects/ui/killfeeddeath",
@@ -293,7 +295,8 @@ public class VoClient {
 
         for (ProjectileCreated msg : messages) {
             if (!projectileTypes.contains(msg.type)) {
-                SoundPlayer.play("soundfx/ui/shoot.ogg", parent.gameState.userPlayer.getPosition(), msg.pos);
+                SoundPlayer.play(ClientProjectile.getSoundPath(msg.type),
+                        parent.gameState.userPlayer.getPosition(), msg.pos);
             }
 
             projectileTypes.add(msg.type);

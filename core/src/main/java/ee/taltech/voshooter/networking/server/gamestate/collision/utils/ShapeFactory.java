@@ -115,6 +115,7 @@ public final class ShapeFactory {
             case ROCKET:
                 return constructRocket(world, pos, vel);
             case PISTOL_BULLET:
+            case SHOTGUN_PELLET:
                 return constructPistolBullet(world, pos, vel);
             case FIREBALL:
                 return constructFireball(world, pos, vel);

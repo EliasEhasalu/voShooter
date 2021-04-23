@@ -27,10 +27,11 @@ public abstract class Projectile implements DamageDealer {
     protected Vector2 vel;
 
     public enum Type {
-        ROCKET,
         PISTOL_BULLET,
+        SHOTGUN_PELLET,
+        ROCKET,
         FIREBALL,
-        GRENADE,
+        GRENADE
     }
 
     /**
