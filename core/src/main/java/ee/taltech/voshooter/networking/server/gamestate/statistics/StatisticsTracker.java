@@ -75,8 +75,10 @@ public class StatisticsTracker {
     }
 
     private void sendPlayerDamageEvents() {
-        for (VoConnection c : parent.getConnections()) {
-            c.sendTCP(playerDamageEvents.peek());
+        while (!playerDamageEvents.isEmpty()) {
+            for (VoConnection c : parent.getConnections()) {
+                c.sendTCP(playerDamageEvents.peek());
+            }
             playerDamageEvents.pop();
         }
     }
