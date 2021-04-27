@@ -195,6 +195,21 @@ public class GameState {
         }
     }
 
+    public void addParticleEffect(Vector2 pos, Vector2 endPos, String path) {
+        if (AppPreferences.getParticlesOn()) {
+            ParticleEffect pe = new ParticleEffect();
+            pe.load(Gdx.files.internal(path), Gdx.files.internal("textures/particles"));
+            pe.setPosition(pos.x, pos.y);
+            System.out.println("START " + pos);
+            System.out.println("END " + endPos);
+            pe.getEmitters().get(0).getSpawnHeight().setHigh(endPos.y - pos.y);
+            pe.getEmitters().get(0).getSpawnWidth().setHigh(endPos.x - pos.x);
+            pe.start();
+
+            particleEffects.add(pe);
+        }
+    }
+
     /**
      * Remove particle effects that have finished.
      * @param pe Particle effect to remove.
@@ -202,6 +217,7 @@ public class GameState {
     public void particleEffectFinished(ParticleEffect pe) {
         particleEffects.remove(pe);
         uiParticles.remove(pe);
+        pe.dispose();
     }
 
     /**

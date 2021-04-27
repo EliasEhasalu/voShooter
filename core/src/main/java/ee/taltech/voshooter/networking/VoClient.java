@@ -31,6 +31,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+import ee.taltech.voshooter.networking.messages.clientreceived.RailgunFired;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
@@ -68,6 +69,7 @@ public class VoClient {
             private GameStarted gameStart;
             private Set<ProjectileCreated> projectilesCreatedSet = ConcurrentHashMap.newKeySet();
             private Set<ProjectileDestroyed> projectileDestroyedSet = ConcurrentHashMap.newKeySet();
+            private Set<RailgunFired> railgunFiredSet = ConcurrentHashMap.newKeySet();
             private Set<PlayerDeath> playerDeathSet = ConcurrentHashMap.newKeySet();
             private ProjectilePositions projectileUpdate;
             private Set<ChatReceiveMessage> receivedMessages = ConcurrentHashMap.newKeySet();
@@ -123,6 +125,8 @@ public class VoClient {
                     receivedPlayerChanges.add((ChatGamePlayerChange) message);
                 } else if (message instanceof PlayerSwappedWeapon) {
                     handlePlayerWeaponUpdate((PlayerSwappedWeapon) message);
+                } else if (message instanceof RailgunFired) {
+                    railgunFiredSet.add((RailgunFired) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -168,6 +172,12 @@ public class VoClient {
                             for (ChatGamePlayerChange msg : receivedPlayerChanges) {
                                 handleReceivedPlayerChanges(msg);
                                 receivedPlayerChanges.remove(msg);
+                            }
+                        }
+                        if (!railgunFiredSet.isEmpty()) {
+                            for (RailgunFired msg : railgunFiredSet) {
+                                handleRailgunPositions(msg);
+                                railgunFiredSet.remove(msg);
                             }
                         }
                     }
@@ -348,6 +358,10 @@ public class VoClient {
         if (parent.gameState.getPlayers().containsKey(msg.id)) {
             parent.gameState.getPlayers().get(msg.id).setWeapon(msg.weaponType);
         }
+    }
+
+    private void handleRailgunPositions(RailgunFired msg) {
+        parent.gameState.addParticleEffect(msg.startPos, msg.endPos, "particleeffects/projectile/railgun");
     }
 
     /**

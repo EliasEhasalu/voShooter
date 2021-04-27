@@ -3,6 +3,7 @@ package ee.taltech.voshooter.weapon.hitscanweapon;
 import com.badlogic.gdx.physics.box2d.Body;
 import ee.taltech.voshooter.networking.messages.clientreceived.RailgunFired;
 import ee.taltech.voshooter.networking.server.VoConnection;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.RayCaster;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
@@ -41,7 +42,10 @@ public abstract class HitscanWeapon extends Weapon implements DamageDealer {
 
     private void sendLaserDataToClients(Body hitObject) {
         for (VoConnection c : wielder.getGame().getConnections()) {
-            c.sendTCP(new RailgunFired(wielder.getPos(), hitObject.getPosition()));
+            c.sendTCP(new RailgunFired(
+                    PixelToSimulation.toPixels(wielder.getPos()),
+                    PixelToSimulation.toPixels(hitObject.getPosition())));
+            System.out.println("HIT BODY " + hitObject.getPosition());
         }
     }
 }
