@@ -182,7 +182,7 @@ public final class ShapeFactory {
 
         Fixture fixture = b.createFixture(fixtureDef);
 
-        b.applyLinearImpulse(vel.cpy().nor(), b.getPosition(), true);
+        b.applyLinearImpulse(vel.cpy(), b.getPosition(), true);
         shape.dispose();
         return b;
     }

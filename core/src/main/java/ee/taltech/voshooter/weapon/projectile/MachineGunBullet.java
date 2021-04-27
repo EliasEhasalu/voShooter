@@ -8,7 +8,7 @@ import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDeal
 public class MachineGunBullet extends Bullet implements DamageDealer {
 
     public static final float RADIUS = 0.05f;
-    private static final float IMPULSE = 1f;
+    private static final float IMPULSE = 1.1f;
     private static final float LIFE_TIME = 2f;
     private static final int DAMAGE = 20;
 

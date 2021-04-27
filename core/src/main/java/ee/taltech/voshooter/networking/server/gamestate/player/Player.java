@@ -134,7 +134,7 @@ public class Player {
 
     public void takeDamage(int amount, DamageDealer source) {
         if (source instanceof Fireball) statusManager.applyDebuff(new Burning(this, source.getDamageSource()));
-        getStatisticsTracker().setLastDamageTakenFrom(this, source);
+        getStatisticsTracker().setLastDamageTakenFrom(this, source, amount);
 
         takeDamage(amount);
     }

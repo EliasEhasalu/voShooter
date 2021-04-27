@@ -2,11 +2,13 @@ package ee.taltech.voshooter.networking.server.gamestate.statistics;
 
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerStatistics;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerTookDamage;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
 
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,15 +24,26 @@ public class StatisticsTracker {
     private final Map<Player, DamageDealer> lastDamageTakenFrom = new HashMap<>();  // receiver <- dealer
     private final Map<Player, Integer> deathCount = new HashMap<>();
     private final Map<Player, Integer> killCount = new HashMap<>();
-    private final List<long[]> playerDeathEvents = new LinkedList<long[]>();
+    private final List<long[]> playerDeathEvents = new LinkedList<>();
+    private final Deque<PlayerTookDamage> playerDamageEvents = new LinkedList<>();
     private final Game parent;
 
     public StatisticsTracker(Game parent) {
         this.parent = parent;
     }
 
-    public void setLastDamageTakenFrom(Player receiver, DamageDealer dealer) {
+    public void setLastDamageTakenFrom(Player receiver, DamageDealer dealer, int amount) {
+        addPlayerDamageEvent(receiver, dealer, amount);
         lastDamageTakenFrom.put(receiver, dealer);
+    }
+
+    private void addPlayerDamageEvent(Player receiver, DamageDealer dealer, int amount) {
+        if (dealer.getDamageSource() instanceof Player) {
+            Player p = (Player) dealer.getDamageSource();
+            playerDamageEvents.add(new PlayerTookDamage(amount, p.getId(), receiver.getId()));
+        } else {
+            playerDamageEvents.add(new PlayerTookDamage(amount, receiver.getId()));
+        }
     }
 
     public void incrementDeaths(Player dyingPlayer) {
@@ -58,6 +71,16 @@ public class StatisticsTracker {
     private void assembleUpdates() {
         sendPlayerStats();
         sendPlayerDeathEvents();
+        sendPlayerDamageEvents();
+    }
+
+    private void sendPlayerDamageEvents() {
+        while (!playerDamageEvents.isEmpty()) {
+            for (VoConnection c : parent.getConnections()) {
+                c.sendTCP(playerDamageEvents.peek());
+            }
+            playerDamageEvents.pop();
+        }
     }
 
     private void sendPlayerStats() {
