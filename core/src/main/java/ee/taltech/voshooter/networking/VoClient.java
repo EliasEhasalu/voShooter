@@ -295,7 +295,7 @@ public class VoClient {
 
         for (ProjectileCreated msg : messages) {
             if (!projectileTypes.contains(msg.type)) {
-                SoundPlayer.play(ClientProjectile.getSoundPath(msg.type),
+                SoundPlayer.play(ClientProjectile.getSoundCreatedPath(msg.type),
                         parent.gameState.userPlayer.getPosition(), msg.pos);
             }
 
@@ -317,6 +317,9 @@ public class VoClient {
      * @param msg Projectile destroyed message.
      */
     private void destroyProjectile(ProjectileDestroyed msg) {
+        ClientProjectile p = parent.gameState.getProjectiles().get((long) msg.id);
+        String path = ClientProjectile.getSoundDestroyedPath(p.getType());
+        if (path != null) SoundPlayer.play(path, parent.gameState.userPlayer.getPosition(), p.getPosition());
         parent.gameState.destroyProjectile(msg);
     }
 
