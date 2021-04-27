@@ -31,6 +31,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
@@ -81,12 +82,10 @@ public class VoClient {
             public void received(Connection connection, Object message) {
 
                 if (message instanceof LobbyJoined) {
-                    LobbyJoined mes = (LobbyJoined) message;
                     screenToChangeTo = VoShooter.Screen.LOBBY;
-                    joinLobby(mes);
+                    joinLobby((LobbyJoined) message);
                 } else if (message instanceof LobbyUserUpdate) {
-                    LobbyUserUpdate update = (LobbyUserUpdate) message;
-                    updateLobby(update);
+                    updateLobby((LobbyUserUpdate) message);
                 } else if (message instanceof GameStarted) {
                     gameStart = (GameStarted) message;
                     screenToChangeTo = VoShooter.Screen.MAIN;
@@ -123,6 +122,8 @@ public class VoClient {
                     receivedPlayerChanges.add((ChatGamePlayerChange) message);
                 } else if (message instanceof PlayerSwappedWeapon) {
                     handlePlayerWeaponUpdate((PlayerSwappedWeapon) message);
+                } else if (message instanceof LobbySettingsChanged) {
+                    updateLobbySettings((LobbySettingsChanged) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -194,6 +195,12 @@ public class VoClient {
      */
     private void joinLobby(LobbyJoined msg) {
             parent.gameState.currentLobby.handleJoining(msg);
+    }
+
+    private void updateLobbySettings(LobbySettingsChanged msg) {
+        parent.gameState.currentLobby.setGamemode(msg.gameMode);
+        parent.gameState.currentLobby.setMaxUsers(msg.maxUsers);
+        parent.gameState.currentLobby.setMapType(msg.mapType);
     }
 
     /**

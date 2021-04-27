@@ -15,6 +15,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.ChatSendMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
@@ -108,11 +109,19 @@ public class VoServer {
         });
 
         server.addListener(
-            new RunMethodListener<ChatSendMessage>(ChatSendMessage.class) {
-                @Override
-                public void run(VoConnection c, ChatSendMessage msg) {
+        new RunMethodListener<ChatSendMessage>(ChatSendMessage.class) {
+            @Override
+            public void run(VoConnection c, ChatSendMessage msg) {
                     handleSendMessage(c, msg);
                 }
+        });
+
+        server.addListener(
+        new RunMethodListener<LobbySettingsChanged>(LobbySettingsChanged.class) {
+            @Override
+            public void run(VoConnection c, LobbySettingsChanged msg) {
+                handleLobbyChanges(msg);
+            }
         });
 
         server.bind(port);
@@ -136,6 +145,14 @@ public class VoServer {
         LobbyJoined res =
                 new LobbyJoined(msg.gameMode, msg.maxPlayers, code, newLobby.getUsers(), user, user.id, msg.mapType);
         connection.sendTCP(res);
+    }
+
+    private void handleLobbyChanges(LobbySettingsChanged msg) {
+        String code = sanitizeLobbyCode(msg.lobbyCode);
+        if (lobbyExists(code)) {
+            Lobby lobby = lobbies.get(code);
+            lobby.handleChanges(msg);
+        }
     }
 
     /**

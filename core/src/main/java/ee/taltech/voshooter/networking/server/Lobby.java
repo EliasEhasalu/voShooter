@@ -4,6 +4,7 @@ import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
+import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
@@ -17,8 +18,8 @@ public class Lobby {
 
     public static final int MINIMUM_PLAYERS = 1;
 
-    private final int maxUsers;
-    private final int gameMode;
+    private int maxUsers;
+    private int gameMode;
     private final String lobbyCode;
     private VoConnection host;
     private GameMap.MapType mapType;
@@ -129,6 +130,15 @@ public class Lobby {
         return connections.stream()
             .map(con -> con.user)
             .collect(Collectors.toList());
+    }
+
+    public void handleChanges(LobbySettingsChanged msg) {
+        this.gameMode = msg.gameMode;
+        this.maxUsers = msg.maxUsers;
+        this.mapType = msg.mapType;
+        for (VoConnection connection : connections) {
+            connection.sendTCP(msg);
+        }
     }
 
     /**

@@ -5,17 +5,27 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.map.GameMap;
+import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
+
+import java.util.Arrays;
+import java.util.Map;
 
 public class LobbySettingsScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
+    private int playerCount = 4;
+    private int gameMode = 1;
+    private GameMap.MapType mapType = GameMap.PLAYER_MAPS[0];
+    public Map<Integer, String> gameModes;
 
     /**
      * Construct the menu screen.
@@ -25,6 +35,7 @@ public class LobbySettingsScreen implements Screen {
         this.parent = parent;
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
+        gameModes = parent.createGameScreen.gameModes;
     }
 
     @Override
@@ -43,7 +54,34 @@ public class LobbySettingsScreen implements Screen {
 
         TextButton cancel = new TextButton("Cancel", skin);
         TextButton save = new TextButton("Save changes", skin);
+        Table gameModeTable = new Table();
+        Label gameModeLabel = new Label("Gamemode:", skin);
+        Label gameModeLabel2 = new Label(gameModes.get(gameMode), skin);
+        TextButton gameModeDecrease = new TextButton("<", skin);
+        TextButton gameModeIncrease = new TextButton(">", skin);
+        Table playerCountTable = new Table();
+        Label playersLabel = new Label("Players:", skin);
+        Label playerCountLabel = new Label(String.valueOf(playerCount), skin);
+        TextButton playerCountDecrease = new TextButton("<", skin);
+        TextButton playerCountIncrease = new TextButton(">", skin);
+        Label mapLabel = new Label("Map", skin);
+        TextButton changeMapButton = new TextButton(mapType.name(), skin);
 
+        table.add(playersLabel).left();
+        table.add(playerCountTable).fillX();
+        playerCountTable.add(playerCountDecrease).left();
+        playerCountTable.add(playerCountLabel).width(60).center().fillX();
+        playerCountTable.add(playerCountIncrease).right();
+        table.row().pad(10, 0, 0, 0);
+        table.add(gameModeLabel).left();
+        gameModeTable.add(gameModeDecrease).left();
+        gameModeTable.add(gameModeLabel2).width(100).center().fillX();
+        gameModeTable.add(gameModeIncrease).right();
+        table.add(gameModeTable).center();
+        table.row().pad(10, 0, 0, 0);
+        table.add(mapLabel).left();
+        table.add(changeMapButton).center();
+        table.row().pad(100, 0, 0, 0);
         table.add(cancel).left().padRight(10);
         table.add(save).right();
 
@@ -57,7 +95,61 @@ public class LobbySettingsScreen implements Screen {
         save.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                parent.getClient().sendTCP(new LobbySettingsChanged(gameMode, mapType,
+                        Math.max(playerCount, parent.gameState.currentLobby.getUsersCount()),
+                        parent.gameState.currentLobby.getLobbyCode()));
                 parent.changeScreen(VoShooter.Screen.LOBBY);
+            }
+        });
+
+        playerCountDecrease.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (playerCount > 2) {
+                    playerCount--;
+                    playerCountLabel.setText(String.valueOf(playerCount));
+                }
+            }
+        });
+
+        playerCountIncrease.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (playerCount < 8) {
+                    playerCount++;
+                    playerCountLabel.setText(String.valueOf(playerCount));
+                }
+            }
+        });
+
+        gameModeDecrease.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (gameMode > 0) {
+                    gameMode--;
+                    gameModeLabel2.setText(gameModes.get(gameMode));
+                }
+            }
+        });
+
+        gameModeIncrease.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (gameMode < gameModes.size() - 1) {
+                    gameMode++;
+                    gameModeLabel2.setText(gameModes.get(gameMode));
+                }
+            }
+        });
+
+        changeMapButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                int i = Arrays.asList(GameMap.PLAYER_MAPS).indexOf(mapType);
+                i++;
+                if (i >= GameMap.PLAYER_MAPS.length) i = 0;
+                mapType = GameMap.PLAYER_MAPS[i];
+                changeMapButton.setText(mapType.name());
             }
         });
     }
