@@ -10,7 +10,7 @@ public class GrenadeLauncher extends ProjectileWeapon {
     private static final float COOL_DOWN = 0.65f;
 
     public GrenadeLauncher(Player wielder) {
-        super(wielder, COOL_DOWN, STARTING_AMMO, Type.ROCKET_LAUNCHER);
+        super(wielder, COOL_DOWN, STARTING_AMMO, Type.GRENADE_LAUNCHER);
     }
 
     @Override
