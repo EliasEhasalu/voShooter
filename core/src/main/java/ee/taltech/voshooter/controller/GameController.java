@@ -55,6 +55,10 @@ public class GameController {
                 || (Gdx.input.isButtonPressed(AppPreferences.getNumberSix()) && !AppPreferences.getNumberSixIsKey())) {
             actionsPerformed.add(ActionType.WEAPON_GRENADE_LAUNCHER);
         }
+        if ((Gdx.input.isKeyPressed(AppPreferences.getNumberSeven()) && AppPreferences.getNumberSevenIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getNumberSeven()) && !AppPreferences.getNumberSevenIsKey())) {
+            actionsPerformed.add(ActionType.WEAPON_RAILGUN);
+        }
         if ((Gdx.input.isKeyPressed(AppPreferences.getLShiftKey()) && AppPreferences.getLShiftKeyIsKey())
                 || (Gdx.input.isButtonPressed(AppPreferences.getLShiftKey()) && !AppPreferences.getLShiftKeyIsKey())) {
             actionsPerformed.add(ActionType.DASH);
