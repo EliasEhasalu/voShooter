@@ -23,6 +23,7 @@ import ee.taltech.voshooter.soundeffects.MusicPlayer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ee.taltech.voshooter.VoShooter.Screen.LOBBY_SETTINGS;
 import static ee.taltech.voshooter.VoShooter.Screen.MENU;
 
 public class LobbyScreen implements Screen {
@@ -31,6 +32,9 @@ public class LobbyScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
+    private Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+    private TextButton settingsButton = new TextButton("Settings", skin);
+    private TextButton startGame = new TextButton("Start", skin);
     private List<Label> playerNameLabels = new ArrayList<>();
     private Label lobbyCodeLabel;
 
@@ -55,7 +59,6 @@ public class LobbyScreen implements Screen {
         stage.clear();
 
         // A Skin object defines the theme for menu objects.
-        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         // Add a table which will contain game creation settings.
         Table table = new Table();
@@ -67,9 +70,12 @@ public class LobbyScreen implements Screen {
         lobbyCodeLabel = new Label(parent.gameState.currentLobby.getLobbyCode(), skin);
         Label mapLabel = new Label("Map: " + parent.gameState.currentLobby.getMap().name(), skin);
         TextButton leaveButton = new TextButton("Leave", skin);
-        TextButton startGame = new TextButton("Start", skin);
-        if (!parent.gameState.clientUser.isHost()) startGame.setVisible(false);
+        if (!parent.gameState.clientUser.isHost()) {
+            settingsButton.setVisible(false);
+            startGame.setVisible(false);
+        }
 
+        playerNameLabels.clear();
         for (int i = 0; i < parent.gameState.currentLobby.getMaxUsers(); i++) {
             Label playerName = new Label("---", skin);
             playerNameLabels.add(playerName);
@@ -80,6 +86,7 @@ public class LobbyScreen implements Screen {
         table.add(lobbyCodeLabel);
         table.row().pad(10, 0, 0, 0);
         table.add(mapLabel).left();
+        table.add(settingsButton).right();
         table.row().pad(60, 0, 0, 0);
         for (Label playerName : playerNameLabels) {
             table.add(playerName).left();
@@ -101,6 +108,15 @@ public class LobbyScreen implements Screen {
                     startGame.toggle();
                 }
                 return true;
+            }
+        });
+
+        settingsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (parent.gameState.clientUser.isHost()) {
+                    parent.changeScreen(LOBBY_SETTINGS);
+                }
             }
         });
 
@@ -147,12 +163,18 @@ public class LobbyScreen implements Screen {
                 User user = parent.gameState.currentLobby.getUsers().get(i);
                 if (user.isHost()) {
                     playerNameLabels.get(i).setText(user.getName() + "   < Host");
+                    if (parent.gameState.clientUser.id == user.id) parent.gameState.clientUser.setHost(true);
                 } else playerNameLabels.get(i).setText(user.getName());
             }
         }
 
         if (parent.gameState.ongoingGame) {
             parent.changeScreen(VoShooter.Screen.MAIN);
+        }
+
+        if (parent.gameState.clientUser.isHost()) {
+            settingsButton.setVisible(true);
+            startGame.setVisible(true);
         }
 
         // Refresh the graphics renderer every cycle.
