@@ -6,12 +6,12 @@ lowMin: 1000.0
 lowMax: 1000.0
 - Count - 
 min: 0
-max: 1000
+max: 100
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 2000.0
-highMax: 2000.0
+highMin: 100.0
+highMax: 100.0
 relative: false
 scalingCount: 3
 scaling0: 1.0
@@ -19,8 +19,8 @@ scaling1: 1.0
 scaling2: 0.0
 timelineCount: 3
 timeline0: 0.0
-timeline1: 0.1849315
-timeline2: 0.1859315
+timeline1: 0.13013698
+timeline2: 0.13113698
 - Life - 
 lowMin: 0.0
 lowMax: 0.0
@@ -40,7 +40,7 @@ active: false
 - Y Offset - 
 active: false
 - Spawn Shape - 
-shape: line
+shape: point
 - Spawn Width - 
 lowMin: 0.0
 lowMax: 0.0
@@ -77,15 +77,15 @@ active: false
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: 10.0
-highMax: 30.0
+highMin: 20.0
+highMax: 250.0
 relative: false
 scalingCount: 2
 scaling0: 1.0
 scaling1: 0.0
 timelineCount: 2
 timeline0: 0.0
-timeline1: 0.6643836
+timeline1: 1.0
 - Angle - 
 active: true
 lowMin: 0.0
@@ -120,16 +120,14 @@ lowMax: 0.0
 highMin: 1.0
 highMax: 1.0
 relative: false
-scalingCount: 4
+scalingCount: 3
 scaling0: 1.0
 scaling1: 1.0
-scaling2: 0.24561404
-scaling3: 0.0
-timelineCount: 4
+scaling2: 0.0
+timelineCount: 3
 timeline0: 0.0
-timeline1: 0.4520548
-timeline2: 0.6164383
-timeline3: 1.0
+timeline1: 0.21232876
+timeline2: 0.31506848
 - Options - 
 attached: false
 continuous: false

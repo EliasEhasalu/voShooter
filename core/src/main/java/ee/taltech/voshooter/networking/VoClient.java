@@ -368,6 +368,7 @@ public class VoClient {
 
     private void handleRailgunPositions(RailgunFired msg) {
         parent.gameState.addParticleEffect(msg.startPos, msg.endPos, "particleeffects/projectile/railgun");
+        parent.gameState.addParticleEffect(msg.endPos, "particleeffects/projectile/railgunimpact", false, false);
     }
 
     /**
