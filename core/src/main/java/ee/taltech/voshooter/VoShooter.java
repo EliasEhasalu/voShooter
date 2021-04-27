@@ -106,7 +106,7 @@ public class VoShooter extends Game {
                 break;
             case LOBBY:
                 if (lobbySettingsScreen == null) lobbySettingsScreen = new LobbySettingsScreen(this);
-                lobbyScreen = new LobbyScreen(this);
+                if (lobbyScreen == null) lobbyScreen = new LobbyScreen(this);
                 setScreen(lobbyScreen);
                 break;
             case CHANGE_CONTROLS:

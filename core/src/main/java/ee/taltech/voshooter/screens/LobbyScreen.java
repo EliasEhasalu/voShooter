@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -101,6 +102,7 @@ public class LobbyScreen implements Screen {
         table.row().pad(50, 0, 0, 0);
         table.add(leaveButton).left();
         table.add(startGame).right();
+        boolean hasListener;
 
         // Music.
         MusicPlayer.setMusic("soundfx/bensound-theelevatorbossanova.mp3");
@@ -117,36 +119,63 @@ public class LobbyScreen implements Screen {
             }
         });
 
-        settingsButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (parent.gameState.clientUser.isHost()) {
-                    parent.changeScreen(LOBBY_SETTINGS);
-                }
+        hasListener = false;
+        for (EventListener listener : settingsButton.getListeners()) {
+            if (listener instanceof ChangeListener) {
+                hasListener = true;
+                break;
             }
-        });
+        }
+        if (!hasListener) {
+            settingsButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (parent.gameState.clientUser.isHost()) {
+                        parent.changeScreen(LOBBY_SETTINGS);
+                    }
+                }
+            });
+        }
 
         // Add button functionality.
-        leaveButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                parent.gameState.currentLobby.clearLobby();
-                parent.gameState.clientUser.setHost(false);
-                playerNameLabels.clear();
-                parent.getClient().sendTCP(new LeaveLobby());
-                parent.changeScreen(MENU);
+        hasListener = false;
+        for (EventListener listener : leaveButton.getListeners()) {
+            if (listener instanceof ChangeListener) {
+                hasListener = true;
+                break;
             }
-        });
-
-        startGame.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (parent.gameState.clientUser.isHost()) {
+        }
+        if (!hasListener) {
+            leaveButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                    parent.gameState.currentLobby.clearLobby();
+                    parent.gameState.clientUser.setHost(false);
                     playerNameLabels.clear();
-                    parent.getClient().sendTCP(new StartGame());
+                    parent.getClient().sendTCP(new LeaveLobby());
+                    parent.changeScreen(MENU);
                 }
+            });
+        }
+
+        hasListener = false;
+        for (EventListener listener : startGame.getListeners()) {
+            if (listener instanceof ChangeListener) {
+                hasListener = true;
+                break;
             }
-        });
+        }
+        if (!hasListener) {
+            startGame.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (parent.gameState.clientUser.isHost()) {
+                        playerNameLabels.clear();
+                        parent.getClient().sendTCP(new StartGame());
+                    }
+                }
+            });
+        }
     }
 
     /**

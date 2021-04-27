@@ -186,7 +186,7 @@ public class VoClient {
     }
 
     private void updateKingOfTheHillAreaHolder(PlayerKothChange msg) {
-        System.out.println(msg.player.getName());
+        // TODO add method.
     }
 
     /**
