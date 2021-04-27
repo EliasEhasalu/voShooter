@@ -11,7 +11,7 @@ public class ShotgunPellet extends Bullet {
     private static final float LIFE_TIME = 0.5f;
 
     public ShotgunPellet(Player owner, Vector2 pos, Vector2 dir) {
-        super(Type.PISTOL_BULLET, owner, pos, dir, LIFE_TIME);
+        super(Type.SHOTGUN_PELLET, owner, pos, dir, LIFE_TIME);
     }
 
     public void handleCollision(Fixture fix) {
