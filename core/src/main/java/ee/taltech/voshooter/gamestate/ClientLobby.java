@@ -11,7 +11,7 @@ import java.util.List;
 public class ClientLobby {
 
     private int maxUsers = 4;
-    private int gamemode = 0;
+    private int gamemode = 1;
     private List<User> users = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private String lobbyCode;

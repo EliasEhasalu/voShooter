@@ -136,15 +136,14 @@ public class VoServer {
     private void handleCreateLobby(VoConnection connection, CreateLobby msg) {
         String code = generateLobbyCode();
         User user = connection.user;
-        Lobby newLobby = new Lobby(msg.gameMode, msg.maxPlayers, code, msg.mapType);
+        Lobby newLobby = new Lobby(code);
         lobbies.put(code, newLobby);
 
         newLobby.addConnection(connection);
         newLobby.setHost(connection);
 
-        LobbyJoined res =
-                new LobbyJoined(msg.gameMode, msg.maxPlayers, code, newLobby.getUsers(), user, user.id, msg.mapType);
-        connection.sendTCP(res);
+        connection.sendTCP(new LobbyJoined(newLobby.getGameMode(), newLobby.getMaxPlayers(), code, newLobby.getUsers(), user,
+                        user.id, newLobby.getMapType()));
     }
 
     private void handleLobbyChanges(LobbySettingsChanged msg) {

@@ -16,6 +16,7 @@ import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 public class LobbySettingsScreen implements Screen {
@@ -25,7 +26,11 @@ public class LobbySettingsScreen implements Screen {
     private int playerCount = 4;
     private int gameMode = 1;
     private GameMap.MapType mapType = GameMap.PLAYER_MAPS[0];
-    public Map<Integer, String> gameModes;
+    public Map<Integer, String> gameModes = new HashMap<Integer, String>() {{
+        put(0, "Funky");
+        put(1, "FFA");
+        put(2, "KotH");
+    }};
 
     /**
      * Construct the menu screen.
@@ -35,7 +40,6 @@ public class LobbySettingsScreen implements Screen {
         this.parent = parent;
         // Create stage which will contain this screen's objects
         stage = new Stage(new ScreenViewport());
-        gameModes = parent.createGameScreen.gameModes;
     }
 
     @Override
@@ -70,12 +74,12 @@ public class LobbySettingsScreen implements Screen {
         table.add(playersLabel).left();
         table.add(playerCountTable).fillX();
         playerCountTable.add(playerCountDecrease).left();
-        playerCountTable.add(playerCountLabel).width(60).center().fillX();
+        playerCountTable.add(playerCountLabel).center().fillX();
         playerCountTable.add(playerCountIncrease).right();
         table.row().pad(10, 0, 0, 0);
         table.add(gameModeLabel).left();
         gameModeTable.add(gameModeDecrease).left();
-        gameModeTable.add(gameModeLabel2).width(100).center().fillX();
+        gameModeTable.add(gameModeLabel2).center().fillX();
         gameModeTable.add(gameModeIncrease).right();
         table.add(gameModeTable).center();
         table.row().pad(10, 0, 0, 0);

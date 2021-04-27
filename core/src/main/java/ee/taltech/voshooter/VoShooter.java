@@ -29,7 +29,7 @@ public class VoShooter extends Game {
     public CreateGameScreen createGameScreen;
     public JoinGameScreen joinGameScreen;
     private LobbyScreen lobbyScreen;
-    private LobbySettingsScreen lobbySettingsScreen;
+    public LobbySettingsScreen lobbySettingsScreen;
     private boolean codeCorrect;
     private String lobbyCode;
     private boolean cameFromGame;
@@ -105,7 +105,8 @@ public class VoShooter extends Game {
                 setScreen(joinGameScreen);
                 break;
             case LOBBY:
-                if (lobbyScreen == null) lobbyScreen = new LobbyScreen(this);
+                if (lobbySettingsScreen == null) lobbySettingsScreen = new LobbySettingsScreen(this);
+                lobbyScreen = new LobbyScreen(this);
                 setScreen(lobbyScreen);
                 break;
             case CHANGE_CONTROLS:

@@ -362,7 +362,6 @@ public class VoClient {
      * @param msg The message.
      */
     private void handleReceivedMessages(ChatReceiveMessage msg) {
-        System.out.println(msg.message);
         ChatEntry entry = new ChatEntry();
         entry.setText(msg.message);
 
@@ -377,7 +376,6 @@ public class VoClient {
      * @param msg The message.
      */
     private void handleReceivedPlayerChanges(ChatGamePlayerChange msg) {
-        System.out.println(msg.message);
         ChatEntry entry = new ChatEntry();
         entry.setText(msg.message);
 

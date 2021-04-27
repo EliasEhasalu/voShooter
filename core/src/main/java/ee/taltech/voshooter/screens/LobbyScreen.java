@@ -32,6 +32,8 @@ public class LobbyScreen implements Screen {
 
     private VoShooter parent;
     private Stage stage;
+    private Label gamemodeLabel;
+    private Label mapLabel;
     private Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     private TextButton settingsButton = new TextButton("Settings", skin);
     private TextButton startGame = new TextButton("Start", skin);
@@ -68,7 +70,9 @@ public class LobbyScreen implements Screen {
         // Create the menu objects for our stage.
         Label lobbyTitleLabel = new Label("Lobby", skin);
         lobbyCodeLabel = new Label(parent.gameState.currentLobby.getLobbyCode(), skin);
-        Label mapLabel = new Label("Map: " + parent.gameState.currentLobby.getMap().name(), skin);
+        mapLabel = new Label("Map: " + parent.gameState.currentLobby.getMap().name(), skin);
+        int gameMode = parent.gameState.currentLobby.getGamemode();
+        gamemodeLabel = new Label("Gamemode: " + parent.lobbySettingsScreen.gameModes.get(gameMode), skin);
         TextButton leaveButton = new TextButton("Leave", skin);
         if (!parent.gameState.clientUser.isHost()) {
             settingsButton.setVisible(false);
@@ -87,7 +91,9 @@ public class LobbyScreen implements Screen {
         table.row().pad(10, 0, 0, 0);
         table.add(mapLabel).left();
         table.add(settingsButton).right();
-        table.row().pad(60, 0, 0, 0);
+        table.row().pad(10, 0, 0, 0);
+        table.add(gamemodeLabel).left();
+        table.row().pad(40, 0, 0, 0);
         for (Label playerName : playerNameLabels) {
             table.add(playerName).left();
             table.row().pad(10, 0, 0, 0);
@@ -151,6 +157,9 @@ public class LobbyScreen implements Screen {
         // Update lobby.
         int maxPlayers = parent.gameState.currentLobby.getMaxUsers();
         int joinedPlayers = parent.gameState.currentLobby.getUsersCount();
+        mapLabel = new Label("Map: " + parent.gameState.currentLobby.getMap().name(), skin);
+        int gameMode = parent.gameState.currentLobby.getGamemode();
+        gamemodeLabel = new Label("Gamemode: " + parent.lobbySettingsScreen.gameModes.get(gameMode), skin);
 
         // Clear all slots from last frame.
         for (int i = 0; i < maxPlayers; i++) {
@@ -158,6 +167,7 @@ public class LobbyScreen implements Screen {
                 playerNameLabels.get(i).setText(LobbyScreen.EMPTY_SLOT);
             }
         }
+
         for (int i = 0; i < maxPlayers; i++) {
             if (i < joinedPlayers && playerNameLabels.size() > i) {
                 User user = parent.gameState.currentLobby.getUsers().get(i);
