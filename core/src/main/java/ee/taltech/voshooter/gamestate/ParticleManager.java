@@ -46,18 +46,31 @@ public class ParticleManager {
         if (AppPreferences.getParticlesOn()) {
             ParticleEffect pe = new ParticleEffect();
             pe.load(Gdx.files.internal(path), Gdx.files.internal("textures/particles"));
-            ParticleEmitter em = pe.getEmitters().get(0);
             pe.setPosition(pos.x, pos.y);
-            em.getSpawnHeight().setHigh(endPos.y - pos.y);
-            em.getSpawnWidth().setHigh(endPos.x - pos.x);
 
-            final float dist = new Vector2(0, 0).dst(new Vector2(em.getSpawnWidth().getHighMax(),
-                    em.getSpawnHeight().getHighMax()));
-            final float emission = em.getEmission().getHighMax() / dist * pos.dst(endPos);
-            em.getEmission().setHigh(emission);
-            em.setMaxParticleCount((int) emission);
+            final float rotation = endPos.cpy().sub(pos).angleDeg();
+
+            for (ParticleEmitter em : pe.getEmitters()) {
+                if (em.getSpawnShape().getShape() == ParticleEmitter.SpawnShape.line) {
+                    final float dist = new Vector2(0, 0).dst(new Vector2(em.getSpawnWidth().getHighMax(),
+                            em.getSpawnHeight().getHighMax()));
+
+                    em.getSpawnWidth().setHigh(endPos.x - pos.x);
+                    em.getSpawnHeight().setHigh(endPos.y - pos.y);
+
+                    final float emission = em.getEmission().getHighMax() / dist * pos.dst(endPos);
+                    final float count = em.getMaxParticleCount() / dist * pos.dst(endPos);
+                    em.getEmission().setHigh(emission);
+                    em.setMaxParticleCount((int) count);
+                } else if (em.getSpawnShape().getShape() == ParticleEmitter.SpawnShape.point) {
+                    em.getAngle().setHighMin(em.getAngle().getHighMin() + rotation);
+                    em.getAngle().setHighMax(em.getAngle().getHighMax() + rotation);
+                    em.getAngle().setLowMin(em.getAngle().getLowMin() + rotation);
+                    em.getAngle().setLowMax(em.getAngle().getLowMax() + rotation);
+                }
+            }
+
             pe.start();
-
             particleEffects.add(pe);
         }
     }
