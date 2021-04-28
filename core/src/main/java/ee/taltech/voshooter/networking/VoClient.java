@@ -177,8 +177,7 @@ public class VoClient {
                         }
                         if (!railgunFiredSet.isEmpty()) {
                             for (RailgunFired msg : railgunFiredSet) {
-                                playRailgunSound(msg);
-                                handleRailgunPositions(msg);
+                                handleRailgunFired(msg);
                                 railgunFiredSet.remove(msg);
                             }
                         }
@@ -279,21 +278,24 @@ public class VoClient {
         if (msg.playerId != msg.killerId) {
             if (msg.killerId == parent.gameState.userPlayer.getId()) {
                 SoundPlayer.play("soundfx/ui/kill.ogg");
-                parent.gameState.addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
+                parent.gameState.particleManager
+                        .addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
                                 Gdx.graphics.getHeight() - MainScreen.KILLFEED_TOP_MARGIN - 18),
                         "particleeffects/ui/killfeedkill",
                         false,
                         true);
             } else if (msg.playerId == parent.gameState.userPlayer.getId()) {
                 SoundPlayer.play("soundfx/ui/player_death.ogg");
-                parent.gameState.addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
+                parent.gameState.particleManager
+                        .addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
                                 Gdx.graphics.getHeight() - MainScreen.KILLFEED_TOP_MARGIN - 18),
                         "particleeffects/ui/killfeeddeath",
                         false,
                         true);
             }
         }
-        parent.gameState.addParticleEffect(parent.gameState.players.get(msg.playerId).getPosition(),
+        parent.gameState.particleManager
+                .addParticleEffect(parent.gameState.players.get(msg.playerId).getPosition(),
                 "particleeffects/player/playerdeath", false, false);
     }
 
@@ -367,9 +369,18 @@ public class VoClient {
         }
     }
 
-    private void handleRailgunPositions(RailgunFired msg) {
-        parent.gameState.addParticleEffect(msg.startPos, msg.endPos, "particleeffects/projectile/railgun");
-        parent.gameState.addParticleEffect(msg.endPos, "particleeffects/projectile/railgunimpact", false, false);
+    /**
+     * Handle railgun being fired. Create particles, play sound.
+     * @param msg The railgun fired message.
+     */
+    private void handleRailgunFired(RailgunFired msg) {
+        String path = "soundfx/gun/railgun.ogg";
+        SoundPlayer.play(path, parent.gameState.userPlayer.getPosition(), msg.startPos);
+
+        parent.gameState.particleManager
+                .addParticleEffect(msg.startPos, msg.endPos, "particleeffects/projectile/railgun");
+        parent.gameState.particleManager
+                .addParticleEffect(msg.endPos, "particleeffects/projectile/railgunimpact", false, false);
     }
 
     /**
@@ -398,11 +409,5 @@ public class VoClient {
 
         entry.setPrefix("Server");
         parent.gameState.addChatEntry(entry);
-    }
-
-    private void playRailgunSound(RailgunFired msg) {
-        String path = "soundfx/gun/railgun.ogg";
-
-        SoundPlayer.play(path, parent.gameState.userPlayer.getPosition(), msg.startPos);
     }
 }

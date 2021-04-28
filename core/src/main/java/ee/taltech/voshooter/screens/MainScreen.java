@@ -451,11 +451,11 @@ public class MainScreen implements Screen {
 
         // Draw UI particles.
         if (AppPreferences.getParticlesOn()) {
-            for (ParticleEffect pe : parent.gameState.getUiParticles()) {
+            for (ParticleEffect pe : parent.gameState.particleManager.getUiParticles()) {
                 pe.update(Gdx.graphics.getDeltaTime());
                 pe.draw(hudBatch);
                 if (pe.isComplete()) {
-                    parent.gameState.particleEffectFinished(pe);
+                    parent.gameState.particleManager.particleEffectFinished(pe);
                 }
             }
         }
@@ -530,6 +530,7 @@ public class MainScreen implements Screen {
         hudBatch.end();
     }
 
+    /** Draw the chat. */
     private void drawChat() {
         final int width = Gdx.graphics.getWidth();
         final int height = Gdx.graphics.getHeight();
@@ -595,11 +596,11 @@ public class MainScreen implements Screen {
      */
     private void drawParticles() {
         if (AppPreferences.getParticlesOn()) {
-            for (ParticleEffect pe : parent.gameState.getParticleEffects()) {
+            for (ParticleEffect pe : parent.gameState.particleManager.getParticleEffects()) {
                 pe.update(Gdx.graphics.getDeltaTime());
                 pe.draw(stage.getBatch());
                 if (pe.isComplete()) {
-                    parent.gameState.particleEffectFinished(pe);
+                    parent.gameState.particleManager.particleEffectFinished(pe);
                 }
             }
         }
