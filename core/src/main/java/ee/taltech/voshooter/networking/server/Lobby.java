@@ -21,6 +21,7 @@ public class Lobby {
     private int maxUsers = 4;
     private int gameMode = 1;
     private final String lobbyCode;
+    private int gameLength;
     private VoConnection host;
     private GameMap.MapType mapType = GameMap.MapType.DEFAULT;
 
@@ -45,7 +46,7 @@ public class Lobby {
 
     /** Send all users in this lobby a message that the game has started. */
     protected void sendGameStart() {
-        game = new Game(gameMode, mapType);
+        game = new Game(gameMode, mapType, gameLength);
 
         for (VoConnection con : connections) {
             game.addConnection(con);
@@ -130,6 +131,7 @@ public class Lobby {
         this.gameMode = msg.gameMode;
         this.maxUsers = msg.maxUsers;
         this.mapType = msg.mapType;
+        this.gameLength = msg.gameLength;
         for (VoConnection connection : connections) {
             connection.sendTCP(msg);
         }
