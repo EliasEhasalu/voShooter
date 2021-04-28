@@ -8,9 +8,12 @@ import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -44,18 +47,39 @@ public class LevelGenerator {
                         continue;
                     }
 
+                    Vector2 pos = getMapObjectPos(object);
+
                     BodyDef bodyDef = new BodyDef();
                     bodyDef.type = BodyDef.BodyType.StaticBody;
+                    bodyDef.position.x = pos.x;
+                    bodyDef.position.y = pos.y;
                     Body body = world.createBody(bodyDef);
-                    Fixture f = body.createFixture(shape, 1);
-                    f.setFriction(0f);
-                    f.setRestitution(0f);
+
+                    FixtureDef fixtureDef = new FixtureDef();
+                    fixtureDef.shape = shape;
+                    fixtureDef.density = 0f;
+                    fixtureDef.restitution = 0f;
+
+                    Fixture fixture = body.createFixture(fixtureDef);
+                    System.out.println(body.getPosition());
 
                     shape.dispose();
                 }
                 break;
             }
         }
+    }
+
+    private static Vector2 getMapObjectPos(MapObject object) {
+        if (object instanceof RectangleMapObject) {
+            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+
+            return new Vector2(
+                    PixelToSimulation.toUnits(rectangle.x + rectangle.width * 0.5f),
+                    PixelToSimulation.toUnits(rectangle.y + rectangle.height * 0.5f)
+            );
+        }
+        throw new RuntimeException("Position not defined for this shape.");
     }
 
     public static Map<Integer, Float> getKothLocation(TiledMap map) {

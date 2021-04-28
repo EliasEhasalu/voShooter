@@ -35,16 +35,9 @@ public final class ShapeFactory {
     public static PolygonShape getRectangle(Rectangle rectangle) {
         PolygonShape polygon = new PolygonShape();
 
-        Vector2 size = new Vector2(
-                PixelToSimulation.toUnits(rectangle.x + rectangle.width * 0.5f),
-                PixelToSimulation.toUnits(rectangle.y + rectangle.height * 0.5f)
-        );
-
         polygon.setAsBox(
                 PixelToSimulation.toUnits(rectangle.width * 0.5f),
-                PixelToSimulation.toUnits(rectangle.height * 0.5f),
-                size,
-                0.0f
+                PixelToSimulation.toUnits(rectangle.height * 0.5f)
         );
 
         return polygon;
