@@ -2,6 +2,7 @@ package ee.taltech.voshooter.gamestate;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
 import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.entity.Entity;
@@ -199,11 +200,16 @@ public class GameState {
         if (AppPreferences.getParticlesOn()) {
             ParticleEffect pe = new ParticleEffect();
             pe.load(Gdx.files.internal(path), Gdx.files.internal("textures/particles"));
+            ParticleEmitter em = pe.getEmitters().get(0);
             pe.setPosition(pos.x, pos.y);
-            System.out.println("START " + pos);
-            System.out.println("END " + endPos);
-            pe.getEmitters().get(0).getSpawnHeight().setHigh(endPos.y - pos.y);
-            pe.getEmitters().get(0).getSpawnWidth().setHigh(endPos.x - pos.x);
+            em.getSpawnHeight().setHigh(endPos.y - pos.y);
+            em.getSpawnWidth().setHigh(endPos.x - pos.x);
+
+            final float dist = new Vector2(0, 0).dst(new Vector2(em.getSpawnWidth().getHighMax(),
+                    em.getSpawnHeight().getHighMax()));
+            final float emission = em.getEmission().getHighMax() / dist * pos.dst(endPos);
+            em.getEmission().setHigh(emission);
+            em.setMaxParticleCount((int) emission);
             pe.start();
 
             particleEffects.add(pe);

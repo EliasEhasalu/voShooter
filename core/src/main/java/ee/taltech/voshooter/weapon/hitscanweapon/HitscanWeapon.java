@@ -5,6 +5,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.RailgunFired;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.RayCaster;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.RayCollision;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
 import ee.taltech.voshooter.weapon.Weapon;
@@ -24,7 +25,7 @@ public abstract class HitscanWeapon extends Weapon implements DamageDealer {
     }
 
     protected void onFire() {
-        Body hitObject = rayCaster.getFirstCollision(
+        RayCollision collision = rayCaster.getFirstCollision(
                 wielder.getWorld(),
                 wielder.getPos(),
                 wielder.getViewDirection(),
@@ -32,20 +33,23 @@ public abstract class HitscanWeapon extends Weapon implements DamageDealer {
                 new HashSet<Body>() {{ add(wielder.getBody()); }}
         );
 
-        sendLaserDataToClients(hitObject);
+        if (collision != null) {
+            sendLaserDataToClients(collision);
 
-        if (hitObject != null && hitObject.getUserData() instanceof Player) {
-            Player hitPlayer = (Player) hitObject.getUserData();
-            hitPlayer.takeDamage(damage, this);
+            Body collidedBody = collision.getCollidedBody();
+            if (collidedBody != null && collidedBody.getUserData() instanceof Player) {
+                Player hitPlayer = (Player) collidedBody.getUserData();
+                hitPlayer.takeDamage(damage, this);
+            }
         }
     }
 
-    private void sendLaserDataToClients(Body hitObject) {
+    private void sendLaserDataToClients(RayCollision collision) {
         for (VoConnection c : wielder.getGame().getConnections()) {
             c.sendTCP(new RailgunFired(
                     PixelToSimulation.toPixels(wielder.getPos()),
-                    PixelToSimulation.toPixels(hitObject.getPosition())));
-            System.out.println("HIT BODY " + hitObject.getPosition());
+                    PixelToSimulation.toPixels(collision.getCollisionPosition())
+            ));
         }
     }
 }
