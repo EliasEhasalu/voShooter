@@ -178,12 +178,17 @@ public class GameState {
         deathMessages.poll();
     }
 
+    /**
+     * Add a chat entry.
+     * @param entry The entry to be added.
+     */
     public void addChatEntry(ChatEntry entry) {
         chatEntries.offer(entry);
 
         if (chatEntries.size() > MAX_CHAT_SIZE) removeChatEntry();
     }
 
+    /** Remove the last chat entry. */
     public void removeChatEntry() {
         chatEntries.poll();
     }
