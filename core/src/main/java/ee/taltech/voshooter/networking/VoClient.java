@@ -403,6 +403,6 @@ public class VoClient {
     private void playRailgunSound(RailgunFired msg) {
         String path = "soundfx/gun/railgun.ogg";
 
-        SoundPlayer.play(path, parent.gameState.userPlayer.getPosition(), msg.endPos);
+        SoundPlayer.play(path, parent.gameState.userPlayer.getPosition(), msg.startPos);
     }
 }
