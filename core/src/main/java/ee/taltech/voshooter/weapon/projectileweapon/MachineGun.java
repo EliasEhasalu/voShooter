@@ -13,7 +13,7 @@ public class MachineGun extends ProjectileWeapon {
     private static final int STARTING_AMMO = 75;
     private static final float BASE_COOL_DOWN = 0.06f;
     private static final Random random = new Random();
-    public static final int BULLET_SPREAD = 5;
+    public static final int BULLET_SPREAD = 4;
 
     public MachineGun(Player owner) {
         super(owner, BASE_COOL_DOWN, STARTING_AMMO, Type.MACHINE_GUN);

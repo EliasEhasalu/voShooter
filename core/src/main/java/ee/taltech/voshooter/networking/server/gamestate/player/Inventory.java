@@ -28,7 +28,7 @@ public class Inventory {
         pickUpWeapon(Weapon.Type.SHOTGUN);
         pickUpWeapon(Weapon.Type.GRENADE_LAUNCHER);
         pickUpWeapon(Weapon.Type.RAILGUN);
-        swapToWeapon(Weapon.Type.RAILGUN);
+        swapToDefaultWeapon();
     }
 
     protected void attemptToFireCurrentWeapon() {

@@ -1,9 +1,5 @@
 package ee.taltech.voshooter.gamestate;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.math.Vector2;
-import ee.taltech.voshooter.AppPreferences;
 import ee.taltech.voshooter.entity.Entity;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
@@ -38,23 +34,18 @@ public class GameState {
 
     public Map<Long, ClientPlayer> players = new ConcurrentHashMap<>();
     private final Map<Long, ClientProjectile> projectiles = new ConcurrentHashMap<>();
-    private final Set<ParticleEffect> particleEffects = ConcurrentHashMap.newKeySet();
-    private final Set<ParticleEffect> uiParticles = ConcurrentHashMap.newKeySet();
+    public ParticleManager particleManager = new ParticleManager();
 
     public Queue<DeathMessage> deathMessages = new ArrayDeque<>();
     public Queue<ChatEntry> chatEntries = new ArrayDeque<>();
     public static final int MAX_CHAT_SIZE = 20;
 
-    /**
-     * @return The list of drawable entities.
-     */
+    /** @return The list of drawable entities. */
     public Set<Drawable> getDrawables() {
         return drawableEntities;
     }
 
-    /**
-     * @return The list of players.
-     */
+    /** @return The list of players. */
     public Map<Long, ClientPlayer> getPlayers() {
         return players;
     }
@@ -137,7 +128,7 @@ public class GameState {
     public void destroyProjectile(ProjectileDestroyed msg) {
         if (projectiles.containsKey((long) msg.id)) {
             ClientProjectile p = projectiles.get((long) msg.id);
-            addParticleEffect(p.getPosition(), p.getParticlePath(), false, false);
+            particleManager.addParticleEffect(p.getPosition(), p.getParticlePath(), false, false);
             projectiles.remove((long) msg.id);
         }
     }
@@ -156,9 +147,7 @@ public class GameState {
         }
     }
 
-    /**
-     * Clear all drawable entities.
-     */
+    /** Clear all drawable entities. */
     public void clearDrawables() {
         drawableEntities.clear();
         players.clear();
@@ -166,42 +155,9 @@ public class GameState {
         projectiles.clear();
     }
 
-    /**
-     * @return Set of projectiles on the client.
-     */
+    /** @return Set of projectiles on the client. */
     public Map<Long, ClientProjectile> getProjectiles() {
         return projectiles;
-    }
-
-    /**
-     * Add a new particle effect.
-     * @param pos Position of the particle effect.
-     * @param looping If the particle is looping or not.
-     * @param path Path to the particle effect in assets.
-     * @param isUI If the particle should be rendered on the UI.
-     */
-    public void addParticleEffect(Vector2 pos, String path, boolean looping, boolean isUI) {
-        if (AppPreferences.getParticlesOn()) {
-            ParticleEffect pe = new ParticleEffect();
-            pe.load(Gdx.files.internal(path), Gdx.files.internal("textures/particles"));
-            pe.setPosition(pos.x, pos.y);
-            pe.start();
-
-            if (isUI) {
-                uiParticles.add(pe);
-            } else {
-                particleEffects.add(pe);
-            }
-        }
-    }
-
-    /**
-     * Remove particle effects that have finished.
-     * @param pe Particle effect to remove.
-     */
-    public void particleEffectFinished(ParticleEffect pe) {
-        particleEffects.remove(pe);
-        uiParticles.remove(pe);
     }
 
     /**
@@ -217,9 +173,7 @@ public class GameState {
         deathMessages.offer(msg);
     }
 
-    /**
-     * Remove a message from the set of death messages.
-     */
+    /** Remove a message from the set of death messages. */
     public void removeDeathMessage() {
         deathMessages.poll();
     }
@@ -232,15 +186,5 @@ public class GameState {
 
     public void removeChatEntry() {
         chatEntries.poll();
-    }
-
-    /** @return Set of particle effects currently in the game. */
-    public Set<ParticleEffect> getParticleEffects() {
-        return particleEffects;
-    }
-
-    /** @return Set of the UI particles. */
-    public Set<ParticleEffect> getUiParticles() {
-        return uiParticles;
     }
 }

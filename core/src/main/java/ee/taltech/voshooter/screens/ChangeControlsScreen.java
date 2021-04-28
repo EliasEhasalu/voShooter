@@ -40,6 +40,8 @@ public class ChangeControlsScreen implements Screen {
     private Label rocketLauncher;
     private Label flameThrower;
     private Label machineGun;
+    private Label grenadeLauncher;
+    private Label railGun;
     private TextButton returnToPreferencesScreen;
     private Map.Entry<Label, TextButton> changeControlEntry;
 
@@ -126,74 +128,79 @@ public class ChangeControlsScreen implements Screen {
             if (AppPreferences.getUpKeyIsKey()) {
                 put(keyUp, new TextButton(Input.Keys.toString(AppPreferences.getUpKey()), skin));
             } else {
-                put(keyUp, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getUpKey()), skin));
+                put(keyUp, new TextButton(AppPreferences.repr(AppPreferences.getUpKey()), skin));
             }
             keyLeft = new Label("Move left", skin);
             if (AppPreferences.getLeftKeyIsKey()) {
                 put(keyLeft, new TextButton(Input.Keys.toString(AppPreferences.getLeftKey()), skin));
             } else {
-                put(keyLeft, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getLeftKey()), skin));
+                put(keyLeft, new TextButton(AppPreferences.repr(AppPreferences.getLeftKey()), skin));
             }
             keyDown = new Label("Move down", skin);
             if (AppPreferences.getDownKeyIsKey()) {
                 put(keyDown, new TextButton(Input.Keys.toString(AppPreferences.getDownKey()), skin));
             } else {
-                put(keyDown, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getDownKey()), skin));
+                put(keyDown, new TextButton(AppPreferences.repr(AppPreferences.getDownKey()), skin));
             }
             keyRight = new Label("Move right", skin);
             if (AppPreferences.getRightKeyIsKey()) {
                 put(keyRight, new TextButton(Input.Keys.toString(AppPreferences.getRightKey()), skin));
             } else {
-                put(keyRight, new TextButton(AppPreferences.stringRepresentation(AppPreferences.getRightKey()), skin));
+                put(keyRight, new TextButton(AppPreferences.repr(AppPreferences.getRightKey()), skin));
             }
             buttonLeft = new Label("Shoot", skin);
             if (AppPreferences.getButtonLeftIsKey()) {
                 put(buttonLeft, new TextButton(Input.Keys.toString(AppPreferences.getMouseLeft()), skin));
             } else {
-                put(buttonLeft,
-                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getMouseLeft()), skin));
+                put(buttonLeft, new TextButton(AppPreferences.repr(AppPreferences.getMouseLeft()), skin));
             }
             buttonRight = new Label("Aim", skin);
             if (AppPreferences.getButtonRightIsKey()) {
                 put(buttonRight, new TextButton(Input.Keys.toString(AppPreferences.getMouseRight()), skin));
             } else {
-                put(buttonRight,
-                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getMouseRight()), skin));
+                put(buttonRight, new TextButton(AppPreferences.repr(AppPreferences.getMouseRight()), skin));
             }
             pistol = new Label("Pistol", skin);
             if (AppPreferences.getNumberOneIsKey()) {
                 put(pistol, new TextButton(Input.Keys.toString(AppPreferences.getNumberOne()), skin));
             } else {
-                put(pistol,
-                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberOne()), skin));
+                put(pistol, new TextButton(AppPreferences.repr(AppPreferences.getNumberOne()), skin));
             }
             shotgun = new Label("Shotgun", skin);
             if (AppPreferences.getNumberTwoIsKey()) {
                 put(shotgun, new TextButton(Input.Keys.toString(AppPreferences.getNumberTwo()), skin));
             } else {
-                put(shotgun,
-                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberTwo()), skin));
+                put(shotgun, new TextButton(AppPreferences.repr(AppPreferences.getNumberTwo()), skin));
             }
             rocketLauncher = new Label("Rocket launcher", skin);
             if (AppPreferences.getNumberThreeIsKey()) {
                 put(rocketLauncher, new TextButton(Input.Keys.toString(AppPreferences.getNumberThree()), skin));
             } else {
-                put(rocketLauncher,
-                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberThree()), skin));
+                put(rocketLauncher, new TextButton(AppPreferences.repr(AppPreferences.getNumberThree()), skin));
             }
             flameThrower = new Label("Flamethrower", skin);
             if (AppPreferences.getNumberFourIsKey()) {
                 put(flameThrower, new TextButton(Input.Keys.toString(AppPreferences.getNumberFour()), skin));
             } else {
-                put(flameThrower,
-                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberFour()), skin));
+                put(flameThrower, new TextButton(AppPreferences.repr(AppPreferences.getNumberFour()), skin));
             }
             machineGun = new Label("Machine Gun", skin);
             if (AppPreferences.getNumberFiveIsKey()) {
                 put(machineGun, new TextButton(Input.Keys.toString(AppPreferences.getNumberFive()), skin));
             } else {
-                put(machineGun,
-                        new TextButton(AppPreferences.stringRepresentation(AppPreferences.getNumberFive()), skin));
+                put(machineGun, new TextButton(AppPreferences.repr(AppPreferences.getNumberFive()), skin));
+            }
+            grenadeLauncher = new Label("Rocket Launcher", skin);
+            if (AppPreferences.getNumberSixIsKey()) {
+                put(grenadeLauncher, new TextButton(Input.Keys.toString(AppPreferences.getNumberSix()), skin));
+            } else {
+                put(grenadeLauncher, new TextButton(AppPreferences.repr(AppPreferences.getNumberSix()), skin));
+            }
+            railGun = new Label("Railgun", skin);
+            if (AppPreferences.getNumberSevenIsKey()) {
+                put(railGun, new TextButton(Input.Keys.toString(AppPreferences.getNumberSeven()), skin));
+            } else {
+                put(railGun, new TextButton(AppPreferences.repr(AppPreferences.getNumberSeven()), skin));
             }
         }};
     }
@@ -273,6 +280,12 @@ public class ChangeControlsScreen implements Screen {
         } else if (key.equals(machineGun)) {
             AppPreferences.setNumberFive(inputKey);
             AppPreferences.setNumberFiveIsKey(true);
+        } else if (key.equals(grenadeLauncher)) {
+            AppPreferences.setNumberSix(inputKey);
+            AppPreferences.setNumberSixIsKey(true);
+        } else if (key.equals(railGun)) {
+            AppPreferences.setNumberSeven(inputKey);
+            AppPreferences.setNumberSevenIsKey(true);
         }
         changeControlEntry.getValue().setText(Input.Keys.toString(inputKey));
         setButtonsWhite();
@@ -318,8 +331,14 @@ public class ChangeControlsScreen implements Screen {
         } else if (key.equals(machineGun)) {
             AppPreferences.setNumberFive(inputButton);
             AppPreferences.setNumberFiveIsKey(false);
+        } else if (key.equals(grenadeLauncher)) {
+            AppPreferences.setNumberSix(inputButton);
+            AppPreferences.setNumberSixIsKey(false);
+        } else if (key.equals(railGun)) {
+            AppPreferences.setNumberSeven(inputButton);
+            AppPreferences.setNumberSevenIsKey(false);
         }
-        changeControlEntry.getValue().setText(AppPreferences.stringRepresentation(inputButton));
+        changeControlEntry.getValue().setText(AppPreferences.repr(inputButton));
         setButtonsWhite();
         changeControlEntry = null;
     }

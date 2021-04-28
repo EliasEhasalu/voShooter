@@ -36,12 +36,14 @@ public class AppPreferences {
     private static final String PREF_NUMBER_4 = "number 4";
     private static final String PREF_NUMBER_5 = "number 5";
     private static final String PREF_NUMBER_6 = "number 6";
+    private static final String PREF_NUMBER_7 = "number 7";
     private static final String PREF_1_IS_KEY = "number 1 is key";
     private static final String PREF_2_IS_KEY = "number 2 is key";
     private static final String PREF_3_IS_KEY = "number 3 is key";
     private static final String PREF_4_IS_KEY = "number 4 is key";
     private static final String PREF_5_IS_KEY = "number 5 is key";
     private static final String PREF_6_IS_KEY = "number 6 is key";
+    private static final String PREF_7_IS_KEY = "number 7 is key";
     private static final List<String> BUTTONS_LIST = Arrays.asList("Left Button", "Right Button", "Middle Button", "Back", "Forward");
 
     /** @return A preferences object containing the player's preferences */
@@ -297,6 +299,34 @@ public class AppPreferences {
         getPrefs().flush();
     }
 
+    /** @param key Set the key that triggers PREF_NUMBER_6 action. */
+    public static void setNumberSix(int key) {
+        getPrefs().putInteger(PREF_NUMBER_6, key);
+        // Write to disk.
+        getPrefs().flush();
+    }
+
+    /** @param isKey Set whether PREF_NUMBER_6 action is key. */
+    public static void setNumberSixIsKey(boolean isKey) {
+        getPrefs().putBoolean(PREF_6_IS_KEY, isKey);
+        // Write to disk.
+        getPrefs().flush();
+    }
+
+    /** @param key Set the key that triggers PREF_NUMBER_7 action. */
+    public static void setNumberSeven(int key) {
+        getPrefs().putInteger(PREF_NUMBER_7, key);
+        // Write to disk.
+        getPrefs().flush();
+    }
+
+    /** @param isKey Set whether PREF_NUMBER_7 action is key. */
+    public static void setNumberSevenIsKey(boolean isKey) {
+        getPrefs().putBoolean(PREF_7_IS_KEY, isKey);
+        // Write to disk.
+        getPrefs().flush();
+    }
+
 
     /** @return Key that triggers MOVE_UP action. */
     public static int getUpKey() {
@@ -429,12 +459,22 @@ public class AppPreferences {
         return getPrefs().getBoolean(PREF_6_IS_KEY, true);
     }
 
+    /** @return Key that triggers NUMBER_7 action. */
+    public static int getNumberSeven() {
+        return getPrefs().getInteger(PREF_NUMBER_7, Input.Keys.NUM_7);
+    }
+
+    /** @return Whether NUMBER_7 action is key. */
+    public static boolean getNumberSevenIsKey() {
+        return getPrefs().getBoolean(PREF_7_IS_KEY, true);
+    }
+
     /**
      * Get the string form of given button.
      * @param inputButton that was clicked
      * @return the string representation
      */
-    public static String stringRepresentation(int inputButton) {
+    public static String repr(int inputButton) {
         if (inputButton < 5) {
             return BUTTONS_LIST.get(inputButton);
         } else {

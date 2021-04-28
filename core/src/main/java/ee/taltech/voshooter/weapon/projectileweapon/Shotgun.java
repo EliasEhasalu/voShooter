@@ -9,8 +9,9 @@ import ee.taltech.voshooter.weapon.projectile.ShotgunPellet;
 public class Shotgun extends ProjectileWeapon {
 
     private static final int STARTING_AMMO = 10;
-    private static final int PELLET_COUNT = 8;
+    private static final int PELLET_COUNT = 9;
     private static final float COOL_DOWN = 1f;
+    private static final float CONE_SIZE_DEG = 25f;
 
     /**
      * @param wielder The player who wields this weapon.
@@ -22,8 +23,8 @@ public class Shotgun extends ProjectileWeapon {
     @Override
     protected void onFire() {
         for (int i = 0; i < PELLET_COUNT; i++) {
-            final float start = -45f / 2;
-            final float end = 45f / 2;
+            final float start = -(CONE_SIZE_DEG) / 2;
+            final float end = CONE_SIZE_DEG / 2;
             final float inc = (end - start) / PELLET_COUNT;
 
             Vector2 offset = wielder.getViewDirection().cpy().nor().rotateDeg(start + i * inc);
