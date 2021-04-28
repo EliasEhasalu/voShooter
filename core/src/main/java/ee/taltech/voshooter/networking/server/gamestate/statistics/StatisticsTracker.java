@@ -40,7 +40,7 @@ public class StatisticsTracker {
     private void addPlayerDamageEvent(Player receiver, DamageDealer dealer, int amount) {
         if (dealer.getDamageSource() instanceof Player) {
             Player p = (Player) dealer.getDamageSource();
-            playerDamageEvents.add(new PlayerTookDamage(amount, p.getId(), receiver.getId()));
+            playerDamageEvents.add(new PlayerTookDamage(amount, receiver.getId(), p.getId()));
         } else {
             playerDamageEvents.add(new PlayerTookDamage(amount, receiver.getId()));
         }
