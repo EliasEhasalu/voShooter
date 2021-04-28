@@ -28,8 +28,17 @@ public class KingOfTheHillManager extends GameMode {
 
     @Override
     public void update() {
+        calculateTimeLeft();
         sendKothAreaUpdates();
         statisticsUpdates();
+    }
+
+    @Override
+    public void calculateTimeLeft() {
+        timePassed += 1 / Game.TICK_RATE_IN_HZ;
+        if (timePassed >= parent.gameLength) {
+            parent.shutDown();
+        }
     }
 
     @Override

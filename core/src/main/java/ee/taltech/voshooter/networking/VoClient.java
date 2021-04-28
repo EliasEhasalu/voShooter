@@ -14,6 +14,7 @@ import ee.taltech.voshooter.gamestate.gamemode.ClientKingOfTheHillManager;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerChange;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
+import ee.taltech.voshooter.networking.messages.clientreceived.GameEnd;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
@@ -124,6 +125,8 @@ public class VoClient {
                     handlePlayerWeaponUpdate((PlayerSwappedWeapon) message);
                 } else if (message instanceof LobbySettingsChanged) {
                     updateLobbySettings((LobbySettingsChanged) message);
+                } else if (message instanceof GameEnd) {
+                    screenToChangeTo = VoShooter.Screen.LOBBY;
                 }
 
                 // Define actions to be taken on the next cycle

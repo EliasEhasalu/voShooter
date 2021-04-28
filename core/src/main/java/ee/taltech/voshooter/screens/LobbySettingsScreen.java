@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
@@ -25,6 +26,8 @@ public class LobbySettingsScreen implements Screen {
     private Stage stage;
     private int playerCount = 4;
     private int gameMode = 1;
+    private int roundLength = 0;
+    private boolean isCorrectGameLength = false;
     private GameMap.MapType mapType = GameMap.PLAYER_MAPS[0];
     public Map<Integer, String> gameModes = new HashMap<Integer, String>() {{
         put(0, "Funky");
@@ -70,6 +73,9 @@ public class LobbySettingsScreen implements Screen {
         TextButton playerCountIncrease = new TextButton(">", skin);
         Label mapLabel = new Label("Map", skin);
         TextButton changeMapButton = new TextButton(mapType.name(), skin);
+        Label gameLength = new Label("Round length: ", skin);
+        TextField gameLengthField = new TextField("", skin);
+        Label gameLengthHint = new Label("seconds", skin);
 
         table.add(playersLabel).left();
         table.add(playerCountTable).fillX();
@@ -85,6 +91,10 @@ public class LobbySettingsScreen implements Screen {
         table.row().pad(10, 0, 0, 0);
         table.add(mapLabel).left();
         table.add(changeMapButton).center();
+        table.row().pad(10, 0, 0, 0);
+        table.add(gameLength).left();
+        table.add(gameLengthField).center();
+        table.add(gameLengthHint).right();
         table.row().pad(100, 0, 0, 0);
         table.add(cancel).left().padRight(10);
         table.add(save).right();
@@ -101,7 +111,7 @@ public class LobbySettingsScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 parent.getClient().sendTCP(new LobbySettingsChanged(gameMode, mapType,
                         Math.max(playerCount, parent.gameState.currentLobby.getUsersCount()),
-                        parent.gameState.currentLobby.getLobbyCode()));
+                        parent.gameState.currentLobby.getLobbyCode(), roundLength));
                 parent.changeScreen(VoShooter.Screen.LOBBY);
             }
         });
@@ -154,6 +164,22 @@ public class LobbySettingsScreen implements Screen {
                 if (i >= GameMap.PLAYER_MAPS.length) i = 0;
                 mapType = GameMap.PLAYER_MAPS[i];
                 changeMapButton.setText(mapType.name());
+            }
+        });
+
+        gameLengthField.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (!gameLengthField.getText().matches("^[0-9]*$") || gameLengthField.getText().length() <= 0) {
+                    gameLengthHint.setText("Only numbers 0-9");
+                    gameLengthHint.setColor(255, 0, 0, 255);
+                    isCorrectGameLength = false;
+                } else {
+                    gameLengthHint.setText("seconds");
+                    gameLengthHint.setColor(0, 255, 0, 255);
+                    roundLength = Integer.parseInt(gameLengthField.getText());
+                    isCorrectGameLength = true;
+                }
             }
         });
     }

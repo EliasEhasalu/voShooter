@@ -11,6 +11,7 @@ import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerChange;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
+import ee.taltech.voshooter.networking.messages.clientreceived.GameEnd;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
@@ -105,6 +106,7 @@ public final class Network {
         kryo.register(ActionType.class);
         kryo.register(Weapon.Type.class);
         kryo.register(PlayerSwappedWeapon.class);
+        kryo.register(GameEnd.class);
 
         kryo.register(Shoot.class);
         kryo.register(MovePlayer.class);
