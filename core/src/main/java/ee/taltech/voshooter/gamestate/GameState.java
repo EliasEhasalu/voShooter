@@ -38,7 +38,7 @@ public class GameState {
 
     public Queue<DeathMessage> deathMessages = new ArrayDeque<>();
     public Queue<ChatEntry> chatEntries = new ArrayDeque<>();
-    public static final int MAX_CHAT_SIZE = 25;
+    public static final int MAX_CHAT_SIZE = 20;
 
     /** @return The list of drawable entities. */
     public Set<Drawable> getDrawables() {

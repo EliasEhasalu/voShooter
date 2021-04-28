@@ -32,6 +32,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.messages.clientreceived.RailgunFired;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.screens.MainScreen;
@@ -84,12 +85,10 @@ public class VoClient {
             public void received(Connection connection, Object message) {
 
                 if (message instanceof LobbyJoined) {
-                    LobbyJoined mes = (LobbyJoined) message;
                     screenToChangeTo = VoShooter.Screen.LOBBY;
-                    joinLobby(mes);
+                    joinLobby((LobbyJoined) message);
                 } else if (message instanceof LobbyUserUpdate) {
-                    LobbyUserUpdate update = (LobbyUserUpdate) message;
-                    updateLobby(update);
+                    updateLobby((LobbyUserUpdate) message);
                 } else if (message instanceof GameStarted) {
                     gameStart = (GameStarted) message;
                     screenToChangeTo = VoShooter.Screen.MAIN;
@@ -126,6 +125,8 @@ public class VoClient {
                     receivedPlayerChanges.add((ChatGamePlayerChange) message);
                 } else if (message instanceof PlayerSwappedWeapon) {
                     handlePlayerWeaponUpdate((PlayerSwappedWeapon) message);
+                } else if (message instanceof LobbySettingsChanged) {
+                    updateLobbySettings((LobbySettingsChanged) message);
                 } else if (message instanceof RailgunFired) {
                     railgunFiredSet.add((RailgunFired) message);
                 }
@@ -196,7 +197,7 @@ public class VoClient {
     }
 
     private void updateKingOfTheHillAreaHolder(PlayerKothChange msg) {
-        System.out.println(msg.player.getName());
+        // TODO add method.
     }
 
     /**
@@ -205,6 +206,12 @@ public class VoClient {
      */
     private void joinLobby(LobbyJoined msg) {
             parent.gameState.currentLobby.handleJoining(msg);
+    }
+
+    private void updateLobbySettings(LobbySettingsChanged msg) {
+        parent.gameState.currentLobby.setGamemode(msg.gameMode);
+        parent.gameState.currentLobby.setMaxUsers(msg.maxUsers);
+        parent.gameState.currentLobby.setMapType(msg.mapType);
     }
 
     /**
@@ -388,7 +395,6 @@ public class VoClient {
      * @param msg The message.
      */
     private void handleReceivedMessages(ChatReceiveMessage msg) {
-        System.out.println(msg.message);
         ChatEntry entry = new ChatEntry();
         entry.setText(msg.message);
 
@@ -403,7 +409,6 @@ public class VoClient {
      * @param msg The message.
      */
     private void handleReceivedPlayerChanges(ChatGamePlayerChange msg) {
-        System.out.println(msg.message);
         ChatEntry entry = new ChatEntry();
         entry.setText(msg.message);
 
