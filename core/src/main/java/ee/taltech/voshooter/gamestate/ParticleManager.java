@@ -37,7 +37,7 @@ public class ParticleManager {
     }
 
     /**
-     * Add particle effect on a line.
+     * Add particle effect on a line. Set the line width and height, rotate non-line emitters.
      * @param pos The start position of the line.
      * @param endPos The end position of the line.
      * @param path The path to the particle effect in assets.
