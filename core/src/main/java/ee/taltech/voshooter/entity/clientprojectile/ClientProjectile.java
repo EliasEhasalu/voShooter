@@ -34,6 +34,7 @@ public class ClientProjectile extends Entity implements Drawable {
         put(Projectile.Type.PISTOL_BULLET, "soundfx/gun/weapon1.ogg");
         put(Projectile.Type.GRENADE, "soundfx/gun/grenade_launcher.ogg");
         put(Projectile.Type.SHOTGUN_PELLET, "soundfx/gun/shotgun.ogg");
+        put(Projectile.Type.ROCKET, "soundfx/gun/rocket_launcher_firing.ogg");
     }};
 
     private static final Map<Projectile.Type, String> SOUND_DESTROYED = new HashMap<Projectile.Type, String>() {{
