@@ -61,7 +61,6 @@ public class LevelGenerator {
                     fixtureDef.restitution = 0f;
 
                     Fixture fixture = body.createFixture(fixtureDef);
-                    System.out.println(body.getPosition());
 
                     shape.dispose();
                 }
