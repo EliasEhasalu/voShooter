@@ -60,7 +60,8 @@ public class Game extends Thread {
      */
     public Game(int gameMode, GameMap.MapType mapType, int gameLength) {
         this.mapType = mapType;
-        this.gameLength = gameLength;
+        if (gameLength >= 15) this.gameLength = gameLength;
+        else this.gameLength = Integer.MAX_VALUE;
         setCurrentMap();
         gameModeManager = GameModeManagerFactory.makeGameModeManager(this, statisticsTracker, gameMode);
         LevelGenerator.generateLevel(world, currentMap);

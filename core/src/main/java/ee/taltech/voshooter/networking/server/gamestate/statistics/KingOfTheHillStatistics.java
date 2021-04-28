@@ -7,6 +7,7 @@ import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.OptionalDouble;
 
 public class KingOfTheHillStatistics {
 
@@ -25,6 +26,10 @@ public class KingOfTheHillStatistics {
         refreshPlayers();
         updatePlayerScoreKoth();
         sendPlayerScoreKoth();
+    }
+
+    public OptionalDouble getHighestTimeHeld() {
+        return kothPlayers.values().stream().mapToDouble(value -> value).max();
     }
 
     public void refreshPlayers() {
