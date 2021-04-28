@@ -357,32 +357,38 @@ public class MainScreen implements Screen {
             }
         });
 
-        resumeButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                setPauseTableVisibility(false);
-            }
-        });
+        if (parent.doesNotContainChangeListener(resumeButton.getListeners())) {
+            resumeButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    setPauseTableVisibility(false);
+                }
+            });
+        }
 
-        settingsButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.setCameFromGame(true);
-                parent.screen = null;
-                parent.changeScreen(VoShooter.Screen.PREFERENCES);
-            }
-        });
+        if (parent.doesNotContainChangeListener(settingsButton.getListeners())) {
+            settingsButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    parent.setCameFromGame(true);
+                    parent.screen = null;
+                    parent.changeScreen(VoShooter.Screen.PREFERENCES);
+                }
+            });
+        }
 
-        exitButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.gameState.clearDrawables();
-                pauseMenuActive = false;
-                parent.screen = null;
-                parent.getClient().sendTCP(new LeaveLobby());
-                parent.changeScreen(VoShooter.Screen.MENU);
-            }
-        });
+        if (parent.doesNotContainChangeListener(exitButton.getListeners())) {
+            exitButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    parent.gameState.clearDrawables();
+                    pauseMenuActive = false;
+                    parent.screen = null;
+                    parent.getClient().sendTCP(new LeaveLobby());
+                    parent.changeScreen(VoShooter.Screen.MENU);
+                }
+            });
+        }
     }
 
     /**

@@ -88,33 +88,37 @@ public class ChangeControlsScreen implements Screen {
             table.row().pad(0, 0, 5, 30);
             table.add(entry.getKey());
             table.add(entry.getValue());
-            entry.getValue().addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    if (entry.getValue().getColor().equals(Color.RED)) {
-                        entry.getValue().setColor(Color.WHITE);
-                        changeControlEntry = null;
-                    } else {
-                        setButtonsWhite();
-                        entry.getValue().setColor(Color.RED);
-                        changeControlEntry = entry;
+            if (parent.doesNotContainChangeListener(entry.getValue().getListeners())) {
+                entry.getValue().addListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        if (entry.getValue().getColor().equals(Color.RED)) {
+                            entry.getValue().setColor(Color.WHITE);
+                            changeControlEntry = null;
+                        } else {
+                            setButtonsWhite();
+                            entry.getValue().setColor(Color.RED);
+                            changeControlEntry = entry;
+                        }
                     }
-                }
-            });
+                });
+            }
         }
         table.row().pad(0, 0, 100, 30);
         table.add(returnToPreferencesScreen).fillX().uniformX().bottom().right();
 
         table.pack();
 
-        returnToPreferencesScreen.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                stage.clear();
-                changeControlEntry = null;
-                parent.changeScreen(VoShooter.Screen.PREFERENCES);
-            }
-        });
+        if (parent.doesNotContainChangeListener(returnToPreferencesScreen.getListeners())) {
+            returnToPreferencesScreen.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    stage.clear();
+                    changeControlEntry = null;
+                    parent.changeScreen(VoShooter.Screen.PREFERENCES);
+                }
+            });
+        }
     }
 
     /**

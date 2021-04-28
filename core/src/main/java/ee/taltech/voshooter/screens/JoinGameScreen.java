@@ -1,7 +1,5 @@
 package ee.taltech.voshooter.screens;
 
-import java.io.IOException;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -21,6 +19,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
+
+import java.io.IOException;
 
 
 public class JoinGameScreen implements Screen {
@@ -140,95 +140,107 @@ public class JoinGameScreen implements Screen {
         });
 
         // Add button functionality.
-        join.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (isNameGood && isCodeGood) {
-                    try {
-                        String name = playerName.getText().trim();
-                        parent.gameState.clientUser.setName(name);
-                        parent.gameState.clientUser.setHost(false);
-                        parent.createNetworkClient();
-                        parent.getClient().sendTCP(new SetUsername(name));
-                        parent.getClient().sendTCP(new JoinLobby(gameCode.getText().trim()));
-                        if (!parent.isCodeCorrect()) {
-                            gameCodeCheck.setText("No such lobby");
-                            gameCodeCheck.setColor(255, 0, 0, 255);
+        if (parent.doesNotContainChangeListener(join.getListeners())) {
+            join.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (isNameGood && isCodeGood) {
+                        try {
+                            String name = playerName.getText().trim();
+                            parent.gameState.clientUser.setName(name);
+                            parent.gameState.clientUser.setHost(false);
+                            parent.createNetworkClient();
+                            parent.getClient().sendTCP(new SetUsername(name));
+                            parent.getClient().sendTCP(new JoinLobby(gameCode.getText().trim()));
+                            if (!parent.isCodeCorrect()) {
+                                gameCodeCheck.setText("No such lobby");
+                                gameCodeCheck.setColor(255, 0, 0, 255);
+                            }
+                        } catch (IOException e) {
+                            popUpTable.setVisible(true);
+                            table.setVisible(false);
                         }
-                    } catch (IOException e) {
-                        popUpTable.setVisible(true);
-                        table.setVisible(false);
                     }
                 }
-            }
-        });
+            });
+        }
 
-        back.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.changeScreen(VoShooter.Screen.MENU);
-            }
-        });
-
-        closePopUp.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                popUpTable.setVisible(false);
-                table.setVisible(true);
-            }
-        });
-
-        playerName.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (playerName.getText().trim().length() >= 4) {
-                    nameLengthCheck.setText("Good name");
-                    nameLengthCheck.setColor(0, 255, 0, 255);
-                    isNameGood = true;
-                } else {
-                    nameLengthCheck.setText("Too short");
-                    nameLengthCheck.setColor(255, 0, 0, 255);
-                    isNameGood = false;
+        if (parent.doesNotContainChangeListener(back.getListeners())) {
+            back.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    parent.changeScreen(VoShooter.Screen.MENU);
                 }
-            }
-        });
+            });
+        }
 
-        gameCode.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (gameCode.getText().length() < 6) {
-                    gameCodeCheck.setText("Too short");
-                    gameCodeCheck.setColor(255, 0, 0, 255);
-                    isCodeGood = false;
-                } else if (gameCode.getText().length() > 6) {
-                    gameCodeCheck.setText("Too long");
-                    gameCodeCheck.setColor(255, 0, 0, 255);
-                    isCodeGood = false;
-                } else if (!gameCode.getText().matches("^[a-zA-Z]*$")) {
-                    gameCodeCheck.setText("Only letters A-Z");
-                    gameCodeCheck.setColor(255, 0, 0, 255);
-                    isCodeGood = false;
-                } else {
-                    if (parent.getLobbyCode() == null || !gameCode.getText().toUpperCase().equals(parent.getLobbyCode())) {
-                        gameCodeCheck.setText("Good code");
-                        gameCodeCheck.setColor(0, 255, 0, 255);
-                        isCodeGood = true;
+        if (parent.doesNotContainChangeListener(closePopUp.getListeners())) {
+            closePopUp.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    popUpTable.setVisible(false);
+                    table.setVisible(true);
+                }
+            });
+        }
+
+        if (parent.doesNotContainChangeListener(playerName.getListeners())) {
+            playerName.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (playerName.getText().trim().length() >= 4) {
+                        nameLengthCheck.setText("Good name");
+                        nameLengthCheck.setColor(0, 255, 0, 255);
+                        isNameGood = true;
                     } else {
-                        gameCodeCheck.setText("No such lobby");
+                        nameLengthCheck.setText("Too short");
+                        nameLengthCheck.setColor(255, 0, 0, 255);
+                        isNameGood = false;
+                    }
+                }
+            });
+        }
+
+        if (parent.doesNotContainChangeListener(gameCode.getListeners())) {
+            gameCode.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (gameCode.getText().length() < 6) {
+                        gameCodeCheck.setText("Too short");
                         gameCodeCheck.setColor(255, 0, 0, 255);
                         isCodeGood = false;
+                    } else if (gameCode.getText().length() > 6) {
+                        gameCodeCheck.setText("Too long");
+                        gameCodeCheck.setColor(255, 0, 0, 255);
+                        isCodeGood = false;
+                    } else if (!gameCode.getText().matches("^[a-zA-Z]*$")) {
+                        gameCodeCheck.setText("Only letters A-Z");
+                        gameCodeCheck.setColor(255, 0, 0, 255);
+                        isCodeGood = false;
+                    } else {
+                        if (parent.getLobbyCode() == null || !gameCode.getText().toUpperCase().equals(parent.getLobbyCode())) {
+                            gameCodeCheck.setText("Good code");
+                            gameCodeCheck.setColor(0, 255, 0, 255);
+                            isCodeGood = true;
+                        } else {
+                            gameCodeCheck.setText("No such lobby");
+                            gameCodeCheck.setColor(255, 0, 0, 255);
+                            isCodeGood = false;
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
 
-        closePopUp.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                popUpTable.setVisible(false);
-                table.setVisible(true);
-            }
-        });
+        if (parent.doesNotContainChangeListener(closePopUp.getListeners())) {
+            closePopUp.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    popUpTable.setVisible(false);
+                    table.setVisible(true);
+                }
+            });
+        }
     }
 
     /**

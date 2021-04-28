@@ -2,6 +2,9 @@ package ee.taltech.voshooter;
 
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.esotericsoftware.kryonet.Client;
 import ee.taltech.voshooter.gamestate.GameState;
 import ee.taltech.voshooter.networking.VoClient;
@@ -190,5 +193,14 @@ public class VoShooter extends Game {
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException ignored) {
         }
+    }
+
+    public boolean doesNotContainChangeListener(DelayedRemovalArray<EventListener> listeners) {
+        for (EventListener listener : listeners) {
+            if (listener instanceof ChangeListener) {
+                return false;
+            }
+        }
+        return true;
     }
 }
