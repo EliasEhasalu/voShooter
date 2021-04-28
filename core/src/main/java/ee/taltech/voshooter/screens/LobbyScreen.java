@@ -40,6 +40,8 @@ public class LobbyScreen implements Screen {
     private TextButton startGame = new TextButton("Start", skin);
     private List<Label> playerNameLabels = new ArrayList<>();
     private Label lobbyCodeLabel;
+    private Table table = new Table();
+    private Table playerNameTable;
 
     /**
      * Construct the menu screen.
@@ -64,7 +66,7 @@ public class LobbyScreen implements Screen {
         // A Skin object defines the theme for menu objects.
 
         // Add a table which will contain game creation settings.
-        Table table = new Table();
+        table.clear();
         table.setFillParent(true);
         stage.addActor(table);
 
@@ -81,10 +83,7 @@ public class LobbyScreen implements Screen {
         }
 
         playerNameLabels.clear();
-        for (int i = 0; i < parent.gameState.currentLobby.getMaxUsers(); i++) {
-            Label playerName = new Label("---", skin);
-            playerNameLabels.add(playerName);
-        }
+        playerNameTable = new Table();
 
         // Add the objects to the table.
         table.add(lobbyTitleLabel);
@@ -95,10 +94,7 @@ public class LobbyScreen implements Screen {
         table.row().pad(10, 0, 0, 0);
         table.add(gamemodeLabel).left();
         table.row().pad(40, 0, 0, 0);
-        for (Label playerName : playerNameLabels) {
-            table.add(playerName).left();
-            table.row().pad(10, 0, 0, 0);
-        }
+        table.add(playerNameTable).left();
         table.row().pad(50, 0, 0, 0);
         table.add(leaveButton).left();
         table.add(startGame).right();
@@ -178,32 +174,43 @@ public class LobbyScreen implements Screen {
         }
     }
 
+    private void updateLobbyScreen() {
+        int maxPlayers = parent.gameState.currentLobby.getMaxUsers();
+        mapLabel.setText("Map: " + parent.gameState.currentLobby.getMap().name());
+        int gameMode = parent.gameState.currentLobby.getGamemode();
+        gamemodeLabel.setText("Gamemode: " + parent.lobbySettingsScreen.gameModes.get(gameMode));
+        playerNameLabels.clear();
+        playerNameTable.clear();
+        for (int i = 0; i < maxPlayers; i++) {
+            Label playerName = new Label(LobbyScreen.EMPTY_SLOT, skin);
+            playerNameLabels.add(playerName);
+            playerNameTable.add(playerName).left();
+            playerNameTable.row().pad(10, 0, 0, 0);
+        }
+    }
+
     /**
      * Render the elements defined in the show() method.
      */
     @Override
     public void render(float delta) {
         // Update lobby.
+        updateLobbyScreen();
         int maxPlayers = parent.gameState.currentLobby.getMaxUsers();
         int joinedPlayers = parent.gameState.currentLobby.getUsersCount();
-        mapLabel = new Label("Map: " + parent.gameState.currentLobby.getMap().name(), skin);
-        int gameMode = parent.gameState.currentLobby.getGamemode();
-        gamemodeLabel = new Label("Gamemode: " + parent.lobbySettingsScreen.gameModes.get(gameMode), skin);
-
-        // Clear all slots from last frame.
-        for (int i = 0; i < maxPlayers; i++) {
-            if (playerNameLabels.size() > i) {
-                playerNameLabels.get(i).setText(LobbyScreen.EMPTY_SLOT);
-            }
-        }
 
         for (int i = 0; i < maxPlayers; i++) {
             if (i < joinedPlayers && playerNameLabels.size() > i) {
                 User user = parent.gameState.currentLobby.getUsers().get(i);
                 if (user.isHost()) {
                     playerNameLabels.get(i).setText(user.getName() + "   < Host");
-                    if (parent.gameState.clientUser.id == user.id) parent.gameState.clientUser.setHost(true);
-                } else playerNameLabels.get(i).setText(user.getName());
+                    if (parent.gameState.clientUser.id == user.id) {
+                        playerNameLabels.get(i).setText(user.getName() + "   < Host/You");
+                        parent.gameState.clientUser.setHost(true);
+                    }
+                } else if (parent.gameState.clientUser.id == user.id) playerNameLabels.get(i)
+                        .setText(user.getName() + "   < You");
+                else playerNameLabels.get(i).setText(user.getName());
             }
         }
 
