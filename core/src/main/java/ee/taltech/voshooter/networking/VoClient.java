@@ -8,6 +8,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.gamestate.ChatEntry;
 import ee.taltech.voshooter.gamestate.gamemode.ClientKingOfTheHillManager;
@@ -32,6 +33,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
+import ee.taltech.voshooter.networking.messages.clientreceived.RailgunFired;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
@@ -69,6 +71,7 @@ public class VoClient {
             private GameStarted gameStart;
             private Set<ProjectileCreated> projectilesCreatedSet = ConcurrentHashMap.newKeySet();
             private Set<ProjectileDestroyed> projectileDestroyedSet = ConcurrentHashMap.newKeySet();
+            private Set<RailgunFired> railgunFiredSet = ConcurrentHashMap.newKeySet();
             private Set<PlayerDeath> playerDeathSet = ConcurrentHashMap.newKeySet();
             private ProjectilePositions projectileUpdate;
             private Set<ChatReceiveMessage> receivedMessages = ConcurrentHashMap.newKeySet();
@@ -124,6 +127,8 @@ public class VoClient {
                     handlePlayerWeaponUpdate((PlayerSwappedWeapon) message);
                 } else if (message instanceof LobbySettingsChanged) {
                     updateLobbySettings((LobbySettingsChanged) message);
+                } else if (message instanceof RailgunFired) {
+                    railgunFiredSet.add((RailgunFired) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -169,6 +174,13 @@ public class VoClient {
                             for (ChatGamePlayerChange msg : receivedPlayerChanges) {
                                 handleReceivedPlayerChanges(msg);
                                 receivedPlayerChanges.remove(msg);
+                            }
+                        }
+                        if (!railgunFiredSet.isEmpty()) {
+                            for (RailgunFired msg : railgunFiredSet) {
+                                playRailgunSound(msg);
+                                handleRailgunPositions(msg);
+                                railgunFiredSet.remove(msg);
                             }
                         }
                     }
@@ -280,6 +292,7 @@ public class VoClient {
                         false,
                         true);
             } else if (msg.playerId == parent.gameState.userPlayer.getId()) {
+                SoundPlayer.play("soundfx/ui/player_death.ogg");
                 parent.gameState.addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
                                 Gdx.graphics.getHeight() - MainScreen.KILLFEED_TOP_MARGIN - 18),
                         "particleeffects/ui/killfeeddeath",
@@ -300,7 +313,8 @@ public class VoClient {
 
         for (ProjectileCreated msg : messages) {
             if (!projectileTypes.contains(msg.type)) {
-                SoundPlayer.play("soundfx/ui/shoot.ogg", parent.gameState.userPlayer.getPosition(), msg.pos);
+                SoundPlayer.play(ClientProjectile.getSoundCreatedPath(msg.type),
+                        parent.gameState.userPlayer.getPosition(), msg.pos);
             }
 
             projectileTypes.add(msg.type);
@@ -321,6 +335,9 @@ public class VoClient {
      * @param msg Projectile destroyed message.
      */
     private void destroyProjectile(ProjectileDestroyed msg) {
+        ClientProjectile p = parent.gameState.getProjectiles().get((long) msg.id);
+        String path = ClientProjectile.getSoundDestroyedPath(p.getType());
+        if (path != null) SoundPlayer.play(path, parent.gameState.userPlayer.getPosition(), p.getPosition());
         parent.gameState.destroyProjectile(msg);
     }
 
@@ -357,6 +374,11 @@ public class VoClient {
         }
     }
 
+    private void handleRailgunPositions(RailgunFired msg) {
+        parent.gameState.addParticleEffect(msg.startPos, msg.endPos, "particleeffects/projectile/railgun");
+        parent.gameState.addParticleEffect(msg.endPos, "particleeffects/projectile/railgunimpact", false, false);
+    }
+
     /**
      * Receive a chat message.
      * @param msg The message.
@@ -381,5 +403,11 @@ public class VoClient {
 
         entry.setPrefix("Server");
         parent.gameState.addChatEntry(entry);
+    }
+
+    private void playRailgunSound(RailgunFired msg) {
+        String path = "soundfx/gun/railgun.ogg";
+
+        SoundPlayer.play(path, parent.gameState.userPlayer.getPosition(), msg.startPos);
     }
 }

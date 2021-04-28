@@ -30,6 +30,19 @@ public class ClientProjectile extends Entity implements Drawable {
        put(Projectile.Type.GRENADE, "particleeffects/projectile/grenadelauncher");
     }};
 
+    private static final Map<Projectile.Type, String> SOUND_CREATED = new HashMap<Projectile.Type, String>() {{
+        put(Projectile.Type.PISTOL_BULLET, "soundfx/gun/weapon1.ogg");
+        put(Projectile.Type.GRENADE, "soundfx/gun/grenade_launcher.ogg");
+        put(Projectile.Type.SHOTGUN_PELLET, "soundfx/gun/shotgun.ogg");
+        put(Projectile.Type.FIREBALL, "soundfx/gun/flame.ogg");
+        put(Projectile.Type.ROCKET, "soundfx/gun/rocket_launcher_firing.ogg");
+    }};
+
+    private static final Map<Projectile.Type, String> SOUND_DESTROYED = new HashMap<Projectile.Type, String>() {{
+        put(Projectile.Type.ROCKET, "soundfx/gun/explosion.ogg");
+        put(Projectile.Type.GRENADE, "soundfx/gun/explosion.ogg");
+    }};
+
     private final int id;
     private final Projectile.Type type;
     private final Sprite sprite;
@@ -95,8 +108,20 @@ public class ClientProjectile extends Entity implements Drawable {
         return id;
     }
 
+    public Projectile.Type getType() {
+        return type;
+    }
+
     /** @return The path to the particle effect used when clientprojectile is destroyed. */
     public String getParticlePath() {
         return PARTICLE_MAP.getOrDefault(type, PARTICLE_MAP.get(Projectile.Type.PISTOL_BULLET));
+    }
+
+    public static String getSoundCreatedPath(Projectile.Type type) {
+        return SOUND_CREATED.getOrDefault(type, SOUND_CREATED.get((Projectile.Type.PISTOL_BULLET)));
+    }
+
+    public static String getSoundDestroyedPath(Projectile.Type type) {
+        return SOUND_DESTROYED.getOrDefault(type, null);
     }
 }

@@ -11,8 +11,8 @@ import java.util.Map;
 public class SoundPlayer {
 
     private static Map<String, Sound> soundMap = new HashMap<>();
-    private static final float DEFAULT_MIN_DIST = 100f;
-    private static final float DEFAULT_MAX_DIST = 1600f;
+    private static final float DEFAULT_MIN_DIST = 50f;
+    private static final float DEFAULT_MAX_DIST = 2000f;
 
     /**
      * Play a sound effect.
