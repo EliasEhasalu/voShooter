@@ -177,6 +177,7 @@ public class VoClient {
                         }
                         if (!railgunFiredSet.isEmpty()) {
                             for (RailgunFired msg : railgunFiredSet) {
+                                playRailgunSound(msg);
                                 handleRailgunPositions(msg);
                                 railgunFiredSet.remove(msg);
                             }
@@ -397,5 +398,11 @@ public class VoClient {
 
         entry.setPrefix("Server");
         parent.gameState.addChatEntry(entry);
+    }
+
+    private void playRailgunSound(RailgunFired msg) {
+        String path = "soundfx/gun/railgun.ogg";
+
+        SoundPlayer.play(path, parent.gameState.userPlayer.getPosition(), msg.endPos);
     }
 }
