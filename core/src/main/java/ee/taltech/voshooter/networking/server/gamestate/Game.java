@@ -215,11 +215,7 @@ public class Game extends Thread {
         return currentMap;
     }
 
-    @Override
-    public String toString() {
-        return "Game{" +
-                "connectionInputs=" + connectionInputs +
-                ", bots=" + bots +
-                '}';
+    public World getWorld() {
+        return world;
     }
 }
