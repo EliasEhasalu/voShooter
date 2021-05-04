@@ -26,12 +26,21 @@ public class RayCaster {
         );
     }
 
+    private boolean shouldBlockRay(Fixture fixture) {
+        return (
+            fixture != null
+            && !fixture.isSensor()
+        );
+    }
+
     private class CallBack implements RayCastCallback {
 
         @Override
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-            lastCollisionFixture = fixture;
-            if (lastCollisionFixture != null) lastCollisionPosition = point;
+            if (shouldBlockRay(fixture)) {
+                lastCollisionFixture = fixture;
+                lastCollisionPosition = point;
+            }
 
             return fraction;
         }
