@@ -19,6 +19,7 @@ public class ClientPlayer extends Entity implements Drawable {
     private int deaths;
     private int kills;
     public float respawnTimer;
+    private boolean bot;
     private Weapon.Type weapon = Weapon.Type.PISTOL;
     public int currentAmmo = 0;
     public int maxAmmo = 0;
@@ -29,13 +30,14 @@ public class ClientPlayer extends Entity implements Drawable {
      * @param position The initial position of this player.
      * @param spritePath The path to the sprite image this player should have.
      */
-    public ClientPlayer(Vector2 position, long id, String name, String spritePath) {
+    public ClientPlayer(Vector2 position, long id, String name, boolean isBot, String spritePath) {
         super(position);
         this.id = id;
         this.name = name;
         this.health = MAX_HEALTH;
         this.sprite = new Sprite(new Texture(spritePath));
         this.sprite.scale(spriteScale);
+        this.bot = isBot;
     }
 
     /**
@@ -43,14 +45,16 @@ public class ClientPlayer extends Entity implements Drawable {
      * @param position The initial position of this player.
      * @param id .
      * @param name .
+     * @param isBot .
      */
-    public ClientPlayer(Vector2 position, long id, String name) {
+    public ClientPlayer(Vector2 position, long id, String name, boolean isBot) {
         super(position);
         this.id = id;
         this.name = name;
         this.health = MAX_HEALTH;
         this.sprite = new Sprite(new Texture("textures/player/player.png"));
         this.sprite.scale(spriteScale);
+        this.bot = isBot;
     }
 
     /**
@@ -152,5 +156,9 @@ public class ClientPlayer extends Entity implements Drawable {
 
     public Weapon.Type getWeapon() {
         return weapon;
+    }
+
+    public boolean isBot() {
+        return bot;
     }
 }

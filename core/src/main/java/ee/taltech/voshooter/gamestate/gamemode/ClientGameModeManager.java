@@ -1,6 +1,7 @@
 package ee.taltech.voshooter.gamestate.gamemode;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
@@ -39,7 +40,10 @@ public class ClientGameModeManager {
         tableTop -= 20;
         for (ClientPlayer player : mainScreen.parent.gameState.getPlayers().values().stream()
                 .sorted(Comparator.comparing(Drawable::getKills).reversed()).collect(Collectors.toList())) {
+            if (player.isBot()) font.setColor(Color.CYAN);
+            else font.setColor(Color.WHITE);
             font.draw(hudBatch, player.getName(), tableLeft, tableTop);
+            font.setColor(Color.WHITE);
             font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 2), tableTop);
             font.draw(hudBatch, String.valueOf(player.getDeaths()), tableLeft + (STATS_ROW_PAD * 3), tableTop);
             if (player.getDeaths() > 0) {

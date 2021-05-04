@@ -28,6 +28,7 @@ public class Player {
     private String name;
     private Integer health;
     public Vector2 initialPos;
+    protected boolean bot = false;
     private float respawnTime = 5f;
 
     private transient VoConnection connection;
@@ -270,6 +271,6 @@ public class Player {
     }
 
     public boolean isBot() {
-        return (connection == null);
+        return bot;
     }
 }
