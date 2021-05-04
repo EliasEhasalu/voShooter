@@ -29,6 +29,10 @@ public class PlayerManager extends EntityManager {
         super(world, game);
     }
 
+    protected void createPlayer() {
+        createPlayer(null);
+    }
+
     protected void createPlayer(VoConnection c) {
         Player p = new Player(this, c, c.user.id, c.user.getName());
         List<Object> fixtureAndBody = ShapeFactory.getPlayerFixtureAndBody(world, playerSpawner.getSpawnPointForMap(game.getMapType()));

@@ -19,6 +19,7 @@ public class Lobby {
     public static final int MINIMUM_PLAYERS = 1;
 
     private int maxUsers = 4;
+    private int botAmount = 0;
     private int gameMode = 1;
     private final String lobbyCode;
     private int gameLength;
@@ -48,9 +49,8 @@ public class Lobby {
     protected void sendGameStart() {
         game = new Game(gameMode, mapType, gameLength);
 
-        for (VoConnection con : connections) {
-            game.addConnection(con);
-        }
+        for (VoConnection con : connections) game.addConnection(con);
+        for (int i = 0; i < botAmount; i++) game.addBot();
 
         game.start();
 
@@ -132,6 +132,7 @@ public class Lobby {
         this.maxUsers = msg.maxUsers;
         this.mapType = msg.mapType;
         this.gameLength = msg.gameLength;
+        this.botAmount = msg.botAmount;
         for (VoConnection connection : connections) {
             connection.sendTCP(msg);
         }

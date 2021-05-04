@@ -43,4 +43,8 @@ public class EntityManagerHub {
     public void createPlayer(VoConnection connection) {
         ((PlayerManager) entityManagers.get("Player")).createPlayer(connection);
     }
+
+    public void createBot() {
+        ((PlayerManager) entityManagers.get("Player")).createPlayer();
+    }
 }

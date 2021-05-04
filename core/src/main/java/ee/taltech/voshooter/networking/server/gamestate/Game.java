@@ -36,6 +36,7 @@ public class Game extends Thread {
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new ConcurrentHashMap<>();
+    private final Set<Player> bots = ConcurrentHashMap.newKeySet();
 
     static {
         World.setVelocityThreshold(0.1f);
@@ -84,6 +85,10 @@ public class Game extends Thread {
                         connection.player.getName())));
             }
         }
+    }
+
+    public void addBot() {
+       entityManagerHub.createBot();
     }
 
     /**
@@ -182,9 +187,12 @@ public class Game extends Thread {
      * @return A list of player objects in this game.
      */
     public List<Player> getPlayers() {
-       return connectionInputs.keySet().stream()
+       List<Player> players = connectionInputs.keySet().stream()
                .map(c -> c.player)
                .collect(Collectors.toList());
+       players.addAll(bots);
+
+       return players;
     }
 
     public Set<VoConnection> getConnections() {
