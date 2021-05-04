@@ -11,20 +11,22 @@ public class BotManager {
         add("Josh"); add("Bill"); add("Jake"); add("Gaben");
         add("Alice"); add("Lisa"); add("Lucy"); add("Ago");
     }};
-    private static final Set<String> currentlyUsedBotNames = new HashSet<>();
-    private static final Random r = new Random();
-    private static long ID = Long.MAX_VALUE;
+    private static final Random R = new Random();
+    private static long id = Long.MAX_VALUE;
+
+    private final Set<String> currentlyUsedBotNames = new HashSet<>();
 
     long getNewBotId() {
-        return ID--;
+        return id--;
     }
 
     String getNewBotName() {
         String candidate;
 
+        int j = 0;
         while (true) {
             String name = "";
-            int randInt = r.nextInt(BOT_NAMES.size()) + 1;
+            int randInt = R.nextInt(BOT_NAMES.size()) + 1;
             Iterator<String> nameIterator = BOT_NAMES.iterator();
             for (int i = 0; i < randInt; i++) name = nameIterator.next();
             candidate = "BOT " + name;
@@ -33,6 +35,8 @@ public class BotManager {
                 currentlyUsedBotNames.add(candidate);
                 return candidate;
             }
+            if (j > 1000000) return "BOT Lucky";
+            j++;
         }
     }
 }

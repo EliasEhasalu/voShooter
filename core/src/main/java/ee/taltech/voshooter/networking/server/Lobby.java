@@ -52,7 +52,6 @@ public class Lobby {
     /** Send all users in this lobby a message that the game has started. */
     protected void sendGameStart() {
         game = new Game(gameMode, mapType, gameLength);
-
         for (VoConnection con : connections) game.addConnection(con);
         for (int i = 0; i < botAmount; i++) game.addBot();
 
