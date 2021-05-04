@@ -27,6 +27,7 @@ public class LobbySettingsScreen implements Screen {
     private int playerCount = 4;
     private int gameMode = 1;
     private int roundLength = 0;
+    private int botAmount = 0;
     private boolean isCorrectGameLength = false;
     private GameMap.MapType mapType = GameMap.PLAYER_MAPS[0];
     public Map<Integer, String> gameModes = new HashMap<Integer, String>() {{
@@ -76,6 +77,11 @@ public class LobbySettingsScreen implements Screen {
         Label gameLength = new Label("Round length: ", skin);
         TextField gameLengthField = new TextField("", skin);
         Label gameLengthHint = new Label("seconds", skin);
+        Table botTable = new Table(skin);
+        Label botLabel = new Label("Bots:", skin);
+        Label botLabel2 = new Label(String.valueOf(botAmount), skin);
+        TextButton botCountDecrease = new TextButton("<", skin);
+        TextButton botCountIncrease = new TextButton(">", skin);
 
         table.add(playersLabel).left();
         table.add(playerCountTable).fillX();
@@ -95,6 +101,12 @@ public class LobbySettingsScreen implements Screen {
         table.add(gameLength).left();
         table.add(gameLengthField).center();
         table.add(gameLengthHint).right();
+        table.row().pad(10, 0, 0, 0);
+        table.add(botLabel);
+        botTable.add(botCountDecrease).left();
+        botTable.add(botLabel2).center().fillX();
+        botTable.add(botCountIncrease).right();
+        table.add(botTable);
         table.row().pad(100, 0, 0, 0);
         table.add(cancel).left().padRight(10);
         table.add(save).right();
@@ -114,7 +126,7 @@ public class LobbySettingsScreen implements Screen {
                 public void changed(ChangeEvent event, Actor actor) {
                     parent.getClient().sendTCP(new LobbySettingsChanged(gameMode, mapType,
                             Math.max(playerCount, parent.gameState.currentLobby.getUsersCount()),
-                            parent.gameState.currentLobby.getLobbyCode(), roundLength));
+                            parent.gameState.currentLobby.getLobbyCode(), roundLength, botAmount));
                     parent.changeScreen(VoShooter.Screen.LOBBY);
                 }
             });
@@ -139,6 +151,30 @@ public class LobbySettingsScreen implements Screen {
                     if (playerCount < 8) {
                         playerCount++;
                         playerCountLabel.setText(String.valueOf(playerCount));
+                    }
+                }
+            });
+        }
+
+        if (parent.doesNotContainChangeListener(botCountDecrease.getListeners())) {
+            botCountDecrease.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (botAmount > 0) {
+                        botAmount--;
+                        botLabel2.setText(String.valueOf(botAmount));
+                    }
+                }
+            });
+        }
+
+        if (parent.doesNotContainChangeListener(botCountIncrease.getListeners())) {
+            botCountIncrease.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (botAmount < 8) {
+                        botAmount++;
+                        botLabel2.setText(String.valueOf(botAmount));
                     }
                 }
             });
