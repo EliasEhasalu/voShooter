@@ -14,9 +14,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.min;
+
 public class Lobby {
 
     public static final int MINIMUM_PLAYERS = 1;
+    public static final int MAX_BOTS = 8;
+    public static final int MAX_USERS = 8;
 
     private int maxUsers = 4;
     private int botAmount = 0;
@@ -129,10 +133,10 @@ public class Lobby {
 
     public void handleChanges(LobbySettingsChanged msg) {
         this.gameMode = msg.gameMode;
-        this.maxUsers = msg.maxUsers;
         this.mapType = msg.mapType;
         this.gameLength = msg.gameLength;
-        this.botAmount = msg.botAmount;
+        this.maxUsers = min(msg.maxUsers, MAX_USERS);
+        this.botAmount = min(msg.botAmount, MAX_BOTS);
         for (VoConnection connection : connections) {
             connection.sendTCP(msg);
         }
