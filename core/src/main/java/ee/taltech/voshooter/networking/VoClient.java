@@ -322,8 +322,9 @@ public class VoClient {
                         true);
             }
         }
-        parent.gameState.particleManager
-                .addParticleEffect(parent.gameState.players.get(msg.playerId).getPosition(),
+        ClientPlayer player = parent.gameState.players.get(msg.playerId);
+        if (player != null && player.getPosition() != null) parent.gameState.particleManager
+                .addParticleEffect(player.getPosition(),
                 "particleeffects/player/playerdeath", false, false);
     }
 
