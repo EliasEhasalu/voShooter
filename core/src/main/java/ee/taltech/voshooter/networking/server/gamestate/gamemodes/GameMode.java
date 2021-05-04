@@ -12,4 +12,8 @@ public abstract class GameMode {
     public abstract void calculateTimeLeft();
 
     public abstract void statisticsUpdates();
+
+    public double getTimePassed() {
+        return timePassed;
+    }
 }

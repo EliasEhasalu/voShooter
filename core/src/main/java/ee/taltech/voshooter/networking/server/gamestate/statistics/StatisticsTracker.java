@@ -88,7 +88,7 @@ public class StatisticsTracker {
             for (Player p : parent.getPlayers()) {
                 int kills = killCount.getOrDefault(p, 0);
                 int deaths = deathCount.getOrDefault(p, 0);
-                c.sendTCP(new PlayerStatistics(p.getId(), deaths, kills));
+                c.sendTCP(new PlayerStatistics(p.getId(), deaths, kills, parent.getGameModeManager().getTimePassed()));
             }
         }
     }

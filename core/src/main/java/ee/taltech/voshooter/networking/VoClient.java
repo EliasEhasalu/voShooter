@@ -34,8 +34,8 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
-import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.messages.clientreceived.RailgunFired;
+import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
@@ -379,6 +379,9 @@ public class VoClient {
      * @param msg The message containing info about the player.
      */
     private void updatePlayerStatistics(PlayerStatistics msg) {
+        MainScreen mainScreen = parent.mainScreen;
+        if (mainScreen != null && mainScreen.clientGameModeManager != null) mainScreen.clientGameModeManager
+                .setTimePassed(msg.timePassed);
         if (parent.gameState.players.containsKey(msg.id)) {
             ClientPlayer p = parent.gameState.players.get(msg.id);
             p.setKills(msg.kills);

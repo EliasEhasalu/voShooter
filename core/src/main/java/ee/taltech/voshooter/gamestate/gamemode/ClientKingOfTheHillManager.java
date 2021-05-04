@@ -26,11 +26,20 @@ public class ClientKingOfTheHillManager extends ClientGameModeManager {
         if (mainScreen.statsTabOpen) drawStatistics();
     }
 
+    public void setTimePassed(double timePassed) {
+        this.timePassed = timePassed;
+    }
+
     @Override
     public void drawStatistics() {
         hudBatch.begin();
         int tableTop = Gdx.graphics.getHeight() - 30;
         int tableLeft = Gdx.graphics.getWidth() / 2 - 3 * STATS_ROW_PAD;
+        int gameLength = mainScreen.parent.gameState.currentLobby.getGameLength();
+        if (gameLength >= 15) font.draw(hudBatch, String.format("Hill held until win: %s",
+                mainScreen.parent.gameState.currentLobby.getGameLength()), tableLeft, tableTop);
+        else font.draw(hudBatch, "Endless game", tableLeft, tableTop);
+        tableTop -= 20;
         font.draw(hudBatch, "Player names", tableLeft, tableTop);
         font.draw(hudBatch, "Kills", tableLeft + (STATS_ROW_PAD * 2), tableTop);
         font.draw(hudBatch, "Deaths", tableLeft + (STATS_ROW_PAD * 3), tableTop);
