@@ -47,7 +47,7 @@ public class ClientKingOfTheHillManager extends ClientGameModeManager {
         font.draw(hudBatch, "Seconds held", tableLeft + (STATS_ROW_PAD * 5), tableTop);
         tableTop -= 20;
         for (ClientPlayer player : mainScreen.parent.gameState.getPlayers().values().stream()
-                .sorted(Comparator.comparing(player -> players.get(((ClientPlayer) player).getId()))
+                .sorted(Comparator.comparing(player -> players.getOrDefault(((ClientPlayer) player).getId(), 0.0))
                         .reversed()).collect(Collectors.toList())) {
             if (player.isBot()) font.setColor(Color.CYAN);
             else font.setColor(Color.WHITE);
