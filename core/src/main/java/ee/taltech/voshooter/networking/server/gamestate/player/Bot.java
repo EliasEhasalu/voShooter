@@ -4,10 +4,12 @@ import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerMana
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotAction;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.DefaultBotStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.DefaultShootingStrategy;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public class Bot extends Player {
 
-    private transient final BotStrategy strategy = new DefaultBotStrategy(this);
+    private transient final BotStrategy strategy = new DefaultBotStrategy(this, new DefaultShootingStrategy());
 
     /** Serialize **/
     public Bot() {
@@ -15,6 +17,7 @@ public class Bot extends Player {
 
     public Bot(PlayerManager playerManager, long id, String name) {
         super(playerManager, null, id, name);
+        getInventory().swapToWeapon(Weapon.Type.RAILGUN);
     }
 
     @Override
@@ -25,5 +28,6 @@ public class Bot extends Player {
 
     private void performAction(BotAction action) {
         setViewDirection(action.getAim());
+        if (action.isShooting()) shoot();
     }
 }
