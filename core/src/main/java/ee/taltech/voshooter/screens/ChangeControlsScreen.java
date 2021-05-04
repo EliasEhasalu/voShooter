@@ -34,7 +34,6 @@ public class ChangeControlsScreen implements Screen {
     private Label keyLeft;
     private Label keyRight;
     private Label buttonLeft;
-    private Label buttonRight;
     private Label pistol;
     private Label shotgun;
     private Label rocketLauncher;
@@ -82,9 +81,16 @@ public class ChangeControlsScreen implements Screen {
         controls = setButtonsCorrect();
 
         // Add the sliders and labels to the table.
-        table.add(titleLabel).fillX().uniformX().pad(0, 0, 20, 0).bottom().right();
+        table.add(titleLabel).fillX().uniformX().bottom().right();
+        table.row().pad(60, 0, 20, 30);
+        table.add(new Label("Move and shoot", skin));
+        table.row().pad(0, 0, 5, 30);
 
         for (Map.Entry<Label, TextButton> entry : controls.entrySet()) {
+            if (entry.getKey().equals(pistol)) {
+                table.row().pad(60, 0, 20, 30);
+                table.add(new Label("Weapon switches", skin));
+            }
             table.row().pad(0, 0, 5, 30);
             table.add(entry.getKey());
             table.add(entry.getValue());
@@ -104,7 +110,7 @@ public class ChangeControlsScreen implements Screen {
                 });
             }
         }
-        table.row().pad(0, 0, 100, 30);
+        table.row().pad(20, 0, 100, 30);
         table.add(returnToPreferencesScreen).fillX().uniformX().bottom().right();
 
         table.pack();
@@ -157,12 +163,6 @@ public class ChangeControlsScreen implements Screen {
                 put(buttonLeft, new TextButton(Input.Keys.toString(AppPreferences.getMouseLeft()), skin));
             } else {
                 put(buttonLeft, new TextButton(AppPreferences.repr(AppPreferences.getMouseLeft()), skin));
-            }
-            buttonRight = new Label("Aim", skin);
-            if (AppPreferences.getButtonRightIsKey()) {
-                put(buttonRight, new TextButton(Input.Keys.toString(AppPreferences.getMouseRight()), skin));
-            } else {
-                put(buttonRight, new TextButton(AppPreferences.repr(AppPreferences.getMouseRight()), skin));
             }
             pistol = new Label("Pistol", skin);
             if (AppPreferences.getNumberOneIsKey()) {
@@ -266,9 +266,6 @@ public class ChangeControlsScreen implements Screen {
         } else if (key.equals(buttonLeft)) {
             AppPreferences.setMouseLeft(inputKey);
             AppPreferences.setButtonLeftIsKey(true);
-        } else if (key.equals(buttonRight)) {
-            AppPreferences.setMouseRight(inputKey);
-            AppPreferences.setButtonRightIsKey(true);
         } else if (key.equals(pistol)) {
             AppPreferences.setNumberOne(inputKey);
             AppPreferences.setNumberOneIsKey(true);
@@ -317,9 +314,6 @@ public class ChangeControlsScreen implements Screen {
         } else if (key.equals(buttonLeft)) {
             AppPreferences.setMouseLeft(inputButton);
             AppPreferences.setButtonLeftIsKey(false);
-        } else if (key.equals(buttonRight)) {
-            AppPreferences.setMouseRight(inputButton);
-            AppPreferences.setButtonRightIsKey(false);
         } else if (key.equals(pistol)) {
             AppPreferences.setNumberOne(inputButton);
             AppPreferences.setNumberOneIsKey(false);
