@@ -103,7 +103,7 @@ public class GameState {
     public void createPlayerObjects(List<Player> players) {
         for (Player p : players) {
             if (!getPlayers().containsKey(p.getId())) {
-                ClientPlayer newP = new ClientPlayer(p.initialPos, p.getId(), p.getName());
+                ClientPlayer newP = new ClientPlayer(p.initialPos, p.getId(), p.getName(), p.isBot());
                 addEntity(newP);
                 if (p.getId() == clientUser.id) {
                     userPlayer = newP;

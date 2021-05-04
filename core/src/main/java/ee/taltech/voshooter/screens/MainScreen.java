@@ -68,7 +68,6 @@ public class MainScreen implements Screen {
     public final VoShooter parent;
     private final Stage stage;
     private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
-    public VoShooter.Screen shouldChangeScreen;
     private BitmapFont font;
     private BitmapFont killfeedFont;
     private boolean pauseMenuActive;
@@ -108,7 +107,7 @@ public class MainScreen implements Screen {
         put(Weapon.Type.ROCKET_LAUNCHER,    new Texture("textures/hud/item/rocketlauncher.png"));
         put(Weapon.Type.FLAMETHROWER,       new Texture("textures/hud/item/flamethrower.png"));
         put(Weapon.Type.MACHINE_GUN,        new Texture("textures/hud/item/machinegun.png"));
-        put(Weapon.Type.RAILGUN,        new Texture("textures/hud/item/machinegun.png"));
+        put(Weapon.Type.RAILGUN,            new Texture("textures/hud/item/machinegun.png"));
         put(Weapon.Type.GRENADE_LAUNCHER,   new Texture("textures/hud/item/grenadelauncher.png"));
     }};
     private final Texture selectedGunBackground
@@ -119,8 +118,6 @@ public class MainScreen implements Screen {
     private final Texture selfKillIcon  = new Texture("textures/hud/background/selfkillicon.png");
 
     private float healthFraction = 1.00f;
-    private int currentAmmo = 16;
-    private int maxAmmo = 20;
     public boolean statsTabOpen = false;
     public boolean chatActive = false;
     public boolean chatOpen = false;
@@ -409,17 +406,18 @@ public class MainScreen implements Screen {
         for (Drawable drawable : parent.gameState.getDrawables()) {
             if (drawable.isVisible()) {
                 drawable.getSprite().draw(stage.getBatch());
-            }
-            if (drawable instanceof ClientPlayer) {
-                final Sprite sprite = WEAPON_SPRITES.get(((ClientPlayer) drawable).getWeapon());
-                sprite.setPosition(drawable.getSprite().getX(), drawable.getSprite().getY());
-                sprite.setRotation(drawable.getSprite().getRotation());
-                sprite.setScale(drawable.getSprite().getScaleX(), drawable.getSprite().getScaleY());
-                sprite.draw(stage.getBatch());
-
-                font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
-                        drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
-                        drawable.getPosition().y + 40);
+                if (drawable instanceof ClientPlayer) {
+                    final Sprite sprite = WEAPON_SPRITES.get(((ClientPlayer) drawable).getWeapon());
+                    sprite.setPosition(drawable.getSprite().getX(), drawable.getSprite().getY());
+                    sprite.setRotation(drawable.getSprite().getRotation());
+                    sprite.setScale(drawable.getSprite().getScaleX(), drawable.getSprite().getScaleY());
+                    sprite.draw(stage.getBatch());
+                    if (((ClientPlayer) drawable).isBot()) font.setColor(Color.CYAN);
+                    else font.setColor(Color.WHITE);
+                    font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
+                            drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
+                            drawable.getPosition().y + 40);
+                }
             }
         }
     }
@@ -471,15 +469,21 @@ public class MainScreen implements Screen {
         int i = parent.gameState.deathMessages.size() - 1;
         Queue<DeathMessage> messages = new ArrayDeque<>(parent.gameState.deathMessages);
         for (DeathMessage msg : messages) {
+            if (msg.getPlayer().isBot()) killfeedFont.setColor(Color.CYAN);
+            else killfeedFont.setColor(Color.WHITE);
             GlyphLayout playerLayout = new GlyphLayout();
             playerLayout.setText(killfeedFont, msg.getPlayer().getName());
+            killfeedFont.setColor(Color.WHITE);
 
             final int playerX = width - (int) playerLayout.width - KILLFEED_RIGHT_MARGIN;
             final int playerY = height - (i * KILLFEED_GAP) - KILLFEED_TOP_MARGIN;
 
             if (msg.getKiller() != msg.getPlayer()) {
+                if (msg.getKiller().isBot()) killfeedFont.setColor(Color.CYAN);
+                else killfeedFont.setColor(Color.WHITE);
                 GlyphLayout killerLayout = new GlyphLayout();
                 killerLayout.setText(killfeedFont, msg.getKiller().getName());
+                killfeedFont.setColor(Color.WHITE);
 
                 hudBatch.draw(killIcon,
                         playerX - killIcon.getWidth() - KILLFEED_ICON_SPACE,
