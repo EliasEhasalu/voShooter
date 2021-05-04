@@ -7,7 +7,6 @@ import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotSt
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.DefaultBotStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy.DefaultMovingStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.DefaultShootingStrategy;
-import ee.taltech.voshooter.weapon.Weapon;
 
 public class Bot extends Player {
 
@@ -27,12 +26,13 @@ public class Bot extends Player {
         this.bot = true;
 
         setViewDirection(new MouseCoords(1, 1));
-        getInventory().swapToWeapon(Weapon.Type.ROCKET_LAUNCHER);
+        getInventory().swapToRandomWeapon();
     }
 
     @Override
     public void update() {
         performAction(strategy.getAction());
+        if (getWeapon().getRemainingAmmo() == 0) getInventory().swapToRandomWeapon();
         super.update();
     }
 

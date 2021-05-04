@@ -19,8 +19,8 @@ public class DefaultMovingStrategy implements MovingStrategy {
     private transient BotStrategy parent;
 
     @Override
-    public int[] getMovementDirections(Player closestEnemy) {
-        if (closestEnemy != null) return navigateToTarget(closestEnemy);
+    public int[] getMovementDirections(Player closestEnemy, boolean targetIsHitScanned) {
+        if (closestEnemy != null) return navigateToTarget(closestEnemy, targetIsHitScanned);
         return new int[] {R.nextInt(3) - 1, R.nextInt(3) - 1};
     }
 
@@ -30,9 +30,10 @@ public class DefaultMovingStrategy implements MovingStrategy {
         this.walls = LevelGenerator.getWallGrid(bot.getGame().getCurrentMap());
     }
 
-    private int[] navigateToTarget(Player enemy) {
+    private int[] navigateToTarget(Player enemy, boolean targetIsHitScanned) {
         List<Node> nodes = getPathTo(enemy);
-        if (nodes.size() <= 1) return new int[] {0, 0};
+        if (nodes.size() <= 2) return new int[] {0, 0};
+        if (targetIsHitScanned && nodes.size() <= 16) return new int[] {0, 0};
         else return nodes.get(1).subtract(nodes.get(0));
     }
 
