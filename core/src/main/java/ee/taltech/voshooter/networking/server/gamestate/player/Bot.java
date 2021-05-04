@@ -1,5 +1,6 @@
 package ee.taltech.voshooter.networking.server.gamestate.player;
 
+import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerManager;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotAction;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotStrategy;
@@ -22,6 +23,8 @@ public class Bot extends Player {
 
     public Bot(PlayerManager playerManager, long id, String name) {
         super(playerManager, null, id, name);
+        setViewDirection(new MouseCoords(1, 1));
+        getInventory().swapToWeapon(Weapon.Type.RAILGUN);
         bot = true;
     }
 

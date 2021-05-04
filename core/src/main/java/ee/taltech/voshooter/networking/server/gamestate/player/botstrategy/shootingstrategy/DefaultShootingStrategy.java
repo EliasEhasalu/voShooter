@@ -1,6 +1,7 @@
 package ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy;
 
 import com.badlogic.gdx.physics.box2d.Body;
+import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.RayCaster;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.RayCollision;
 import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
@@ -8,26 +9,64 @@ import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
 import java.util.HashSet;
 
+import static java.lang.Math.max;
+
 public class DefaultShootingStrategy implements ShootingStrategy {
 
+    private static final float REACTION_TIME = 0.35f;
     private final RayCaster rayCaster = new RayCaster();
+
     private Bot bot;
+    private float timeToReaction = REACTION_TIME;
+
+    private Body lastTargetedBody = null;
+    private Body targetedBody = null;
 
     @Override
     public boolean toShoot() {
+        handleReactionTime();
+        System.out.println(timeToReaction);
+
         switch (bot.getInventory().getCurrentWeaponType()) {
             case PISTOL:
-                return targetIsHitScanned();
+                return pistolFiringStrategy();
             case RAILGUN:
-                return targetIsHitScanned();
+                return railGunFiringStrategy();
             case MACHINE_GUN:
-                return targetIsHitScanned();
+                return machineGunFiringStrategy();
             default:
                 return false;
         }
     }
 
-    private boolean targetIsHitScanned() {
+    private void handleReactionTime() {
+        Body temp = targetedBody;
+        targetedBody = getHitScannedTarget();
+        lastTargetedBody = temp;
+
+        if (
+                targetedBody != null &&
+                targetedBody.getUserData() instanceof Player
+                && targetedBody == lastTargetedBody
+        ) {
+            timeToReaction = max(0f, timeToReaction - Game.timeElapsed());
+        } else timeToReaction = REACTION_TIME;
+    }
+
+
+    private boolean pistolFiringStrategy() {
+        return (timeToReaction <= 0f && targetIsHitScanned());
+    }
+
+    private boolean railGunFiringStrategy() {
+        return (timeToReaction <= 0f && targetIsHitScanned());
+    }
+
+    private boolean machineGunFiringStrategy() {
+        return (timeToReaction <= 0f && targetIsHitScanned());
+    }
+
+    private Body getHitScannedTarget() {
         RayCollision collision = rayCaster.getFirstCollision(
                 bot.getGame(),
                 bot.getPos(),
@@ -39,7 +78,11 @@ public class DefaultShootingStrategy implements ShootingStrategy {
         Body b = null;
         if (collision != null) b = collision.getCollidedBody();
 
-        return (b != null && b.getUserData() != bot && b.getUserData() instanceof Player);
+        return b;
+    }
+
+    private boolean targetIsHitScanned() {
+        return (targetedBody != null && targetedBody.getUserData() instanceof Player);
     }
 
     @Override
