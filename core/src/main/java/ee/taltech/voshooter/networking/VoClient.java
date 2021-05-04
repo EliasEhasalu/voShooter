@@ -222,6 +222,7 @@ public class VoClient {
         parent.gameState.currentLobby.setMaxUsers(msg.maxUsers);
         parent.gameState.currentLobby.setMapType(msg.mapType);
         parent.gameState.currentLobby.setGameLength(msg.gameLength);
+        parent.gameState.currentLobby.setBotAmount(msg.botAmount);
     }
 
     /**
