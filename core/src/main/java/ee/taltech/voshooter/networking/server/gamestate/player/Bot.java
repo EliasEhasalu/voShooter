@@ -27,7 +27,7 @@ public class Bot extends Player {
         this.bot = true;
 
         setViewDirection(new MouseCoords(1, 1));
-        getInventory().swapToWeapon(Weapon.Type.RAILGUN);
+        getInventory().swapToWeapon(Weapon.Type.ROCKET_LAUNCHER);
     }
 
     @Override

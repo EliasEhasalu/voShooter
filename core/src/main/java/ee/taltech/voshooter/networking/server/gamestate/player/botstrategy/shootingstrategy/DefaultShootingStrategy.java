@@ -33,6 +33,8 @@ public class DefaultShootingStrategy implements ShootingStrategy {
                 return railGunFiringStrategy();
             case MACHINE_GUN:
                 return machineGunFiringStrategy();
+            case ROCKET_LAUNCHER:
+                return rocketLauncherFiringStrategy();
             default:
                 return false;
         }
@@ -62,6 +64,10 @@ public class DefaultShootingStrategy implements ShootingStrategy {
     }
 
     private boolean machineGunFiringStrategy() {
+        return (timeToReaction <= 0f && targetIsHitScanned());
+    }
+
+    private boolean rocketLauncherFiringStrategy() {
         return (timeToReaction <= 0f && targetIsHitScanned());
     }
 
