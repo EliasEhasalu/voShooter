@@ -24,17 +24,21 @@ public class PlayerManager extends EntityManager {
 
     private final Set<Player> players = ConcurrentHashMap.newKeySet();
     private final PlayerSpawner playerSpawner = new PlayerSpawner();
+    private final BotManager botManager = new BotManager();
 
     public PlayerManager(World world, Game game) {
         super(world, game);
     }
 
-    protected void createPlayer() {
-        createPlayer(null);
+    protected void createPlayer(VoConnection c) {
+       addPlayerToWorld(new Player(this, c, c.user.id, c.user.getName()));
     }
 
-    protected void createPlayer(VoConnection c) {
-        Player p = new Player(this, c, c.user.id, c.user.getName());
+    protected void createBot() {
+        addPlayerToWorld(new Player(this, null, botManager.getNewBotId(), botManager.getNewBotName()));
+    }
+
+    private void addPlayerToWorld(Player p) {
         List<Object> fixtureAndBody = ShapeFactory.getPlayerFixtureAndBody(world, playerSpawner.getSpawnPointForMap(game.getMapType()));
         Body playerBody = (Body) fixtureAndBody.get(1);
         Fixture playerFixture = (Fixture) fixtureAndBody.get(0);
@@ -42,10 +46,11 @@ public class PlayerManager extends EntityManager {
         p.setBody(playerBody);
         p.setFixture(playerFixture);
         playerBody.setUserData(p);
+        p.initialPos = playerBody.getPosition();
 
         // Set the player object on the connection.
-        c.player = p;
-        c.player.initialPos = playerBody.getPosition();
+        VoConnection c = p.getConnection();
+        if (c != null) c.player = p;
 
         players.add(p);
     }

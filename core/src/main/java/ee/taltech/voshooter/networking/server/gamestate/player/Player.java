@@ -268,4 +268,8 @@ public class Player {
     public void increaseMaxVelocity(float increase) {
         maxPlayerVelocity += increase;
     }
+
+    public boolean isBot() {
+        return (connection == null);
+    }
 }
