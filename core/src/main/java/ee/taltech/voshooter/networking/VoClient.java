@@ -440,7 +440,7 @@ public class VoClient {
     private void handleReceivedMessages(ChatReceiveMessage msg) {
         ChatEntry entry = new ChatEntry();
         entry.setText(msg.message);
-
+        entry.setBroadcast(false);
         if (parent.gameState.getPlayers().containsKey(msg.playerId)) {
             entry.setPrefix(parent.gameState.getPlayers().get(msg.playerId).getName());
         } else entry.setPrefix("unknown");
@@ -454,7 +454,7 @@ public class VoClient {
     private void handleReceivedPlayerChanges(ChatGamePlayerChange msg) {
         ChatEntry entry = new ChatEntry();
         entry.setText(msg.message);
-
+        entry.setBroadcast(true);
         entry.setPrefix("Server");
         parent.gameState.addChatEntry(entry);
     }
