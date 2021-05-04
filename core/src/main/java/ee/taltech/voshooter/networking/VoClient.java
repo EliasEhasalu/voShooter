@@ -129,6 +129,7 @@ public class VoClient {
                 } else if (message instanceof LobbySettingsChanged) {
                     updateLobbySettings((LobbySettingsChanged) message);
                 } else if (message instanceof GameEnd) {
+                    handleGameOver();
                     screenToChangeTo = VoShooter.Screen.LOBBY;
                 } else if (message instanceof RailgunFired) {
                     railgunFiredSet.add((RailgunFired) message);
@@ -197,6 +198,11 @@ public class VoClient {
         if (parent.gameState.userPlayer.clientGameModeManager instanceof ClientKingOfTheHillManager) {
             ((ClientKingOfTheHillManager) parent.gameState.userPlayer.clientGameModeManager).players = msg.players;
         }
+    }
+
+    private void handleGameOver() {
+        parent.gameState.clearDrawables();
+        parent.gameState.clearMessages();
     }
 
     private void updateKingOfTheHillAreaHolder(PlayerKothChange msg) {
