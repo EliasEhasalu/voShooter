@@ -60,6 +60,8 @@ public class LobbySettingsScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
+        updateLobbySettings();
+
         TextButton cancel = new TextButton("Cancel", skin);
         TextButton save = new TextButton("Save changes", skin);
         Table gameModeTable = new Table();
@@ -76,7 +78,10 @@ public class LobbySettingsScreen implements Screen {
         TextButton changeMapButton = new TextButton(mapType.name(), skin);
         Label gameLength = new Label("Round length: ", skin);
         TextField gameLengthField = new TextField("", skin);
+        String gameLengthString = String.valueOf(parent.gameState.currentLobby.getGameLength());
+        gameLengthField.setText(gameLengthString);
         Label gameLengthHint = new Label("seconds", skin);
+        if (parent.gameState.currentLobby.getGameLength() < 15) gameLengthHint.setText("endless");
         Table botTable = new Table(skin);
         Label botLabel = new Label("Bots:", skin);
         Label botLabel2 = new Label(String.valueOf(botAmount), skin);
@@ -102,7 +107,7 @@ public class LobbySettingsScreen implements Screen {
         table.add(gameLengthField).center();
         table.add(gameLengthHint).right();
         table.row().pad(10, 0, 0, 0);
-        table.add(botLabel);
+        table.add(botLabel).left();
         botTable.add(botCountDecrease).left();
         botTable.add(botLabel2).center().fillX();
         botTable.add(botCountIncrease).right();
@@ -226,7 +231,8 @@ public class LobbySettingsScreen implements Screen {
                         gameLengthHint.setColor(255, 0, 0, 255);
                         isCorrectGameLength = false;
                     } else {
-                        gameLengthHint.setText("seconds");
+                        if (Integer.parseInt(gameLengthField.getText()) >= 15) gameLengthHint.setText("seconds");
+                        else gameLengthHint.setText("endless");
                         gameLengthHint.setColor(0, 255, 0, 255);
                         roundLength = Integer.parseInt(gameLengthField.getText());
                         isCorrectGameLength = true;
@@ -234,6 +240,14 @@ public class LobbySettingsScreen implements Screen {
                 }
             });
         }
+    }
+
+    private void updateLobbySettings() {
+        playerCount = parent.gameState.currentLobby.getMaxUsers();
+        gameMode = parent.gameState.currentLobby.getGamemode();
+        roundLength = parent.gameState.currentLobby.getGameLength();
+        botAmount = parent.gameState.currentLobby.getBotAmount();
+        mapType = parent.gameState.currentLobby.getMap();
     }
 
     @Override
