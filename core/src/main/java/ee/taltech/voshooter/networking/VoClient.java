@@ -21,6 +21,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDashed;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
@@ -77,6 +78,7 @@ public class VoClient {
             private ProjectilePositions projectileUpdate;
             private Set<ChatReceiveMessage> receivedMessages = ConcurrentHashMap.newKeySet();
             private Set<ChatGamePlayerChange> receivedPlayerChanges = ConcurrentHashMap.newKeySet();
+            private Set<PlayerDashed> playerDashedMessages = ConcurrentHashMap.newKeySet();
 
             @Override
             public void connected(Connection connection) {
@@ -133,6 +135,8 @@ public class VoClient {
                     screenToChangeTo = VoShooter.Screen.LOBBY;
                 } else if (message instanceof RailgunFired) {
                     railgunFiredSet.add((RailgunFired) message);
+                } else if (message instanceof PlayerDashed) {
+                    playerDashedMessages.add((PlayerDashed) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -184,6 +188,12 @@ public class VoClient {
                             for (RailgunFired msg : railgunFiredSet) {
                                 handleRailgunFired(msg);
                                 railgunFiredSet.remove(msg);
+                            }
+                        }
+                        if (!playerDashedMessages.isEmpty()) {
+                            for (PlayerDashed msg : playerDashedMessages) {
+                                handlePLayerDash(msg);
+                                playerDashedMessages.remove(msg);
                             }
                         }
                     }
@@ -331,6 +341,13 @@ public class VoClient {
 
             projectileTypes.add(msg.type);
             parent.gameState.createProjectile(msg);
+            if (msg.type == Projectile.Type.ROCKET) {
+                parent.gameState.particleManager.addParticleEffect(msg.pos, msg.pos.cpy().add(msg.vel),
+                        "particleeffects/projectile/rocketfire");
+            } else if (msg.type == Projectile.Type.GRENADE) {
+                parent.gameState.particleManager.addParticleEffect(msg.pos, msg.pos.cpy().add(msg.vel),
+                        "particleeffects/projectile/grenadelauncherfire");
+            }
         }
     }
 
@@ -385,6 +402,15 @@ public class VoClient {
     private void handlePlayerWeaponUpdate(PlayerSwappedWeapon msg) {
         if (parent.gameState.getPlayers().containsKey(msg.id)) {
             parent.gameState.getPlayers().get(msg.id).setWeapon(msg.weaponType);
+        }
+    }
+
+    private void handlePLayerDash(PlayerDashed msg) {
+        if (parent.gameState.getPlayers().containsKey(msg.id)) {
+            ClientPlayer p = parent.gameState.getPlayers().get(msg.id);
+            parent.gameState.particleManager.addParticleEffect(p.getPosition(),
+                    p.getPosition().cpy().add(msg.direction),
+                    "particleeffects/player/playerdash");
         }
     }
 
