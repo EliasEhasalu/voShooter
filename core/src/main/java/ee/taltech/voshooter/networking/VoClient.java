@@ -324,7 +324,7 @@ public class VoClient {
         }
         ClientPlayer player = parent.gameState.players.get(msg.playerId);
         if (player != null && player.getPosition() != null) parent.gameState.particleManager
-                .addParticleEffect(parent.gameState.players.get(msg.playerId).getPosition(),
+                .addParticleEffect(player.getPosition(),
                 "particleeffects/player/playerdeath", false, false);
     }
 
