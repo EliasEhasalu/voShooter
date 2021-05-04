@@ -218,4 +218,8 @@ public class Game extends Thread {
     public World getWorld() {
         return world;
     }
+
+    public static float timeElapsed() {
+        return (float) (1 / Game.TICK_RATE_IN_HZ);
+    }
 }
