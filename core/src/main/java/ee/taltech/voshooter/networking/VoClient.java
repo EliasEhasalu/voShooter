@@ -11,7 +11,6 @@ import ee.taltech.voshooter.VoShooter;
 import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.gamestate.ChatEntry;
-import ee.taltech.voshooter.gamestate.gamemode.ClientGameModeManager;
 import ee.taltech.voshooter.gamestate.gamemode.ClientKingOfTheHillManager;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerChange;
@@ -379,8 +378,9 @@ public class VoClient {
      * @param msg The message containing info about the player.
      */
     private void updatePlayerStatistics(PlayerStatistics msg) {
-        ClientGameModeManager gameModeManager = parent.mainScreen.clientGameModeManager;
-        if (gameModeManager != null) gameModeManager.setTimePassed(msg.timePassed);
+        MainScreen mainScreen = parent.mainScreen;
+        if (mainScreen != null && mainScreen.clientGameModeManager != null) mainScreen.clientGameModeManager
+                .setTimePassed(msg.timePassed);
         if (parent.gameState.players.containsKey(msg.id)) {
             ClientPlayer p = parent.gameState.players.get(msg.id);
             p.setKills(msg.kills);
