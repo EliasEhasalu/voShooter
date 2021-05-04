@@ -17,6 +17,7 @@ public class RayCaster {
         lastCollisionFixture = null;
 
         Vector2 endPos = initialPos.cpy().add(rayDirection.cpy().setLength(maxDistance));
+        if (Vector2.dst(initialPos.x, initialPos.y, endPos.x, endPos.y) == 0.0f) return null;
         world.rayCast(new CallBack(), initialPos, endPos);
 
         return (lastCollisionFixture == null) ? null : new RayCollision(
