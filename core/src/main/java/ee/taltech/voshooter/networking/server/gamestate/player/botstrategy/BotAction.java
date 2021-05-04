@@ -29,4 +29,24 @@ public class BotAction {
     public int getYMoveDir() {
         return yMoveDir;
     }
+
+    void setDashing(boolean dashing) {
+        this.dashing = dashing;
+    }
+
+    void setShooting(boolean shooting) {
+        this.shooting = shooting;
+    }
+
+    void setAim(MouseCoords aim) {
+        this.aim = aim;
+    }
+
+    void setXMoveDir(int xMoveDir) {
+        this.xMoveDir = xMoveDir;
+    }
+
+    void setYMoveDir(int yMoveDir) {
+        this.yMoveDir = yMoveDir;
+    }
 }
