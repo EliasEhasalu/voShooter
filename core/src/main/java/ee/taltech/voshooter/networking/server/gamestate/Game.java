@@ -20,13 +20,13 @@ import ee.taltech.voshooter.networking.server.gamestate.gamemodes.GameModeManage
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class Game extends Thread {
 
@@ -187,12 +187,7 @@ public class Game extends Thread {
      * @return A list of player objects in this game.
      */
     public List<Player> getPlayers() {
-       List<Player> players = connectionInputs.keySet().stream()
-               .map(c -> c.player)
-               .collect(Collectors.toList());
-       players.addAll(bots);
-
-       return players;
+        return new ArrayList<>(entityManagerHub.getAllPlayers());
     }
 
     public Set<VoConnection> getConnections() {

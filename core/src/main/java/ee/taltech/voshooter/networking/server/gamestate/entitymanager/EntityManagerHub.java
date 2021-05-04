@@ -8,6 +8,7 @@ import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class EntityManagerHub {
 
@@ -45,6 +46,10 @@ public class EntityManagerHub {
     }
 
     public void createBot() {
-        ((PlayerManager) entityManagers.get("Player")).createPlayer();
+        ((PlayerManager) entityManagers.get("Player")).createBot();
+    }
+
+    public Set<Player> getAllPlayers() {
+        return ((PlayerManager) entityManagers.get("Player")).getPlayers();
     }
 }
