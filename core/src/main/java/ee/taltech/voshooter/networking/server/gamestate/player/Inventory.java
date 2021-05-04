@@ -6,12 +6,14 @@ import ee.taltech.voshooter.weapon.WeaponFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class Inventory {
 
     private static final Weapon.Type DEFAULT_WEAPON = Weapon.Type.PISTOL;
     private static final int FREQ = 2400;
     private static final float PASSIVE_AMMO_REGENERATION_FACTOR = 0.1f;
+    private static final Random RANDOM = new Random();
 
     private final Map<Weapon.Type, Weapon> weapons = new HashMap<>();
     private final Player parent;
@@ -90,6 +92,11 @@ public class Inventory {
 
     public void swapToDefaultWeapon() {
         swapToWeapon(DEFAULT_WEAPON);
+    }
+
+    public void swapToRandomWeapon() {
+        Weapon.Type[] weaponTypes = Weapon.Type.values();
+        swapToWeapon(weaponTypes[RANDOM.nextInt(weaponTypes.length)]);
     }
 
     public Weapon.Type getCurrentWeaponType() {

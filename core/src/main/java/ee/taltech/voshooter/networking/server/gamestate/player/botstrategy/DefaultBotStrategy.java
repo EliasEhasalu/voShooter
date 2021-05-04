@@ -1,26 +1,31 @@
 package ee.taltech.voshooter.networking.server.gamestate.player.botstrategy;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.RayCaster;
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.RayCollision;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerManager;
 import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy.MovingStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.ShootingStrategy;
 
-import java.util.Random;
+import java.util.HashSet;
 import java.util.Set;
 
 public class DefaultBotStrategy implements BotStrategy {
 
-    private static final Random RANDOM = new Random();
-    private final float turningSpeed = 720;
+    private static final RayCaster rayCaster = new RayCaster();
+    private final float turningSpeed = 1440;
 
     private final Bot bot;
     private final PlayerManager playerManager;
     private final ShootingStrategy shootingStrategy;
     private final MovingStrategy movingStrategy;
+
+    private Body targetedBody;
 
     public DefaultBotStrategy(Bot bot, ShootingStrategy shootingStrategy, MovingStrategy movingStrategy) {
         this.bot = bot;
@@ -34,10 +39,11 @@ public class DefaultBotStrategy implements BotStrategy {
     public BotAction getAction() {
         BotAction action = new BotAction();
         Player closestEnemy = determineClosestEnemy();
+        targetedBody = getHitScannedTarget();
 
         action.setAim(determineAimDirection(closestEnemy));
-        action.setShooting(shootingStrategy.toShoot());
-        action.setMovementDirections(movingStrategy.getMovementDirections(closestEnemy));
+        action.setShooting(shootingStrategy.toShoot(targetIsHitScanned()));
+        action.setMovementDirections(movingStrategy.getMovementDirections(closestEnemy, targetIsHitScanned()));
 
         return action;
     }
@@ -53,7 +59,6 @@ public class DefaultBotStrategy implements BotStrategy {
         float angleDiff = directionToTarget.angleDeg() - currentViewDirection.angleDeg();
         float turnBy = turningSpeed * Game.timeElapsed();
         float actualTurn = (Math.abs(angleDiff) < Math.abs(turnBy)) ? angleDiff : turnBy;
-        actualTurn = (actualTurn * Math.round(Math.abs(angleDiff) / angleDiff));
 
         Vector2 newViewDirection = currentViewDirection.cpy().rotateDeg(actualTurn);
         return new MouseCoords(newViewDirection.x, newViewDirection.y);
@@ -71,6 +76,26 @@ public class DefaultBotStrategy implements BotStrategy {
         }
 
         return closest;
+    }
+
+
+    private Body getHitScannedTarget() {
+        RayCollision collision = rayCaster.getFirstCollision(
+                bot.getGame(),
+                bot.getPos(),
+                bot.getViewDirection(),
+                50f,
+                new HashSet<>()
+        );
+
+        Body b = null;
+        if (collision != null) b = collision.getCollidedBody();
+
+        return b;
+    }
+
+    private boolean targetIsHitScanned() {
+        return (targetedBody != null && targetedBody.getUserData() instanceof Player);
     }
 
     private float getDistanceTo(Player p) {

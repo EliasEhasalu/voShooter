@@ -5,6 +5,6 @@ import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
 public interface MovingStrategy {
 
-    int[] getMovementDirections(Player closestEnemy);
+    int[] getMovementDirections(Player closestEnemy, boolean targetIsHitScanned);
     void setBot(Bot bot);
 }
