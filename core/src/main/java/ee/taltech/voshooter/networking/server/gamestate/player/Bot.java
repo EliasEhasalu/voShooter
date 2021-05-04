@@ -23,8 +23,6 @@ public class Bot extends Player {
     public Bot(PlayerManager playerManager, long id, String name) {
         super(playerManager, null, id, name);
         bot = true;
-
-        getInventory().swapToWeapon(Weapon.Type.MACHINE_GUN);
     }
 
     @Override
