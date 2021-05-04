@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerChange;
+import ee.taltech.voshooter.networking.messages.clientreceived.GameEnd;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.server.VoConnection;
@@ -42,6 +43,7 @@ public class Game extends Thread {
 
     private final GameMap.MapType mapType;
     private TiledMap currentMap;
+    public final int gameLength;
     private final World world = new World(new Vector2(0, 0), false);
 
     private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this);
@@ -54,13 +56,15 @@ public class Game extends Thread {
      * Construct the game.
      * @param gameMode The game mode for the game.
      * @param mapType The game map used in this game.
+     * @param gameLength Length of the round.
      */
-    public Game(int gameMode, GameMap.MapType mapType) {
+    public Game(int gameMode, GameMap.MapType mapType, int gameLength) {
         this.mapType = mapType;
+        if (gameLength >= 15) this.gameLength = gameLength;
+        else this.gameLength = Integer.MAX_VALUE;
         setCurrentMap();
         gameModeManager = GameModeManagerFactory.makeGameModeManager(this, statisticsTracker, gameMode);
         LevelGenerator.generateLevel(world, currentMap);
-
         world.setContactListener(collisionHandler);
     }
 
@@ -169,6 +173,9 @@ public class Game extends Thread {
     /** Close the game simulation. */
     public void shutDown() {
         running = false;
+        for (VoConnection c : getConnections()) {
+            c.sendTCP(new GameEnd());
+        }
     }
 
     /**

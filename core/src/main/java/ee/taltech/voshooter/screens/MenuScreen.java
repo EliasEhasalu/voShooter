@@ -82,33 +82,41 @@ public class MenuScreen implements Screen {
             }
         });
 
-        joinGame.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.changeScreen(JOIN_GAME);
-            }
-        });
+        if (parent.doesNotContainChangeListener(joinGame.getListeners())) {
+            joinGame.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    parent.changeScreen(JOIN_GAME);
+                }
+            });
+        }
 
-        createGame.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                parent.changeScreen(CREATE_GAME);
-            }
-        });
+        if (parent.doesNotContainChangeListener(createGame.getListeners())) {
+            createGame.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                    parent.changeScreen(CREATE_GAME);
+                }
+            });
+        }
 
-        preferences.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.changeScreen(VoShooter.Screen.PREFERENCES);
-            }
-        });
+        if (parent.doesNotContainChangeListener(preferences.getListeners())) {
+            preferences.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    parent.changeScreen(VoShooter.Screen.PREFERENCES);
+                }
+            });
+        }
 
-        exit.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                Gdx.app.exit();
-            }
-        });
+        if (parent.doesNotContainChangeListener(exit.getListeners())) {
+            exit.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                    Gdx.app.exit();
+                }
+            });
+        }
     }
 
     /**

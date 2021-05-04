@@ -11,6 +11,7 @@ import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerChange;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
+import ee.taltech.voshooter.networking.messages.clientreceived.GameEnd;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
@@ -38,6 +39,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.ChatSendMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.messages.serverreceived.MovePlayer;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
@@ -107,6 +109,7 @@ public final class Network {
         kryo.register(ActionType.class);
         kryo.register(Weapon.Type.class);
         kryo.register(PlayerSwappedWeapon.class);
+        kryo.register(GameEnd.class);
         kryo.register(PlayerTookDamage.class);
         kryo.register(PlayerDashed.class);
         kryo.register(RailgunFired.class);
@@ -134,6 +137,7 @@ public final class Network {
         kryo.register(ProjectilePositions.class);
         kryo.register(ProjectileCreated.class);
         kryo.register(ProjectileDestroyed.class);
+        kryo.register(LobbySettingsChanged.class);
         kryo.register(ChatSendMessage.class);
         kryo.register(ChatReceiveMessage.class);
     }
