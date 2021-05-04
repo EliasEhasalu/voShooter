@@ -16,7 +16,7 @@ public final class PixelToSimulation {
     }
 
     private static int castToGrid(float units) {
-        return (int) Math.floor(units);
+        return (int) Math.max(0, Math.floor(units));
     }
 
     /**
