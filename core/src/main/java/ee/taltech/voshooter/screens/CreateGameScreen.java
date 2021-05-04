@@ -108,57 +108,65 @@ public class CreateGameScreen implements Screen {
             }
         });
 
-        back.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                parent.changeScreen(MENU);
-            }
-        });
-
-        closePopUp.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                popUpTable.setVisible(false);
-                table.setVisible(true);
-            }
-        });
-
-        playerNameField.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (playerNameField.getText().length() < 4) {
-                    playerNameHintLabel.setText("Too short");
-                    playerNameHintLabel.setColor(Color.RED);
-                } else if (playerNameField.getText().equals("")
-                        || playerNameField.getText().replace(" ", "").equals("")) {
-                    playerNameHintLabel.setText("Empty    ");
-                    playerNameHintLabel.setColor(Color.RED);
-                } else {
-                    playerNameHintLabel.setText("Good name");
-                    playerNameHintLabel.setColor(Color.GREEN);
+        if (parent.doesNotContainChangeListener(back.getListeners())) {
+            back.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                    parent.changeScreen(MENU);
                 }
-            }
-        });
+            });
+        }
 
-        createGame.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!playerNameField.getText().equals("")
-                        && !playerNameField.getText().replace(" ", "").equals("")
-                        && playerNameField.getText().length() >= 4) {
-                    try {
-                        parent.createNetworkClient();
-                        parent.gameState.clientUser.setName(playerNameField.getText());
-                        parent.gameState.clientUser.setHost(true);
-                        parent.getClient().sendTCP(new SetUsername(playerNameField.getText()));
-                        parent.getClient().sendTCP(new CreateLobby());
-                    } catch (IOException e) {
-                        popUpTable.setVisible(true);
-                        table.setVisible(false);
+        if (parent.doesNotContainChangeListener(closePopUp.getListeners())) {
+            closePopUp.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    popUpTable.setVisible(false);
+                    table.setVisible(true);
+                }
+            });
+        }
+
+        if (parent.doesNotContainChangeListener(playerNameField.getListeners())) {
+            playerNameField.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (playerNameField.getText().length() < 4) {
+                        playerNameHintLabel.setText("Too short");
+                        playerNameHintLabel.setColor(Color.RED);
+                    } else if (playerNameField.getText().equals("")
+                            || playerNameField.getText().replace(" ", "").equals("")) {
+                        playerNameHintLabel.setText("Empty    ");
+                        playerNameHintLabel.setColor(Color.RED);
+                    } else {
+                        playerNameHintLabel.setText("Good name");
+                        playerNameHintLabel.setColor(Color.GREEN);
                     }
                 }
-            }
-        });
+            });
+        }
+
+        if (parent.doesNotContainChangeListener(createGame.getListeners())) {
+            createGame.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (!playerNameField.getText().equals("")
+                            && !playerNameField.getText().replace(" ", "").equals("")
+                            && playerNameField.getText().length() >= 4) {
+                        try {
+                            parent.createNetworkClient();
+                            parent.gameState.clientUser.setName(playerNameField.getText());
+                            parent.gameState.clientUser.setHost(true);
+                            parent.getClient().sendTCP(new SetUsername(playerNameField.getText()));
+                            parent.getClient().sendTCP(new CreateLobby());
+                        } catch (IOException e) {
+                            popUpTable.setVisible(true);
+                            table.setVisible(false);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     /**

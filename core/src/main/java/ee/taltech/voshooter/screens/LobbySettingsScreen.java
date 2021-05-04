@@ -99,89 +99,105 @@ public class LobbySettingsScreen implements Screen {
         table.add(cancel).left().padRight(10);
         table.add(save).right();
 
-        cancel.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.changeScreen(VoShooter.Screen.LOBBY);
-            }
-        });
-
-        save.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.getClient().sendTCP(new LobbySettingsChanged(gameMode, mapType,
-                        Math.max(playerCount, parent.gameState.currentLobby.getUsersCount()),
-                        parent.gameState.currentLobby.getLobbyCode(), roundLength));
-                parent.changeScreen(VoShooter.Screen.LOBBY);
-            }
-        });
-
-        playerCountDecrease.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (playerCount > 2) {
-                    playerCount--;
-                    playerCountLabel.setText(String.valueOf(playerCount));
+        if (parent.doesNotContainChangeListener(cancel.getListeners())) {
+            cancel.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    parent.changeScreen(VoShooter.Screen.LOBBY);
                 }
-            }
-        });
+            });
+        }
 
-        playerCountIncrease.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (playerCount < 8) {
-                    playerCount++;
-                    playerCountLabel.setText(String.valueOf(playerCount));
+        if (parent.doesNotContainChangeListener(save.getListeners())) {
+            save.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    parent.getClient().sendTCP(new LobbySettingsChanged(gameMode, mapType,
+                            Math.max(playerCount, parent.gameState.currentLobby.getUsersCount()),
+                            parent.gameState.currentLobby.getLobbyCode(), roundLength));
+                    parent.changeScreen(VoShooter.Screen.LOBBY);
                 }
-            }
-        });
+            });
+        }
 
-        gameModeDecrease.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (gameMode > 0) {
-                    gameMode--;
-                    gameModeLabel2.setText(gameModes.get(gameMode));
+        if (parent.doesNotContainChangeListener(playerCountDecrease.getListeners())) {
+            playerCountDecrease.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (playerCount > 2) {
+                        playerCount--;
+                        playerCountLabel.setText(String.valueOf(playerCount));
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        gameModeIncrease.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (gameMode < gameModes.size() - 1) {
-                    gameMode++;
-                    gameModeLabel2.setText(gameModes.get(gameMode));
+        if (parent.doesNotContainChangeListener(playerCountDecrease.getListeners())) {
+            playerCountIncrease.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (playerCount < 8) {
+                        playerCount++;
+                        playerCountLabel.setText(String.valueOf(playerCount));
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        changeMapButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                int i = Arrays.asList(GameMap.PLAYER_MAPS).indexOf(mapType);
-                i++;
-                if (i >= GameMap.PLAYER_MAPS.length) i = 0;
-                mapType = GameMap.PLAYER_MAPS[i];
-                changeMapButton.setText(mapType.name());
-            }
-        });
-
-        gameLengthField.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!gameLengthField.getText().matches("^[0-9]*$") || gameLengthField.getText().length() <= 0) {
-                    gameLengthHint.setText("Only numbers 0-9");
-                    gameLengthHint.setColor(255, 0, 0, 255);
-                    isCorrectGameLength = false;
-                } else {
-                    gameLengthHint.setText("seconds");
-                    gameLengthHint.setColor(0, 255, 0, 255);
-                    roundLength = Integer.parseInt(gameLengthField.getText());
-                    isCorrectGameLength = true;
+        if (parent.doesNotContainChangeListener(gameModeDecrease.getListeners())) {
+            gameModeDecrease.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (gameMode > 0) {
+                        gameMode--;
+                        gameModeLabel2.setText(gameModes.get(gameMode));
+                    }
                 }
-            }
-        });
+            });
+        }
+
+        if (parent.doesNotContainChangeListener(gameModeIncrease.getListeners())) {
+            gameModeIncrease.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (gameMode < gameModes.size() - 1) {
+                        gameMode++;
+                        gameModeLabel2.setText(gameModes.get(gameMode));
+                    }
+                }
+            });
+        }
+
+        if (parent.doesNotContainChangeListener(changeMapButton.getListeners())) {
+            changeMapButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    int i = Arrays.asList(GameMap.PLAYER_MAPS).indexOf(mapType);
+                    i++;
+                    if (i >= GameMap.PLAYER_MAPS.length) i = 0;
+                    mapType = GameMap.PLAYER_MAPS[i];
+                    changeMapButton.setText(mapType.name());
+                }
+            });
+        }
+
+        if (parent.doesNotContainChangeListener(gameLengthField.getListeners())) {
+            gameLengthField.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (!gameLengthField.getText().matches("^[0-9]*$") || gameLengthField.getText().length() <= 0) {
+                        gameLengthHint.setText("Only numbers 0-9");
+                        gameLengthHint.setColor(255, 0, 0, 255);
+                        isCorrectGameLength = false;
+                    } else {
+                        gameLengthHint.setText("seconds");
+                        gameLengthHint.setColor(0, 255, 0, 255);
+                        roundLength = Integer.parseInt(gameLengthField.getText());
+                        isCorrectGameLength = true;
+                    }
+                }
+            });
+        }
     }
 
     @Override
