@@ -218,4 +218,8 @@ public class Game extends Thread {
     public World getWorld() {
         return world;
     }
+
+    public GameMode getGameModeManager() {
+        return gameModeManager;
+    }
 }

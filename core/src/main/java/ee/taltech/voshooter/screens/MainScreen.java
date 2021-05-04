@@ -417,6 +417,7 @@ public class MainScreen implements Screen {
                     font.draw(stage.getBatch(), ((ClientPlayer) drawable).getName(),
                             drawable.getPosition().x - (((ClientPlayer) drawable).getName().length() * 7),
                             drawable.getPosition().y + 40);
+                    font.setColor(Color.WHITE);
                 }
             }
         }

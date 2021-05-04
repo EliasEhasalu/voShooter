@@ -19,4 +19,8 @@ public class ClientFunkyManager extends ClientGameModeManager {
         camera.rotate(ROTATION_SPEED);
         super.update();
     }
+
+    public void setTimePassed(double timePassed) {
+        this.timePassed = timePassed;
+    }
 }
