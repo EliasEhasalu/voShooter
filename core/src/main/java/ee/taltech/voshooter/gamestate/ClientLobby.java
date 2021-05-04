@@ -12,6 +12,7 @@ public class ClientLobby {
 
     private int maxUsers = 4;
     private int gamemode = 1;
+    private int gameLength = 0;
     private List<User> users = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private String lobbyCode;
@@ -78,6 +79,7 @@ public class ClientLobby {
         lobbyCode = null;
         maxUsers = 0;
         gamemode = 0;
+        gameLength = 0;
         mapType = null;
     }
 
@@ -179,5 +181,13 @@ public class ClientLobby {
         setLobbyCode(message.lobbyCode);
         setUsers(message.users);
         this.mapType = message.mapType;
+    }
+
+    public int getGameLength() {
+        return gameLength;
+    }
+
+    public void setGameLength(int gameLength) {
+        this.gameLength = gameLength;
     }
 }
