@@ -6,6 +6,7 @@ import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotSt
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.DefaultBotStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy.DefaultMovingStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.DefaultShootingStrategy;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public class Bot extends Player {
 
@@ -22,6 +23,8 @@ public class Bot extends Player {
     public Bot(PlayerManager playerManager, long id, String name) {
         super(playerManager, null, id, name);
         bot = true;
+
+        getInventory().swapToWeapon(Weapon.Type.MACHINE_GUN);
     }
 
     @Override

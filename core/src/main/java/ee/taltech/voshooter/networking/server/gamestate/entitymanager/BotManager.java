@@ -9,7 +9,7 @@ public class BotManager {
 
     private static final Set<String> BOT_NAMES = new HashSet<String>() {{
         add("Josh"); add("Bill"); add("Jake"); add("Gaben");
-        add("Alice"); add("Lisa"); add("Lucy"); add("Ago");
+        add("Alice"); add("Lisa"); add("Lucy"); add("Ago"); add("Gert");
     }};
     private static final Random R = new Random();
     private static long id = Long.MAX_VALUE;
