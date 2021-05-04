@@ -13,6 +13,7 @@ import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
+import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
 import java.util.List;
@@ -31,11 +32,11 @@ public class PlayerManager extends EntityManager {
     }
 
     protected void createPlayer(VoConnection c) {
-       addPlayerToWorld(new Player(this, c, c.user.id, c.user.getName()));
+        addPlayerToWorld(new Player(this, c, c.user.id, c.user.getName()));
     }
 
     protected void createBot() {
-        addPlayerToWorld(new Player(this, null, botManager.getNewBotId(), botManager.getNewBotName()));
+        addPlayerToWorld(new Bot(this, botManager.getNewBotId(), botManager.getNewBotName()));
     }
 
     private void addPlayerToWorld(Player p) {
@@ -49,8 +50,7 @@ public class PlayerManager extends EntityManager {
         p.initialPos = playerBody.getPosition();
 
         // Set the player object on the connection.
-        VoConnection c = p.getConnection();
-        if (c != null) c.player = p;
+        if (!p.isBot()) p.getConnection().player = p;
 
         players.add(p);
     }

@@ -48,6 +48,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.messages.serverreceived.SetUsername;
 import ee.taltech.voshooter.networking.messages.serverreceived.Shoot;
 import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
+import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.weapon.Weapon;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
@@ -90,6 +91,7 @@ public final class Network {
         kryo.register(Long.class);
 
         kryo.register(Player.class);
+        kryo.register(Bot.class);
         kryo.register(Pos.class);
         kryo.register(GameMap.MapType.class);
         kryo.register(PlayerInput.class);
