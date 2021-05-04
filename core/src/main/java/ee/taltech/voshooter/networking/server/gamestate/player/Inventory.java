@@ -92,6 +92,10 @@ public class Inventory {
         swapToWeapon(DEFAULT_WEAPON);
     }
 
+    public Weapon.Type getCurrentWeaponType() {
+        return currentWeapon.getType();
+    }
+
     protected Weapon getCurrentWeapon() {
         return currentWeapon;
     }

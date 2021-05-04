@@ -5,6 +5,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerManager;
 import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.ShootingStrategy;
 
 import java.util.Set;
 
@@ -12,16 +13,20 @@ public class DefaultBotStrategy implements BotStrategy {
 
     private final Bot bot;
     private final PlayerManager playerManager;
+    private final ShootingStrategy shootingStrategy;
 
-    public DefaultBotStrategy(Bot bot) {
+    public DefaultBotStrategy(Bot bot, ShootingStrategy shootingStrategy) {
         this.bot = bot;
         this.playerManager = bot.getPlayerManager();
+
+        this.shootingStrategy = shootingStrategy; shootingStrategy.setBot(bot);
     }
 
     @Override
     public BotAction getAction() {
         BotAction action = new BotAction();
         action.setAim(determineAimDirection());
+        action.setShooting(shootingStrategy.toShoot());
 
         return action;
     }
@@ -40,7 +45,7 @@ public class DefaultBotStrategy implements BotStrategy {
         float closestDist = Float.MAX_VALUE;
 
         for (Player p : getPlayers()) {
-            if (p != bot && getDistanceTo(p) < closestDist) {
+            if (p != bot && p.isAlive() && getDistanceTo(p) < closestDist) {
                 closest = p;
                 closestDist = getDistanceTo(p);
             }
