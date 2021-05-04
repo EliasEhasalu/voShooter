@@ -192,4 +192,9 @@ public class GameState {
     public void removeChatEntry() {
         chatEntries.poll();
     }
+
+    public void clearMessages() {
+        chatEntries.clear();
+        deathMessages.clear();
+    }
 }

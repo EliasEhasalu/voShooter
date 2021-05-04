@@ -77,7 +77,7 @@ public class ClientLobby {
         users.clear();
         players.clear();
         lobbyCode = null;
-        maxUsers = 0;
+        maxUsers = 4;
         gamemode = 0;
         gameLength = 0;
         mapType = null;

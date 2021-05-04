@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -98,7 +97,6 @@ public class LobbyScreen implements Screen {
         table.row().pad(50, 0, 0, 0);
         table.add(leaveButton).left();
         table.add(startGame).right();
-        boolean hasListener;
 
         // Music.
         MusicPlayer.setMusic("soundfx/bensound-theelevatorbossanova.mp3");
@@ -115,14 +113,7 @@ public class LobbyScreen implements Screen {
             }
         });
 
-        hasListener = false;
-        for (EventListener listener : settingsButton.getListeners()) {
-            if (listener instanceof ChangeListener) {
-                hasListener = true;
-                break;
-            }
-        }
-        if (!hasListener) {
+        if (parent.doesNotContainChangeListener(settingsButton.getListeners())) {
             settingsButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
@@ -134,14 +125,7 @@ public class LobbyScreen implements Screen {
         }
 
         // Add button functionality.
-        hasListener = false;
-        for (EventListener listener : leaveButton.getListeners()) {
-            if (listener instanceof ChangeListener) {
-                hasListener = true;
-                break;
-            }
-        }
-        if (!hasListener) {
+        if (parent.doesNotContainChangeListener(leaveButton.getListeners())) {
             leaveButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeListener.ChangeEvent event, Actor actor) {
@@ -154,14 +138,7 @@ public class LobbyScreen implements Screen {
             });
         }
 
-        hasListener = false;
-        for (EventListener listener : startGame.getListeners()) {
-            if (listener instanceof ChangeListener) {
-                hasListener = true;
-                break;
-            }
-        }
-        if (!hasListener) {
+        if (parent.doesNotContainChangeListener(startGame.getListeners())) {
             startGame.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
