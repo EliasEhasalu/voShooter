@@ -20,6 +20,8 @@ public class DefaultShootingStrategy implements ShootingStrategy {
                 return targetIsHitScanned();
             case RAILGUN:
                 return targetIsHitScanned();
+            case MACHINE_GUN:
+                return targetIsHitScanned();
             default:
                 return false;
         }
