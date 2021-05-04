@@ -14,36 +14,38 @@ public class AppPreferences {
     private static final String PREF_SOUND_VOL = "sound";
     private static final String PREF_PARTICLE_TOGGLE = "particles";
     private static final String PREF_MINIMAP = "minimap";
-    private static final String PREF_PLAYER_COUNT = "4";
-    private static final String PREF_GAME_MODE = "gamemode";
+
+    // Move and shoot buttons.
     private static final String PREF_MOVE_UP_KEY = "up key";
-    private static final String PREF_MOVE_DOWN_KEY = "down key";
-    private static final String PREF_MOVE_LEFT_KEY = "left key";
-    private static final String PREF_MOVE_RIGHT_KEY = "right key";
-    private static final String PREF_MOUSE_LEFT = "mouse left";
-    private static final String PREF_MOUSE_RIGHT = "mouse right";
     private static final String PREF_UP_KEY_IS_KEY = "up key is key";
+    private static final String PREF_MOVE_DOWN_KEY = "down key";
     private static final String PREF_DOWN_IS_KEY = "down key is key";
+    private static final String PREF_MOVE_LEFT_KEY = "left key";
     private static final String PREF_LEFT_IS_KEY = "left key is key";
+    private static final String PREF_MOVE_RIGHT_KEY = "right key";
     private static final String PREF_RIGHT_IS_KEY = "right key is key";
+    private static final String PREF_MOUSE_LEFT = "mouse left";
+    private static final String PREF_MOUSE_LEFT_IS_KEY = "left button is key";
     private static final String PREF_L_SHIFT_KEY = "left shift key";
     private static final String PREF_L_SHIFT_KEY_IS_KEY = "left shift key is key";
-    private static final String PREF_MOUSE_LEFT_IS_KEY = "left button is key";
-    private static final String PREF_MOUSE_RIGHT_IS_KEY = "right button is key";
+
+    // Weapon buttons.
     private static final String PREF_NUMBER_1 = "number 1";
-    private static final String PREF_NUMBER_2 = "number 2";
-    private static final String PREF_NUMBER_3 = "number 3";
-    private static final String PREF_NUMBER_4 = "number 4";
-    private static final String PREF_NUMBER_5 = "number 5";
-    private static final String PREF_NUMBER_6 = "number 6";
-    private static final String PREF_NUMBER_7 = "number 7";
     private static final String PREF_1_IS_KEY = "number 1 is key";
+    private static final String PREF_NUMBER_2 = "number 2";
     private static final String PREF_2_IS_KEY = "number 2 is key";
+    private static final String PREF_NUMBER_3 = "number 3";
     private static final String PREF_3_IS_KEY = "number 3 is key";
+    private static final String PREF_NUMBER_4 = "number 4";
     private static final String PREF_4_IS_KEY = "number 4 is key";
+    private static final String PREF_NUMBER_5 = "number 5";
     private static final String PREF_5_IS_KEY = "number 5 is key";
+    private static final String PREF_NUMBER_6 = "number 6";
     private static final String PREF_6_IS_KEY = "number 6 is key";
+    private static final String PREF_NUMBER_7 = "number 7";
     private static final String PREF_7_IS_KEY = "number 7 is key";
+
+    // Buttons as strings.
     private static final List<String> BUTTONS_LIST = Arrays.asList("Left Button", "Right Button", "Middle Button", "Back", "Forward");
 
     /** @return A preferences object containing the player's preferences */
@@ -113,38 +115,6 @@ public class AppPreferences {
         getPrefs().flush();
     }
 
-    /**
-     * @param players the desired player amount
-     */
-    public static void setPlayerCount(float players) {
-        getPrefs().putFloat(PREF_PLAYER_COUNT, players);
-        // Write to disk.
-        getPrefs().flush();
-    }
-
-    /**
-     * @return the player count
-     */
-    public static float getPlayerCount() {
-        return getPrefs().getFloat(PREF_PLAYER_COUNT, 4);
-    }
-
-    /**
-     * @param gameMode the desired gamemode
-     */
-    public static void setGameMode(float gameMode) {
-        getPrefs().putFloat(PREF_GAME_MODE, gameMode);
-        // Write to disk.
-        getPrefs().flush();
-    }
-
-    /**
-     * @return the game mode
-     */
-    public static float getGameMode() {
-        return getPrefs().getFloat(PREF_GAME_MODE, 1);
-    }
-
     /** @param key Set the key that triggers MOVE_UP action. */
     public static void setUpKey(int key) {
         getPrefs().putInteger(PREF_MOVE_UP_KEY, key);
@@ -211,20 +181,6 @@ public class AppPreferences {
     /** @param isKey Set whether MOUSE_LEFT action is key. */
     public static void setButtonLeftIsKey(boolean isKey) {
         getPrefs().putBoolean(PREF_MOUSE_LEFT_IS_KEY, isKey);
-        // Write to disk.
-        getPrefs().flush();
-    }
-
-    /** @param key Set the key that triggers MOUSE_RIGHT action. */
-    public static void setMouseRight(int key) {
-        getPrefs().putInteger(PREF_MOUSE_RIGHT, key);
-        // Write to disk.
-        getPrefs().flush();
-    }
-
-    /** @param isKey Set whether MOUSE_RIGHT action is key. */
-    public static void setButtonRightIsKey(boolean isKey) {
-        getPrefs().putBoolean(PREF_MOUSE_RIGHT_IS_KEY, isKey);
         // Write to disk.
         getPrefs().flush();
     }
@@ -387,16 +343,6 @@ public class AppPreferences {
     /** @return Whether MOUSE_LEFT action is key. */
     public static boolean getButtonLeftIsKey() {
         return getPrefs().getBoolean(PREF_MOUSE_LEFT_IS_KEY, false);
-    }
-
-    /** @return Key that triggers MOUSE_RIGHT action. */
-    public static int getMouseRight() {
-        return getPrefs().getInteger(PREF_MOUSE_RIGHT, Input.Buttons.RIGHT);
-    }
-
-    /** @return Whether MOUSE_RIGHT action is key. */
-    public static boolean getButtonRightIsKey() {
-        return getPrefs().getBoolean(PREF_MOUSE_RIGHT_IS_KEY, false);
     }
 
     /** @return Key that triggers NUMBER_1 action. */

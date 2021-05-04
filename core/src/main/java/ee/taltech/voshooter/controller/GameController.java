@@ -68,10 +68,6 @@ public class GameController {
                 || (Gdx.input.isButtonPressed(AppPreferences.getMouseLeft()) && !AppPreferences.getButtonLeftIsKey())) {
             actionsPerformed.add(ActionType.MOUSE_LEFT);
         }
-        if ((Gdx.input.isKeyPressed(AppPreferences.getMouseRight()) && AppPreferences.getButtonRightIsKey())
-                || (Gdx.input.isButtonPressed(AppPreferences.getMouseRight()) && !AppPreferences.getButtonRightIsKey())) {
-            actionsPerformed.add(ActionType.MOUSE_RIGHT);
-        }
 
         return actionsPerformed;
     }
