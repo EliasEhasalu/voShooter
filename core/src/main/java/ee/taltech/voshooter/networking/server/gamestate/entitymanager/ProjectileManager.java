@@ -70,4 +70,8 @@ public class ProjectileManager extends EntityManager {
         projectiles.add(p);
         createdProjectileUpdates.add((ProjectileCreated) p.getUpdate());
     }
+
+    Set<Projectile> getProjectiles() {
+        return projectiles;
+    }
 }

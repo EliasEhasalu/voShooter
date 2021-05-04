@@ -52,4 +52,8 @@ public class EntityManagerHub {
     public Set<Player> getAllPlayers() {
         return ((PlayerManager) entityManagers.get("Player")).getPlayers();
     }
+
+    public Set<Projectile> getAllProjectiles() {
+        return ((ProjectileManager) entityManagers.get("Projectile")).getProjectiles();
+    }
 }

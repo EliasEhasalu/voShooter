@@ -26,14 +26,14 @@ public abstract class HitscanWeapon extends Weapon implements DamageDealer {
 
     protected void onFire() {
         RayCollision collision = rayCaster.getFirstCollision(
-                wielder.getWorld(),
+                wielder.getGame(),
                 wielder.getPos(),
                 wielder.getViewDirection(),
                 maxDist,
-                new HashSet<Body>() {{ add(wielder.getBody()); }}
+                new HashSet<>()
         );
 
-        if (collision != null) {
+        if (collision != null && collision.getCollidedBody() != null) {
             sendLaserDataToClients(collision);
 
             Body collidedBody = collision.getCollidedBody();
