@@ -34,17 +34,18 @@ public class DefaultBotStrategy implements BotStrategy {
     @Override
     public BotAction getAction() {
         BotAction action = new BotAction();
-        action.setAim(determineAimDirection());
+        Player closestEnemy = determineClosestEnemy();
+
+        action.setAim(determineAimDirection(closestEnemy));
         action.setShooting(shootingStrategy.toShoot());
-        action.setMovementDirections(movingStrategy.getMovementDirections());
+        action.setMovementDirections(movingStrategy.getMovementDirections(closestEnemy));
 
         return action;
     }
 
-    private MouseCoords determineAimDirection() {
-        Player closest = determineClosestEnemy();
-        if (closest == null) return new MouseCoords(bot.getViewDirection().x, bot.getViewDirection().y);
-        else return lookTowardsTargetMouseCoords(closest);
+    private MouseCoords determineAimDirection(Player closestEnemy) {
+        if (closestEnemy == null) return new MouseCoords(bot.getViewDirection().x, bot.getViewDirection().y);
+        else return lookTowardsTargetMouseCoords(closestEnemy);
     }
 
     private MouseCoords lookTowardsTargetMouseCoords(Player target) {
