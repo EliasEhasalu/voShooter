@@ -221,6 +221,7 @@ public class Game extends Thread {
 
     public GameMode getGameModeManager() {
         return gameModeManager;
+    }
 
     public static float timeElapsed() {
         return (float) (1 / Game.TICK_RATE_IN_HZ);

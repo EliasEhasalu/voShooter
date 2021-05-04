@@ -53,6 +53,7 @@ public class DefaultBotStrategy implements BotStrategy {
         float angleDiff = directionToTarget.angleDeg() - currentViewDirection.angleDeg();
         float turnBy = turningSpeed * Game.timeElapsed();
         float actualTurn = (Math.abs(angleDiff) < Math.abs(turnBy)) ? angleDiff : turnBy;
+        actualTurn = (actualTurn * Math.round(Math.abs(angleDiff) / angleDiff));
 
         Vector2 newViewDirection = currentViewDirection.cpy().rotateDeg(actualTurn);
         return new MouseCoords(newViewDirection.x, newViewDirection.y);

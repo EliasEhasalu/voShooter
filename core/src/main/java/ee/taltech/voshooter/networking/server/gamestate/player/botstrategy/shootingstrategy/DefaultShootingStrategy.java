@@ -25,7 +25,6 @@ public class DefaultShootingStrategy implements ShootingStrategy {
     @Override
     public boolean toShoot() {
         handleReactionTime();
-        System.out.println(timeToReaction);
 
         switch (bot.getInventory().getCurrentWeaponType()) {
             case PISTOL:
