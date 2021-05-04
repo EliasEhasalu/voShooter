@@ -5,6 +5,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerManager;
 import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy.MovingStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.ShootingStrategy;
 
 import java.util.Set;
@@ -14,12 +15,14 @@ public class DefaultBotStrategy implements BotStrategy {
     private final Bot bot;
     private final PlayerManager playerManager;
     private final ShootingStrategy shootingStrategy;
+    private final MovingStrategy movingStrategy;
 
-    public DefaultBotStrategy(Bot bot, ShootingStrategy shootingStrategy) {
+    public DefaultBotStrategy(Bot bot, ShootingStrategy shootingStrategy, MovingStrategy movingStrategy) {
         this.bot = bot;
         this.playerManager = bot.getPlayerManager();
 
         this.shootingStrategy = shootingStrategy; shootingStrategy.setBot(bot);
+        this.movingStrategy = movingStrategy; movingStrategy.setBot(bot);
     }
 
     @Override
@@ -27,6 +30,7 @@ public class DefaultBotStrategy implements BotStrategy {
         BotAction action = new BotAction();
         action.setAim(determineAimDirection());
         action.setShooting(shootingStrategy.toShoot());
+        action.setMovementDirections(movingStrategy.getMovementDirections());
 
         return action;
     }

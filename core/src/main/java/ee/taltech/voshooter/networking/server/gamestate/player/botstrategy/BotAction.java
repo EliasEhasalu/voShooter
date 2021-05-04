@@ -7,8 +7,7 @@ public class BotAction {
     private boolean dashing;
     private boolean shooting;
     private MouseCoords aim;
-    private int xMoveDir;
-    private int yMoveDir;
+    private int[] movementDirections;
 
     public boolean isDashing() {
         return dashing;
@@ -23,11 +22,11 @@ public class BotAction {
     }
 
     public int getXMoveDir() {
-        return xMoveDir;
+        return movementDirections[0];
     }
 
     public int getYMoveDir() {
-        return yMoveDir;
+        return movementDirections[1];
     }
 
     void setDashing(boolean dashing) {
@@ -42,11 +41,7 @@ public class BotAction {
         this.aim = aim;
     }
 
-    void setXMoveDir(int xMoveDir) {
-        this.xMoveDir = xMoveDir;
-    }
-
-    void setYMoveDir(int yMoveDir) {
-        this.yMoveDir = yMoveDir;
+    void setMovementDirections(int[] movementDirections) {
+        this.movementDirections = movementDirections;
     }
 }
