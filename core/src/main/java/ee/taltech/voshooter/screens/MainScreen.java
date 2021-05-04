@@ -558,7 +558,7 @@ public class MainScreen implements Screen {
             if (chatActive) opacity = 1;
             else opacity = Math.min(Math.max(
                     entry.getDuration() / (ChatEntry.MAX_DURATION / 10f), 0f), 1f);
-            if (entry.getPrefix().equals("[Server]: ")) chatFont.setColor(Color.LIGHT_GRAY.r, Color.LIGHT_GRAY.g,
+            if (entry.isBroadcast()) chatFont.setColor(Color.LIGHT_GRAY.r, Color.LIGHT_GRAY.g,
                     Color.LIGHT_GRAY.b, opacity);
             else chatFont.setColor(0, 1, 1, opacity);
 
