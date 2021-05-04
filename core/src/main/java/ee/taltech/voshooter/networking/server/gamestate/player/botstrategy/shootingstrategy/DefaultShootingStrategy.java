@@ -54,7 +54,7 @@ public class DefaultShootingStrategy implements ShootingStrategy {
     }
 
     private boolean machineGunFiringStrategy() {
-        return (timeToReaction <= 0f && aimWasLocked);
+        return (timeToReaction <= 0f && aimIsLocked);
     }
 
     private boolean rocketLauncherFiringStrategy() {
