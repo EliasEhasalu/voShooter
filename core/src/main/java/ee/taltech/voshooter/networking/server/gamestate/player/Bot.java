@@ -11,11 +11,7 @@ import ee.taltech.voshooter.weapon.Weapon;
 
 public class Bot extends Player {
 
-    private transient final BotStrategy strategy = new DefaultBotStrategy(
-            this,
-            new DefaultShootingStrategy(),
-            new DefaultMovingStrategy()
-    );
+    private transient BotStrategy strategy;
 
     /** Serialize. */
     public Bot() {
@@ -23,9 +19,15 @@ public class Bot extends Player {
 
     public Bot(PlayerManager playerManager, long id, String name) {
         super(playerManager, null, id, name);
+        this.strategy = new DefaultBotStrategy(
+            this,
+            new DefaultShootingStrategy(),
+            new DefaultMovingStrategy()
+        );
+        this.bot = true;
+
         setViewDirection(new MouseCoords(1, 1));
         getInventory().swapToWeapon(Weapon.Type.RAILGUN);
-        bot = true;
     }
 
     @Override

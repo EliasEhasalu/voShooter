@@ -47,7 +47,7 @@ public class LevelGenerator {
                         continue;
                     }
 
-                    Vector2 pos = getMapObjectPos(object);
+                    Vector2 pos = getMapObjectWorldPos(object);
 
                     BodyDef bodyDef = new BodyDef();
                     bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -69,7 +69,7 @@ public class LevelGenerator {
         }
     }
 
-    private static Vector2 getMapObjectPos(MapObject object) {
+    private static Vector2 getMapObjectWorldPos(MapObject object) {
         if (object instanceof RectangleMapObject) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
 
@@ -78,7 +78,18 @@ public class LevelGenerator {
                     PixelToSimulation.toUnits(rectangle.y + rectangle.height * 0.5f)
             );
         }
-        throw new RuntimeException("Position not defined for this shape.");
+        throw new RuntimeException("World position not defined for this shape.");
+    }
+
+    private static Vector2 getMapObjectGridPos(MapObject object) {
+        if (object instanceof RectangleMapObject) {
+            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            return new Vector2(
+                    PixelToSimulation.toUnits(rectangle.x),
+                    PixelToSimulation.toUnits(rectangle.y)
+            );
+        }
+        throw new RuntimeException("Grid position not defined for this shape.");
     }
 
     public static Map<Integer, Float> getKothLocation(TiledMap map) {
@@ -98,5 +109,26 @@ public class LevelGenerator {
             }
         }
         return null;
+    }
+
+    public static int[][] getWallGrid(TiledMap map) {
+        int width = (int) map.getProperties().get("width");
+        int height = (int) map.getProperties().get("height");
+
+        MapObjects objects;
+        int[][] grid = new int[width][height];
+
+        for (MapLayer l : map.getLayers()) {
+            if (l.getName().equals("WallsObjects")) {
+                objects = l.getObjects();
+                for (MapObject object : objects) {
+                    Vector2 pos = getMapObjectGridPos(object);
+                    grid[(int) pos.y][(int) pos.x] = 1;
+                }
+                break;
+            }
+        }
+
+        return grid;
     }
 }

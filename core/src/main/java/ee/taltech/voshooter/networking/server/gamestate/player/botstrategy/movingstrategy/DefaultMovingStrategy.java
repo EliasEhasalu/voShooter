@@ -1,13 +1,16 @@
 package ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy;
 
+import ee.taltech.voshooter.networking.server.gamestate.collision.utils.LevelGenerator;
 import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class DefaultMovingStrategy implements MovingStrategy {
 
     private static final Random R = new Random();
     private Bot bot;
+    private transient int[][] walls;
 
     @Override
     public int[] getMovementDirections() {
@@ -17,5 +20,10 @@ public class DefaultMovingStrategy implements MovingStrategy {
     @Override
     public void setBot(Bot bot) {
         this.bot = bot;
+        this.walls = LevelGenerator.getWallGrid(bot.getGame().getCurrentMap());
+
+        for (int[] wall : walls) {
+            System.out.println(Arrays.toString(wall));
+        }
     }
 }

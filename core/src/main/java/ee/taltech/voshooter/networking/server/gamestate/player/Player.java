@@ -243,7 +243,7 @@ public class Player {
     }
 
     public Game getGame() {
-        return playerManager.getGame();
+        return (playerManager != null) ? playerManager.getGame() : null;
     }
 
     private StatisticsTracker getStatisticsTracker() {
