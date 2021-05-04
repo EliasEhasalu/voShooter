@@ -6,7 +6,7 @@ import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.Defau
 
 public class Bot extends Player {
 
-    private final BotStrategy strategy = new DefaultBotStrategy();
+    private final BotStrategy strategy = new DefaultBotStrategy(this);
 
     public Bot(PlayerManager playerManager, long id, String name) {
         super(playerManager, null, id, name);
