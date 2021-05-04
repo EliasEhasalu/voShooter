@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDashed;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
@@ -98,6 +99,10 @@ public class Player {
                 body.applyLinearImpulse(body.getLinearVelocity().cpy().nor().setLength(DASH_FORCE), body.getPosition(), true);
             }
             statusManager.playerDashed();
+
+            for (VoConnection c : getGame().getConnections()) {
+                c.sendTCP(new PlayerDashed(id, body.getLinearVelocity()));
+            }
         }
     }
 

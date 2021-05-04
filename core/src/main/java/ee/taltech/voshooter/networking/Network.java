@@ -17,6 +17,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDashed;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
@@ -107,6 +108,7 @@ public final class Network {
         kryo.register(Weapon.Type.class);
         kryo.register(PlayerSwappedWeapon.class);
         kryo.register(PlayerTookDamage.class);
+        kryo.register(PlayerDashed.class);
         kryo.register(RailgunFired.class);
 
         kryo.register(Shoot.class);
