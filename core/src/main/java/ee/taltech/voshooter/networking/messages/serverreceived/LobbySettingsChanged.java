@@ -9,16 +9,19 @@ public class LobbySettingsChanged {
     public int gameMode;
     public GameMap.MapType mapType;
     public int maxUsers;
+    public int botAmount;
 
     /** Serialization. */
     public LobbySettingsChanged() {
     }
 
-    public LobbySettingsChanged(int gameMode, GameMap.MapType mapType, int maxUsers, String lobbyCode, int gameLength) {
+    public LobbySettingsChanged(int gameMode, GameMap.MapType mapType, int maxUsers, String lobbyCode, int gameLength,
+                                int botAmount) {
         this.gameMode = gameMode;
         this.mapType = mapType;
         this.maxUsers = maxUsers;
         this.lobbyCode = lobbyCode;
         this.gameLength = gameLength;
+        this.botAmount = botAmount;
     }
 }
