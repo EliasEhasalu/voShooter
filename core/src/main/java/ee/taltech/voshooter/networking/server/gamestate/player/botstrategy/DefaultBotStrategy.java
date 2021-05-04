@@ -15,8 +15,7 @@ import java.util.Set;
 public class DefaultBotStrategy implements BotStrategy {
 
     private static final Random RANDOM = new Random();
-    private final int aimDeviation = 4;
-    private final float turningSpeed = 360;
+    private final float turningSpeed = 720;
 
     private final Bot bot;
     private final PlayerManager playerManager;
