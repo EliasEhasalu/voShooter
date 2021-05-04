@@ -214,4 +214,8 @@ public class Game extends Thread {
     public TiledMap getCurrentMap() {
         return currentMap;
     }
+
+    public World getWorld() {
+        return world;
+    }
 }

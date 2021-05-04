@@ -27,11 +27,11 @@ public class DefaultShootingStrategy implements ShootingStrategy {
 
     private boolean targetIsHitScanned() {
         RayCollision collision = rayCaster.getFirstCollision(
-                bot.getWorld(),
+                bot.getGame(),
                 bot.getPos(),
                 bot.getViewDirection(),
-                60f,
-                new HashSet<Body>(){{ add(bot.getBody()); }}
+                50f,
+                new HashSet<>()
         );
 
         Body b = null;
