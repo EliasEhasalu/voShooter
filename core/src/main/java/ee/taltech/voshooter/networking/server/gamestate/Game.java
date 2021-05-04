@@ -214,4 +214,12 @@ public class Game extends Thread {
     public TiledMap getCurrentMap() {
         return currentMap;
     }
+
+    @Override
+    public String toString() {
+        return "Game{" +
+                "connectionInputs=" + connectionInputs +
+                ", bots=" + bots +
+                '}';
+    }
 }
