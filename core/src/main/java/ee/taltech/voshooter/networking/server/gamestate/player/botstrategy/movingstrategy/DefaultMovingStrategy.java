@@ -38,6 +38,8 @@ public class DefaultMovingStrategy implements MovingStrategy {
     }
 
     private List<Node> getPathTo(Player enemy) {
+        // Min and max calls ensure the start and end nodes remain within the mapped play area
+        // (sometimes they are able to escape due to explosions, presumably).
         int[] startArray = PixelToSimulation.castToGrid(bot.getPos());
         Node start = new Node(Math.min(startArray[0], walls[0].length - 1),
                 Math.min(startArray[1], walls.length - 1), 0);
