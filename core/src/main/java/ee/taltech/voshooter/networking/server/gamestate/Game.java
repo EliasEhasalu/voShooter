@@ -47,10 +47,10 @@ public class Game extends Thread {
     public final int gameLength;
     private final World world = new World(new Vector2(0, 0), false);
 
-    private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this);
+    private final StatisticsTracker statisticsTracker = new StatisticsTracker(this);
+    private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this, statisticsTracker);
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
     private final InputHandler inputHandler = new InputHandler();
-    private final StatisticsTracker statisticsTracker = new StatisticsTracker(this);
     private final GameMode gameModeManager;
 
     /**

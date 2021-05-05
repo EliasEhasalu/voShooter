@@ -15,6 +15,7 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToS
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +27,11 @@ public class PlayerManager extends EntityManager {
     private final Set<Player> players = ConcurrentHashMap.newKeySet();
     private final PlayerSpawner playerSpawner = new PlayerSpawner();
     private final BotManager botManager = new BotManager();
+    private final StatisticsTracker statisticsTracker;
 
-    public PlayerManager(World world, Game game) {
+    public PlayerManager(World world, Game game, StatisticsTracker statisticsTracker) {
         super(world, game);
+        this.statisticsTracker = statisticsTracker;
     }
 
     protected void createPlayer(VoConnection c) {
@@ -89,6 +92,10 @@ public class PlayerManager extends EntityManager {
             player.get().purge();
             players.remove(player.get());
         }
+    }
+
+    public Player getTopPlayer() {
+        return statisticsTracker.getTopKiller();
     }
 
     public World getWorld() {
