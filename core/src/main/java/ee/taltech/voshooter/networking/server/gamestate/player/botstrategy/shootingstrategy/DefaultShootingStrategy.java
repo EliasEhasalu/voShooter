@@ -17,7 +17,6 @@ public class DefaultShootingStrategy implements ShootingStrategy {
     private Bot bot;
     private float timeToReaction = REACTION_TIME;
 
-    private boolean aimWasLocked = false;
     private boolean aimIsLocked = false;
 
     @Override
@@ -37,12 +36,10 @@ public class DefaultShootingStrategy implements ShootingStrategy {
     }
 
     private void handleReactionTime(boolean targetIsHitScanned) {
-        boolean temp = aimIsLocked;
         aimIsLocked = targetIsHitScanned;
-        aimWasLocked = temp;
 
-        if (aimWasLocked && aimIsLocked) timeToReaction = max(-REACTION_TIME, timeToReaction - Game.timeElapsed());
-        else timeToReaction = min(REACTION_TIME, timeToReaction + Game.timeElapsed());
+        if (aimIsLocked) timeToReaction = max(-REACTION_TIME, timeToReaction - Game.timeElapsed());
+        else timeToReaction = min(REACTION_TIME, timeToReaction + (Game.timeElapsed() / 2));
     }
 
 
