@@ -83,8 +83,6 @@ public class GameState {
         for (ClientPlayer e : this.players.values()) {
             boolean userFound = false;
             for (Player p : players) {
-                System.out.println(p.getId());
-                System.out.println(e.getId());
                 if (p.getId() == e.getId()) {
                     userFound = true;
                     break;

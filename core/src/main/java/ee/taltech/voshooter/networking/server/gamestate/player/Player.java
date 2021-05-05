@@ -176,7 +176,8 @@ public class Player {
 
     /** @return The position of this player. */
     public Vector2 getPos() {
-        return body.getPosition();
+        if (body != null) return body.getPosition();
+        else return new Vector2();
     }
 
     /** @return The view direction of this player. */
