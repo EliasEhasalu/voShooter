@@ -38,8 +38,14 @@ public class DefaultMovingStrategy implements MovingStrategy {
     }
 
     private List<Node> getPathTo(Player enemy) {
-        Node start = new Node(PixelToSimulation.castToGrid(bot.getPos()), 0);
-        Node target = new Node(PixelToSimulation.castToGrid(enemy.getPos()), 0);
+        // Min and max calls ensure the start and end nodes remain within the mapped play area
+        // (sometimes they are able to escape due to explosions, presumably).
+        int[] startArray = PixelToSimulation.castToGrid(bot.getPos());
+        Node start = new Node(Math.min(startArray[0], walls[0].length - 1),
+                Math.min(startArray[1], walls.length - 1), 0);
+        int[] endArray = PixelToSimulation.castToGrid(enemy.getPos());
+        Node target = new Node(Math.min(endArray[0], walls[0].length - 1),
+                Math.min(endArray[1], walls.length - 1), 0);
 
         return PathFinding.bfsPath(start, target, walls);
     }
