@@ -6,10 +6,11 @@ import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotStrategy;
 
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class DefaultShootingStrategy implements ShootingStrategy {
 
-    private static final float REACTION_TIME = 0.2f;
+    private static final float REACTION_TIME = 0.25f;
     private final RayCaster rayCaster = new RayCaster();
     private BotStrategy parent;
 
@@ -41,7 +42,7 @@ public class DefaultShootingStrategy implements ShootingStrategy {
         aimWasLocked = temp;
 
         if (aimWasLocked && aimIsLocked) timeToReaction = max(0f, timeToReaction - Game.timeElapsed());
-        else timeToReaction = REACTION_TIME;
+        else timeToReaction = min(REACTION_TIME, timeToReaction + Game.timeElapsed());
     }
 
 
