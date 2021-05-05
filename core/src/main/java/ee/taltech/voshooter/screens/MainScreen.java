@@ -470,8 +470,6 @@ public class MainScreen implements Screen {
         int i = parent.gameState.deathMessages.size() - 1;
         Queue<DeathMessage> messages = new ArrayDeque<>(parent.gameState.deathMessages);
         for (DeathMessage msg : messages) {
-            System.out.println(msg.getPlayer());
-            System.out.println(msg.getKiller());
             if (msg.getPlayer().isBot()) killfeedFont.setColor(Color.CYAN);
             else killfeedFont.setColor(Color.WHITE);
             GlyphLayout playerLayout = new GlyphLayout();

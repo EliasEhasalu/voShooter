@@ -98,7 +98,6 @@ public class StatisticsTracker {
     private void sendPlayerDeathEvents() {
         for (VoConnection c : parent.getConnections()) {
             for (long[] deathEvent : playerDeathEvents) {
-                System.out.printf("%s %s", deathEvent[0], deathEvent[1]);
                 c.sendTCP(new PlayerDeath(deathEvent[0], deathEvent[1]));
             }
         }
