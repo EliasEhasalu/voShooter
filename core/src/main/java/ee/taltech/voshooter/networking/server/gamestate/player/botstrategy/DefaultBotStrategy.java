@@ -18,7 +18,7 @@ import java.util.Set;
 public class DefaultBotStrategy implements BotStrategy {
 
     private static final RayCaster rayCaster = new RayCaster();
-    private final float turningSpeed = 1440;
+    private final float turningSpeed = 720;
 
     private final Bot bot;
     private final PlayerManager playerManager;
@@ -59,6 +59,7 @@ public class DefaultBotStrategy implements BotStrategy {
         float angleDiff = directionToTarget.angleDeg() - currentViewDirection.angleDeg();
         float turnBy = turningSpeed * Game.timeElapsed();
         float actualTurn = (Math.abs(angleDiff) < Math.abs(turnBy)) ? angleDiff : turnBy;
+        if (angleDiff > 180) actualTurn = -actualTurn;
 
         Vector2 newViewDirection = currentViewDirection.cpy().rotateDeg(actualTurn);
         return new MouseCoords(newViewDirection.x, newViewDirection.y);
