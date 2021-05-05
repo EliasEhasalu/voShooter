@@ -59,6 +59,8 @@ public class StatisticsTracker {
             killCount.put(killingPlayer, killCount.getOrDefault(killingPlayer, 0) + 1);
             long[] deathEvent = new long[] {dyingPlayer.getId(), killingPlayer.getId()};
             playerDeathEvents.add(deathEvent);
+        } else if (killer instanceof Player) {
+            playerDeathEvents.add(new long[] {((Player) killer).getId(), dyingPlayer.getId()});
         }
     }
 
@@ -95,7 +97,10 @@ public class StatisticsTracker {
 
     private void sendPlayerDeathEvents() {
         for (VoConnection c : parent.getConnections()) {
-            for (long[] deathEvent : playerDeathEvents) c.sendTCP(new PlayerDeath(deathEvent[0], deathEvent[1]));
+            for (long[] deathEvent : playerDeathEvents) {
+                System.out.printf("%s %s", deathEvent[0], deathEvent[1]);
+                c.sendTCP(new PlayerDeath(deathEvent[0], deathEvent[1]));
+            }
         }
         playerDeathEvents.clear();
     }
