@@ -18,7 +18,7 @@ import java.util.Set;
 public class DefaultBotStrategy implements BotStrategy {
 
     private static final RayCaster rayCaster = new RayCaster();
-    private final float turningSpeed = 1440;
+    private final float turningSpeed = 720;
 
     private final Bot bot;
     private final PlayerManager playerManager;
