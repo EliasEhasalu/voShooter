@@ -21,16 +21,17 @@ public class Bot extends Player {
 
     public Bot(PlayerManager playerManager, long id, String name) {
         super(playerManager, null, id, name);
-        int random = new Random().nextInt(2);
-        if (random == 0) this.strategy = new DefaultBotStrategy(
+        //int random = new Random().nextInt(2);
+        //if (random == 0)
+        this.strategy = new DefaultBotStrategy(
             this,
             new DefaultShootingStrategy(),
             new DefaultMovingStrategy()
         );
-        else this.strategy = new BalancingBotStrategy(
-                this,
-                new DefaultShootingStrategy(),
-                new DefaultMovingStrategy());
+        //else this.strategy = new BalancingBotStrategy(
+                //this,
+                //new DefaultShootingStrategy(),
+                //new DefaultMovingStrategy());
         this.bot = true;
 
         setViewDirection(new MouseCoords(1, 1));
