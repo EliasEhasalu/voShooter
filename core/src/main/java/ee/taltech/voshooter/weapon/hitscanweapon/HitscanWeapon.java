@@ -39,7 +39,7 @@ public abstract class HitscanWeapon extends Weapon implements DamageDealer {
             Body collidedBody = collision.getCollidedBody();
             if (collidedBody != null && collidedBody.getUserData() instanceof Player) {
                 Player hitPlayer = (Player) collidedBody.getUserData();
-                hitPlayer.takeDamage(damage, this);
+                hitPlayer.takeDamage(damage, this, type);
             }
         }
     }

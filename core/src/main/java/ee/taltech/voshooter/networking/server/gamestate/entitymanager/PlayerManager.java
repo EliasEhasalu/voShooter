@@ -18,8 +18,9 @@ import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BalancingBotStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.DefaultBotStrategy;
-import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy.DefaultMovingStrategy;
-import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.DefaultShootingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.moving.DefaultMovingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shooting.DefaultShootingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.weaponswitching.DefaultWeaponSwitchingStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
 import java.util.List;
@@ -45,8 +46,10 @@ public class PlayerManager extends EntityManager {
 
     protected void createBot() {
         BotStrategy botStrategy;
-        if (botManager.getBotCount() % 4 == 2) botStrategy = new BalancingBotStrategy(new DefaultShootingStrategy(), new DefaultMovingStrategy());
-        else botStrategy = new DefaultBotStrategy(new DefaultShootingStrategy(), new DefaultMovingStrategy());
+        if (botManager.getBotCount() % 4 == 2) botStrategy = new BalancingBotStrategy(
+                new DefaultShootingStrategy(), new DefaultMovingStrategy(), new DefaultWeaponSwitchingStrategy()
+        );
+        else botStrategy = new DefaultBotStrategy(new DefaultShootingStrategy(), new DefaultMovingStrategy(), new DefaultWeaponSwitchingStrategy());
         addPlayerToWorld(new Bot(this, botManager.getNewBotId(), botManager.getNewBotName(), botStrategy));
     }
 

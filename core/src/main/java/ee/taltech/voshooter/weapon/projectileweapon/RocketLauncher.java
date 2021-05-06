@@ -18,7 +18,7 @@ public class RocketLauncher extends ProjectileWeapon {
         Projectile p = new Rocket(
                 wielder,
                 wielder.getPos().cpy().add(wielder.getViewDirection().cpy().setLength(Rocket.RADIUS)),
-                wielder.getViewDirection().cpy().nor()
+                wielder.getViewDirection().cpy().nor(), type
         );
 
         wielder.getGame().getEntityManagerHub().add(p);

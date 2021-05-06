@@ -3,6 +3,7 @@ package ee.taltech.voshooter.weapon.projectile;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public class PistolBullet extends Bullet {
 
@@ -11,8 +12,8 @@ public class PistolBullet extends Bullet {
     private static final float LIFE_TIME = 2f;
     private static final int DAMAGE = 20;
 
-    public PistolBullet(Player owner, Vector2 pos, Vector2 dir) {
-        super(Type.PISTOL_BULLET, owner, pos, dir.setLength(IMPULSE), LIFE_TIME);
+    public PistolBullet(Player owner, Vector2 pos, Vector2 dir, Weapon.Type weaponType) {
+        super(Type.PISTOL_BULLET, owner, pos, dir.setLength(IMPULSE), LIFE_TIME, weaponType);
     }
 
     @Override
@@ -24,7 +25,7 @@ public class PistolBullet extends Bullet {
         ) {
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
-                p.takeDamage(DAMAGE, this);
+                p.takeDamage(DAMAGE, this, weaponType);
             }
             destroy();
         }

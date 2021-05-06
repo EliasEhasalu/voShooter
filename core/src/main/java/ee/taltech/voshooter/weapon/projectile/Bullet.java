@@ -2,6 +2,7 @@ package ee.taltech.voshooter.weapon.projectile;
 
 import com.badlogic.gdx.math.Vector2;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public abstract class Bullet extends Projectile {
 
@@ -13,7 +14,7 @@ public abstract class Bullet extends Projectile {
      * @param vel      The velocity of the projectile.
      * @param lifeTime The time this projectile will live.
      */
-    public Bullet(Type type, Player owner, Vector2 pos, Vector2 vel, float lifeTime) {
-        super(type, owner, pos, vel, lifeTime);
+    public Bullet(Type type, Player owner, Vector2 pos, Vector2 vel, float lifeTime, Weapon.Type weaponType) {
+        super(type, owner, pos, vel, lifeTime, weaponType);
     }
 }
