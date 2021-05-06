@@ -123,54 +123,66 @@ public class PreferencesScreen implements Screen {
         });
 
         volumeMusicSlider.setValue(AppPreferences.getMusicVolume());
-        volumeMusicSlider.addListener(event -> {
-            AppPreferences.setMusicVolume(volumeMusicSlider.getValue());
-            volumeMusicIndicator.setText(String.valueOf(Math.round(AppPreferences.getMusicVolume() * 100)));
-            return false;
-        });
+        if (parent.doesNotContainChangeListener(volumeMusicSlider.getListeners())) {
+            volumeMusicSlider.addListener(event -> {
+                AppPreferences.setMusicVolume(volumeMusicSlider.getValue());
+                volumeMusicIndicator.setText(String.valueOf(Math.round(AppPreferences.getMusicVolume() * 100)));
+                return false;
+            });
+        }
 
         volumeSoundSlider.setValue(AppPreferences.getSoundVolume());
-        volumeSoundSlider.addListener(event -> {
-            AppPreferences.setSoundVolume(volumeSoundSlider.getValue());
-            volumeSoundIndicator.setText(String.valueOf(Math.round(AppPreferences.getSoundVolume() * 100)));
-            return false;
-        });
+        if (parent.doesNotContainChangeListener(volumeSoundSlider.getListeners())) {
+            volumeSoundSlider.addListener(event -> {
+                AppPreferences.setSoundVolume(volumeSoundSlider.getValue());
+                volumeSoundIndicator.setText(String.valueOf(Math.round(AppPreferences.getSoundVolume() * 100)));
+                return false;
+            });
+        }
 
-        particleToggleCheckbox.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                AppPreferences.setParticlesOn(particleToggleCheckbox.isChecked());
-                particleToggleCheckbox.setChecked(particleToggleCheckbox.isChecked());
-            }
-        });
-
-        minimapCheckbox.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                AppPreferences.setMinimapOn(minimapCheckbox.isChecked());
-                minimapCheckbox.setChecked(minimapCheckbox.isChecked());
-            }
-        });
-
-        returnToPreviousScreen.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                stage.clear();
-                VoShooter.Screen screenToGoTo = VoShooter.Screen.MENU;
-                if (parent.isCameFromGame()) {
-                    screenToGoTo = VoShooter.Screen.MAIN;
+        if (parent.doesNotContainChangeListener(particleToggleCheckbox.getListeners())) {
+            particleToggleCheckbox.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    AppPreferences.setParticlesOn(particleToggleCheckbox.isChecked());
+                    particleToggleCheckbox.setChecked(particleToggleCheckbox.isChecked());
                 }
-                parent.changeScreen(screenToGoTo);
-            }
-        });
+            });
+        }
 
-        goToChangeControls.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                stage.clear();
-                parent.changeScreen(VoShooter.Screen.CHANGE_CONTROLS);
-            }
-        });
+        if (parent.doesNotContainChangeListener(minimapCheckbox.getListeners())) {
+            minimapCheckbox.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    AppPreferences.setMinimapOn(minimapCheckbox.isChecked());
+                    minimapCheckbox.setChecked(minimapCheckbox.isChecked());
+                }
+            });
+        }
+
+        if (parent.doesNotContainChangeListener(returnToPreviousScreen.getListeners())) {
+            returnToPreviousScreen.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    stage.clear();
+                    VoShooter.Screen screenToGoTo = VoShooter.Screen.MENU;
+                    if (parent.isCameFromGame()) {
+                        screenToGoTo = VoShooter.Screen.MAIN;
+                    }
+                    parent.changeScreen(screenToGoTo);
+                }
+            });
+        }
+
+        if (parent.doesNotContainChangeListener(goToChangeControls.getListeners())) {
+            goToChangeControls.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    stage.clear();
+                    parent.changeScreen(VoShooter.Screen.CHANGE_CONTROLS);
+                }
+            });
+        }
     }
 
     /**

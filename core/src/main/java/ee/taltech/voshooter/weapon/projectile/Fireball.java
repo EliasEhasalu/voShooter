@@ -3,6 +3,7 @@ package ee.taltech.voshooter.weapon.projectile;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public class Fireball extends Bullet {
 
@@ -16,8 +17,8 @@ public class Fireball extends Bullet {
      * @param owner    The player who shot the projectile.
      * @param pos      The position of the projectile.
      */
-    public Fireball(Player owner, Vector2 pos, Vector2 dir) {
-        super(Type.FIREBALL, owner, pos, dir.setLength(SPEED), LIFE_TIME);
+    public Fireball(Player owner, Vector2 pos, Vector2 dir, Weapon.Type weaponType) {
+        super(Type.FIREBALL, owner, pos, dir.setLength(SPEED), LIFE_TIME, weaponType);
     }
 
     @Override
@@ -29,7 +30,7 @@ public class Fireball extends Bullet {
         ) {
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
-                p.takeDamage(DAMAGE, this);
+                p.takeDamage(DAMAGE, this, weaponType);
             }
 
             if (!(fix.getBody().getUserData() instanceof Player)) destroy();

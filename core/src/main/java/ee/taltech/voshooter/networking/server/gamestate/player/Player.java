@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDashed;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
@@ -27,6 +28,7 @@ public class Player {
     private String name;
     private Integer health;
     public Vector2 initialPos;
+    protected boolean bot = false;
     private float respawnTime = 5f;
 
     private transient VoConnection connection;
@@ -98,6 +100,10 @@ public class Player {
                 body.applyLinearImpulse(body.getLinearVelocity().cpy().nor().setLength(DASH_FORCE), body.getPosition(), true);
             }
             statusManager.playerDashed();
+
+            for (VoConnection c : getGame().getConnections()) {
+                c.sendTCP(new PlayerDashed(id, body.getLinearVelocity()));
+            }
         }
     }
 
@@ -132,9 +138,9 @@ public class Player {
         }
     }
 
-    public void takeDamage(int amount, DamageDealer source) {
-        if (source instanceof Fireball) statusManager.applyDebuff(new Burning(this, source.getDamageSource()));
-        getStatisticsTracker().setLastDamageTakenFrom(this, source);
+    public void takeDamage(int amount, DamageDealer source, Weapon.Type type) {
+        if (source instanceof Fireball) statusManager.applyDebuff(new Burning(this, source.getDamageSource(), type));
+        getStatisticsTracker().setLastDamageTakenFrom(this, source, amount, type);
 
         takeDamage(amount);
     }
@@ -170,7 +176,8 @@ public class Player {
 
     /** @return The position of this player. */
     public Vector2 getPos() {
-        return body.getPosition();
+        if (body != null) return body.getPosition();
+        else return new Vector2();
     }
 
     /** @return The view direction of this player. */
@@ -237,7 +244,7 @@ public class Player {
     }
 
     public Game getGame() {
-        return playerManager.getGame();
+        return (playerManager != null) ? playerManager.getGame() : null;
     }
 
     private StatisticsTracker getStatisticsTracker() {
@@ -262,5 +269,9 @@ public class Player {
 
     public void increaseMaxVelocity(float increase) {
         maxPlayerVelocity += increase;
+    }
+
+    public boolean isBot() {
+        return bot;
     }
 }

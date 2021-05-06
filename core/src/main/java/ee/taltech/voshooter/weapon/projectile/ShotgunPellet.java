@@ -3,6 +3,7 @@ package ee.taltech.voshooter.weapon.projectile;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public class ShotgunPellet extends Bullet {
 
@@ -10,8 +11,8 @@ public class ShotgunPellet extends Bullet {
     private static final float BOUNCE_COST = 0.05f;
     private static final float LIFE_TIME = 0.5f;
 
-    public ShotgunPellet(Player owner, Vector2 pos, Vector2 dir) {
-        super(Type.PISTOL_BULLET, owner, pos, dir, LIFE_TIME);
+    public ShotgunPellet(Player owner, Vector2 pos, Vector2 dir, Weapon.Type weaponType) {
+        super(Type.SHOTGUN_PELLET, owner, pos, dir, LIFE_TIME, weaponType);
     }
 
     public void handleCollision(Fixture fix) {
@@ -24,7 +25,7 @@ public class ShotgunPellet extends Bullet {
 
             if (fix.getBody().getUserData() instanceof Player) {
                 Player p = (Player) fix.getBody().getUserData();
-                p.takeDamage(DAMAGE, this);
+                p.takeDamage(DAMAGE, this, weaponType);
                 destroy();
             }
         }

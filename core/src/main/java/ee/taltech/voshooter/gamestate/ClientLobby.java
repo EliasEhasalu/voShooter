@@ -11,7 +11,9 @@ import java.util.List;
 public class ClientLobby {
 
     private int maxUsers = 4;
-    private int gamemode = 0;
+    private int gamemode = 1;
+    private int gameLength = 0;
+    private int botAmount = 0;
     private List<User> users = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private String lobbyCode;
@@ -78,7 +80,9 @@ public class ClientLobby {
         lobbyCode = null;
         maxUsers = 4;
         gamemode = 0;
-        mapType = null;
+        gameLength = 0;
+        botAmount = 0;
+        mapType = GameMap.MapType.DEFAULT;
     }
 
     /**
@@ -179,5 +183,21 @@ public class ClientLobby {
         setLobbyCode(message.lobbyCode);
         setUsers(message.users);
         this.mapType = message.mapType;
+    }
+
+    public int getGameLength() {
+        return gameLength;
+    }
+
+    public void setGameLength(int gameLength) {
+        this.gameLength = gameLength;
+    }
+
+    public int getBotAmount() {
+        return botAmount;
+    }
+
+    public void setBotAmount(int botAmount) {
+        this.botAmount = botAmount;
     }
 }

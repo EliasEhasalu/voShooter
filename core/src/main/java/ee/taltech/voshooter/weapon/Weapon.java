@@ -14,12 +14,16 @@ public abstract class Weapon implements AmmoWeapon {
     protected Type type;
     protected int remainingAmmo;
 
+    // This needs to be sorted by effective distance!!!
+    // See DefaultWeaponSwitchingStrategy.java
     public enum Type {
         PISTOL,
-        FLAMETHROWER,
-        ROCKET_LAUNCHER,
         SHOTGUN,
-        MACHINE_GUN
+        FLAMETHROWER,
+        GRENADE_LAUNCHER,
+        MACHINE_GUN,
+        ROCKET_LAUNCHER,
+        RAILGUN
     }
 
     /**
@@ -34,7 +38,11 @@ public abstract class Weapon implements AmmoWeapon {
     }
 
     public boolean canFire() {
-        return (remainingCoolDown == 0 && remainingAmmo > 0);
+        return (
+            remainingCoolDown == 0
+            && remainingAmmo > 0
+            && wielder.isAlive()
+        );
     }
 
     public void coolDown() {
@@ -58,6 +66,8 @@ public abstract class Weapon implements AmmoWeapon {
     }
 
     public void replenishAmmoBy(float decimal) {
+        // This nested chain of min(max()) is here to avoid integer overflow due to
+        // the Pistol class having its max ammo denoted by a MAX_INTEGER.
         remainingAmmo = min(getMaxAmmo(), max(getRemainingAmmo(), getRemainingAmmo() + (int) Math.ceil(getMaxAmmo() * decimal)));
     }
 

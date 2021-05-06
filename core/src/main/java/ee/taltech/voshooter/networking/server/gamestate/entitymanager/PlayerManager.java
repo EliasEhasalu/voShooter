@@ -13,7 +13,15 @@ import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
+import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BalancingBotStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.DefaultBotStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.moving.DefaultMovingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shooting.DefaultShootingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.weaponswitching.DefaultWeaponSwitchingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +32,28 @@ public class PlayerManager extends EntityManager {
 
     private final Set<Player> players = ConcurrentHashMap.newKeySet();
     private final PlayerSpawner playerSpawner = new PlayerSpawner();
+    private final BotManager botManager = new BotManager();
+    private final StatisticsTracker statisticsTracker;
 
-    public PlayerManager(World world, Game game) {
+    public PlayerManager(World world, Game game, StatisticsTracker statisticsTracker) {
         super(world, game);
+        this.statisticsTracker = statisticsTracker;
     }
 
     protected void createPlayer(VoConnection c) {
-        Player p = new Player(this, c, c.user.id, c.user.getName());
+        addPlayerToWorld(new Player(this, c, c.user.id, c.user.getName()));
+    }
+
+    protected void createBot() {
+        BotStrategy botStrategy;
+        if (botManager.getBotCount() % 4 == 2) botStrategy = new BalancingBotStrategy(
+                new DefaultShootingStrategy(), new DefaultMovingStrategy(), new DefaultWeaponSwitchingStrategy()
+        );
+        else botStrategy = new DefaultBotStrategy(new DefaultShootingStrategy(), new DefaultMovingStrategy(), new DefaultWeaponSwitchingStrategy());
+        addPlayerToWorld(new Bot(this, botManager.getNewBotId(), botManager.getNewBotName(), botStrategy));
+    }
+
+    private void addPlayerToWorld(Player p) {
         List<Object> fixtureAndBody = ShapeFactory.getPlayerFixtureAndBody(world, playerSpawner.getSpawnPointForMap(game.getMapType()));
         Body playerBody = (Body) fixtureAndBody.get(1);
         Fixture playerFixture = (Fixture) fixtureAndBody.get(0);
@@ -38,10 +61,10 @@ public class PlayerManager extends EntityManager {
         p.setBody(playerBody);
         p.setFixture(playerFixture);
         playerBody.setUserData(p);
+        p.initialPos = playerBody.getPosition();
 
         // Set the player object on the connection.
-        c.player = p;
-        c.player.initialPos = playerBody.getPosition();
+        if (!p.isBot()) p.getConnection().player = p;
 
         players.add(p);
     }
@@ -80,6 +103,10 @@ public class PlayerManager extends EntityManager {
             player.get().purge();
             players.remove(player.get());
         }
+    }
+
+    public Player getTopPlayer() {
+        return statisticsTracker.getTopKiller();
     }
 
     public World getWorld() {

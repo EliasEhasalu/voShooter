@@ -1,6 +1,7 @@
 package ee.taltech.voshooter.networking.server.gamestate.player.status;
 
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public abstract class Debuff {
 
@@ -13,13 +14,15 @@ public abstract class Debuff {
     private final Type type;
     protected final Player target;
     protected final Object source;
+    protected final Weapon.Type weaponType;
 
-    protected Debuff(Type type, Player target, Object source, int time, int frequency) {
+    protected Debuff(Type type, Player target, Object source, int time, int frequency, Weapon.Type weaponType) {
         this.type = type;
         this.target = target;
         this.source = source;
         this.time = time;
         this.frequency = frequency;
+        this.weaponType = weaponType;
     }
 
     protected Object getSource() {

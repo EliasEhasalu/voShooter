@@ -51,6 +51,14 @@ public class GameController {
                 || (Gdx.input.isButtonPressed(AppPreferences.getNumberFive()) && !AppPreferences.getNumberFiveIsKey())) {
             actionsPerformed.add(ActionType.WEAPON_MACHINE_GUN);
         }
+        if ((Gdx.input.isKeyPressed(AppPreferences.getNumberSix()) && AppPreferences.getNumberSixIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getNumberSix()) && !AppPreferences.getNumberSixIsKey())) {
+            actionsPerformed.add(ActionType.WEAPON_GRENADE_LAUNCHER);
+        }
+        if ((Gdx.input.isKeyPressed(AppPreferences.getNumberSeven()) && AppPreferences.getNumberSevenIsKey())
+                || (Gdx.input.isButtonPressed(AppPreferences.getNumberSeven()) && !AppPreferences.getNumberSevenIsKey())) {
+            actionsPerformed.add(ActionType.WEAPON_RAILGUN);
+        }
         if ((Gdx.input.isKeyPressed(AppPreferences.getLShiftKey()) && AppPreferences.getLShiftKeyIsKey())
                 || (Gdx.input.isButtonPressed(AppPreferences.getLShiftKey()) && !AppPreferences.getLShiftKeyIsKey())) {
             actionsPerformed.add(ActionType.DASH);
@@ -59,10 +67,6 @@ public class GameController {
         if ((Gdx.input.isKeyPressed(AppPreferences.getMouseLeft()) && AppPreferences.getButtonLeftIsKey())
                 || (Gdx.input.isButtonPressed(AppPreferences.getMouseLeft()) && !AppPreferences.getButtonLeftIsKey())) {
             actionsPerformed.add(ActionType.MOUSE_LEFT);
-        }
-        if ((Gdx.input.isKeyPressed(AppPreferences.getMouseRight()) && AppPreferences.getButtonRightIsKey())
-                || (Gdx.input.isButtonPressed(AppPreferences.getMouseRight()) && !AppPreferences.getButtonRightIsKey())) {
-            actionsPerformed.add(ActionType.MOUSE_RIGHT);
         }
 
         return actionsPerformed;

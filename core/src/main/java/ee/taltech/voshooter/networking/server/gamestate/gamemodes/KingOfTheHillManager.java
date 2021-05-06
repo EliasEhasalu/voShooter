@@ -11,6 +11,7 @@ import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTra
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalDouble;
 
 public class KingOfTheHillManager extends GameMode {
 
@@ -28,8 +29,19 @@ public class KingOfTheHillManager extends GameMode {
 
     @Override
     public void update() {
+        calculateTimeLeft();
         sendKothAreaUpdates();
         statisticsUpdates();
+    }
+
+    @Override
+    public void calculateTimeLeft() {
+        OptionalDouble time = kingOfTheHillStatistics.getHighestTimeHeld();
+        double highestTime = 0;
+        if (time.isPresent()) highestTime = time.getAsDouble();
+        if (highestTime >= parent.gameLength) {
+            parent.shutDown();
+        }
     }
 
     @Override

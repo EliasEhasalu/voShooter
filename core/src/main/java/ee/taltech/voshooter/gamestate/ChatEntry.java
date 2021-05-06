@@ -6,6 +6,7 @@ public class ChatEntry {
     private float duration = MAX_DURATION;
     private String text;
     private String prefix;
+    private boolean isBroadcast;
 
     /**
      * Constructor.
@@ -40,5 +41,13 @@ public class ChatEntry {
 
     public void setPrefix(String prefix) {
         this.prefix = "[" + prefix + "]: ";
+    }
+
+    public boolean isBroadcast() {
+        return isBroadcast;
+    }
+
+    public void setBroadcast(boolean broadcast) {
+        isBroadcast = broadcast;
     }
 }

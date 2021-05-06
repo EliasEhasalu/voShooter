@@ -4,6 +4,7 @@ import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
+import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
@@ -13,30 +14,30 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.min;
+
 public class Lobby {
 
     public static final int MINIMUM_PLAYERS = 1;
+    public static final int MAX_BOTS = 8;
+    public static final int MAX_USERS = 8;
 
-    private final int maxUsers;
-    private final int gameMode;
+    private int maxUsers = 4;
+    private int botAmount = 0;
+    private int gameMode = 1;
     private final String lobbyCode;
+    private int gameLength;
     private VoConnection host;
-    private GameMap.MapType mapType;
+    private GameMap.MapType mapType = GameMap.MapType.DEFAULT;
 
     private Game game;
     private final Set<VoConnection> connections = ConcurrentHashMap.newKeySet();
 
     /**
-     * @param maxUsers The maximum amount of users that can be in this lobby.
-     * @param gameMode An integer representing the game mode of this lobby.
      * @param lobbyCode The lobby code assigned to this lobby.
-     * @param mapType The game map used in this lobby.
      */
-    protected Lobby(int gameMode, int maxUsers, String lobbyCode, GameMap.MapType mapType) {
-        this.maxUsers = maxUsers;
-        this.gameMode = gameMode;
+    protected Lobby(String lobbyCode) {
         this.lobbyCode = lobbyCode;
-        this.mapType = mapType;
     }
 
     /** Send updates of people joining / leaving to this lobby's members. */
@@ -50,11 +51,9 @@ public class Lobby {
 
     /** Send all users in this lobby a message that the game has started. */
     protected void sendGameStart() {
-        game = new Game(gameMode, mapType);
-
-        for (VoConnection con : connections) {
-            game.addConnection(con);
-        }
+        game = new Game(gameMode, mapType, gameLength);
+        for (VoConnection con : connections) game.addConnection(con);
+        for (int i = 0; i < botAmount; i++) game.addBot();
 
         game.start();
 
@@ -129,6 +128,17 @@ public class Lobby {
         return connections.stream()
             .map(con -> con.user)
             .collect(Collectors.toList());
+    }
+
+    public void handleChanges(LobbySettingsChanged msg) {
+        this.gameMode = msg.gameMode;
+        this.mapType = msg.mapType;
+        this.gameLength = msg.gameLength;
+        this.maxUsers = min(msg.maxUsers, MAX_USERS);
+        this.botAmount = min(msg.botAmount, MAX_BOTS);
+        for (VoConnection connection : connections) {
+            connection.sendTCP(msg);
+        }
     }
 
     /**

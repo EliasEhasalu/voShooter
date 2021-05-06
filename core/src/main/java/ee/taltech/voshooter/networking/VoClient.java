@@ -8,17 +8,20 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import ee.taltech.voshooter.VoShooter;
+import ee.taltech.voshooter.entity.clientprojectile.ClientProjectile;
 import ee.taltech.voshooter.entity.player.ClientPlayer;
 import ee.taltech.voshooter.gamestate.ChatEntry;
 import ee.taltech.voshooter.gamestate.gamemode.ClientKingOfTheHillManager;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerChange;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
+import ee.taltech.voshooter.networking.messages.clientreceived.GameEnd;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
+import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDashed;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDead;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerDeath;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerHealthUpdate;
@@ -31,6 +34,8 @@ import ee.taltech.voshooter.networking.messages.clientreceived.PlayerViewUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
+import ee.taltech.voshooter.networking.messages.clientreceived.RailgunFired;
+import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
@@ -68,10 +73,12 @@ public class VoClient {
             private GameStarted gameStart;
             private Set<ProjectileCreated> projectilesCreatedSet = ConcurrentHashMap.newKeySet();
             private Set<ProjectileDestroyed> projectileDestroyedSet = ConcurrentHashMap.newKeySet();
+            private Set<RailgunFired> railgunFiredSet = ConcurrentHashMap.newKeySet();
             private Set<PlayerDeath> playerDeathSet = ConcurrentHashMap.newKeySet();
             private ProjectilePositions projectileUpdate;
             private Set<ChatReceiveMessage> receivedMessages = ConcurrentHashMap.newKeySet();
             private Set<ChatGamePlayerChange> receivedPlayerChanges = ConcurrentHashMap.newKeySet();
+            private Set<PlayerDashed> playerDashedMessages = ConcurrentHashMap.newKeySet();
 
             @Override
             public void connected(Connection connection) {
@@ -81,12 +88,10 @@ public class VoClient {
             public void received(Connection connection, Object message) {
 
                 if (message instanceof LobbyJoined) {
-                    LobbyJoined mes = (LobbyJoined) message;
                     screenToChangeTo = VoShooter.Screen.LOBBY;
-                    joinLobby(mes);
+                    joinLobby((LobbyJoined) message);
                 } else if (message instanceof LobbyUserUpdate) {
-                    LobbyUserUpdate update = (LobbyUserUpdate) message;
-                    updateLobby(update);
+                    updateLobby((LobbyUserUpdate) message);
                 } else if (message instanceof GameStarted) {
                     gameStart = (GameStarted) message;
                     screenToChangeTo = VoShooter.Screen.MAIN;
@@ -123,6 +128,15 @@ public class VoClient {
                     receivedPlayerChanges.add((ChatGamePlayerChange) message);
                 } else if (message instanceof PlayerSwappedWeapon) {
                     handlePlayerWeaponUpdate((PlayerSwappedWeapon) message);
+                } else if (message instanceof LobbySettingsChanged) {
+                    updateLobbySettings((LobbySettingsChanged) message);
+                } else if (message instanceof GameEnd) {
+                    handleGameOver();
+                    screenToChangeTo = VoShooter.Screen.LOBBY;
+                } else if (message instanceof RailgunFired) {
+                    railgunFiredSet.add((RailgunFired) message);
+                } else if (message instanceof PlayerDashed) {
+                    playerDashedMessages.add((PlayerDashed) message);
                 }
 
                 // Define actions to be taken on the next cycle
@@ -170,6 +184,18 @@ public class VoClient {
                                 receivedPlayerChanges.remove(msg);
                             }
                         }
+                        if (!railgunFiredSet.isEmpty()) {
+                            for (RailgunFired msg : railgunFiredSet) {
+                                handleRailgunFired(msg);
+                                railgunFiredSet.remove(msg);
+                            }
+                        }
+                        if (!playerDashedMessages.isEmpty()) {
+                            for (PlayerDashed msg : playerDashedMessages) {
+                                handlePLayerDash(msg);
+                                playerDashedMessages.remove(msg);
+                            }
+                        }
                     }
                 });
             }
@@ -184,8 +210,13 @@ public class VoClient {
         }
     }
 
+    private void handleGameOver() {
+        parent.gameState.clearDrawables();
+        parent.gameState.clearMessages();
+    }
+
     private void updateKingOfTheHillAreaHolder(PlayerKothChange msg) {
-        System.out.println(msg.player.getName());
+        // TODO add method.
     }
 
     /**
@@ -194,6 +225,14 @@ public class VoClient {
      */
     private void joinLobby(LobbyJoined msg) {
             parent.gameState.currentLobby.handleJoining(msg);
+    }
+
+    private void updateLobbySettings(LobbySettingsChanged msg) {
+        parent.gameState.currentLobby.setGamemode(msg.gameMode);
+        parent.gameState.currentLobby.setMaxUsers(msg.maxUsers);
+        parent.gameState.currentLobby.setMapType(msg.mapType);
+        parent.gameState.currentLobby.setGameLength(msg.gameLength);
+        parent.gameState.currentLobby.setBotAmount(msg.botAmount);
     }
 
     /**
@@ -263,24 +302,30 @@ public class VoClient {
      * @param msg The message containing info about the death.
      */
     private void handlePlayerDeath(PlayerDeath msg) {
-        parent.gameState.addDeathMessage(msg.playerId, msg.killerId);
+        System.out.println(msg.weaponType);
+        parent.gameState.addDeathMessage(msg.playerId, msg.killerId, msg.weaponType);
         if (msg.playerId != msg.killerId) {
             if (msg.killerId == parent.gameState.userPlayer.getId()) {
                 SoundPlayer.play("soundfx/ui/kill.ogg");
-                parent.gameState.addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
+                parent.gameState.particleManager
+                        .addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
                                 Gdx.graphics.getHeight() - MainScreen.KILLFEED_TOP_MARGIN - 18),
                         "particleeffects/ui/killfeedkill",
                         false,
                         true);
             } else if (msg.playerId == parent.gameState.userPlayer.getId()) {
-                parent.gameState.addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
+                SoundPlayer.play("soundfx/ui/player_death.ogg");
+                parent.gameState.particleManager
+                        .addParticleEffect(new Vector2(Gdx.graphics.getWidth(),
                                 Gdx.graphics.getHeight() - MainScreen.KILLFEED_TOP_MARGIN - 18),
                         "particleeffects/ui/killfeeddeath",
                         false,
                         true);
             }
         }
-        parent.gameState.addParticleEffect(parent.gameState.players.get(msg.playerId).getPosition(),
+        ClientPlayer player = parent.gameState.players.get(msg.playerId);
+        if (player != null && player.getPosition() != null) parent.gameState.particleManager
+                .addParticleEffect(player.getPosition(),
                 "particleeffects/player/playerdeath", false, false);
     }
 
@@ -293,11 +338,19 @@ public class VoClient {
 
         for (ProjectileCreated msg : messages) {
             if (!projectileTypes.contains(msg.type)) {
-                SoundPlayer.play("soundfx/ui/shoot.ogg", parent.gameState.userPlayer.getPosition(), msg.pos);
+                SoundPlayer.play(ClientProjectile.getSoundCreatedPath(msg.type),
+                        parent.gameState.userPlayer.getPosition(), msg.pos);
             }
 
             projectileTypes.add(msg.type);
             parent.gameState.createProjectile(msg);
+            if (msg.type == Projectile.Type.ROCKET) {
+                parent.gameState.particleManager.addParticleEffect(msg.pos, msg.pos.cpy().add(msg.vel),
+                        "particleeffects/projectile/rocketfire");
+            } else if (msg.type == Projectile.Type.GRENADE) {
+                parent.gameState.particleManager.addParticleEffect(msg.pos, msg.pos.cpy().add(msg.vel),
+                        "particleeffects/projectile/grenadelauncherfire");
+            }
         }
     }
 
@@ -314,7 +367,12 @@ public class VoClient {
      * @param msg Projectile destroyed message.
      */
     private void destroyProjectile(ProjectileDestroyed msg) {
-        parent.gameState.destroyProjectile(msg);
+        ClientProjectile p = parent.gameState.getProjectiles().get((long) msg.id);
+        if (p != null) {
+            String path = ClientProjectile.getSoundDestroyedPath(p.getType());
+            if (path != null) SoundPlayer.play(path, parent.gameState.userPlayer.getPosition(), p.getPosition());
+            parent.gameState.destroyProjectile(msg);
+        }
     }
 
     /**
@@ -322,6 +380,9 @@ public class VoClient {
      * @param msg The message containing info about the player.
      */
     private void updatePlayerStatistics(PlayerStatistics msg) {
+        MainScreen mainScreen = parent.mainScreen;
+        if (mainScreen != null && mainScreen.clientGameModeManager != null) mainScreen.clientGameModeManager
+                .setTimePassed(msg.timePassed);
         if (parent.gameState.players.containsKey(msg.id)) {
             ClientPlayer p = parent.gameState.players.get(msg.id);
             p.setKills(msg.kills);
@@ -350,15 +411,37 @@ public class VoClient {
         }
     }
 
+    private void handlePLayerDash(PlayerDashed msg) {
+        if (parent.gameState.getPlayers().containsKey(msg.id)) {
+            ClientPlayer p = parent.gameState.getPlayers().get(msg.id);
+            parent.gameState.particleManager.addParticleEffect(p.getPosition(),
+                    p.getPosition().cpy().add(msg.direction),
+                    "particleeffects/player/playerdash");
+        }
+    }
+
+    /**
+     * Handle railgun being fired. Create particles, play sound.
+     * @param msg The railgun fired message.
+     */
+    private void handleRailgunFired(RailgunFired msg) {
+        String path = "soundfx/gun/railgun.ogg";
+        SoundPlayer.play(path, parent.gameState.userPlayer.getPosition(), msg.startPos);
+
+        parent.gameState.particleManager
+                .addParticleEffect(msg.startPos, msg.endPos, "particleeffects/projectile/railgun");
+        parent.gameState.particleManager
+                .addParticleEffect(msg.endPos, "particleeffects/projectile/railgunimpact", false, false);
+    }
+
     /**
      * Receive a chat message.
      * @param msg The message.
      */
     private void handleReceivedMessages(ChatReceiveMessage msg) {
-        System.out.println(msg.message);
         ChatEntry entry = new ChatEntry();
         entry.setText(msg.message);
-
+        entry.setBroadcast(false);
         if (parent.gameState.getPlayers().containsKey(msg.playerId)) {
             entry.setPrefix(parent.gameState.getPlayers().get(msg.playerId).getName());
         } else entry.setPrefix("unknown");
@@ -370,10 +453,9 @@ public class VoClient {
      * @param msg The message.
      */
     private void handleReceivedPlayerChanges(ChatGamePlayerChange msg) {
-        System.out.println(msg.message);
         ChatEntry entry = new ChatEntry();
         entry.setText(msg.message);
-
+        entry.setBroadcast(true);
         entry.setPrefix("Server");
         parent.gameState.addChatEntry(entry);
     }

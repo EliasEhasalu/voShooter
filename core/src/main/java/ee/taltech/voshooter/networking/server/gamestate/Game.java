@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerChange;
+import ee.taltech.voshooter.networking.messages.clientreceived.GameEnd;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.server.VoConnection;
@@ -19,13 +20,13 @@ import ee.taltech.voshooter.networking.server.gamestate.gamemodes.GameModeManage
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class Game extends Thread {
 
@@ -35,6 +36,7 @@ public class Game extends Thread {
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
 
     private final Map<VoConnection, Set<PlayerAction>> connectionInputs = new ConcurrentHashMap<>();
+    private final Set<Player> bots = ConcurrentHashMap.newKeySet();
 
     static {
         World.setVelocityThreshold(0.1f);
@@ -42,25 +44,28 @@ public class Game extends Thread {
 
     private final GameMap.MapType mapType;
     private TiledMap currentMap;
+    public final int gameLength;
     private final World world = new World(new Vector2(0, 0), false);
 
-    private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this);
+    private final StatisticsTracker statisticsTracker = new StatisticsTracker(this);
+    private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this, statisticsTracker);
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
     private final InputHandler inputHandler = new InputHandler();
-    private final StatisticsTracker statisticsTracker = new StatisticsTracker(this);
     private final GameMode gameModeManager;
 
     /**
      * Construct the game.
      * @param gameMode The game mode for the game.
      * @param mapType The game map used in this game.
+     * @param gameLength Length of the round.
      */
-    public Game(int gameMode, GameMap.MapType mapType) {
+    public Game(int gameMode, GameMap.MapType mapType, int gameLength) {
         this.mapType = mapType;
+        if (gameLength >= 15) this.gameLength = gameLength;
+        else this.gameLength = Integer.MAX_VALUE;
         setCurrentMap();
         gameModeManager = GameModeManagerFactory.makeGameModeManager(this, statisticsTracker, gameMode);
         LevelGenerator.generateLevel(world, currentMap);
-
         world.setContactListener(collisionHandler);
     }
 
@@ -80,6 +85,10 @@ public class Game extends Thread {
                         connection.player.getName())));
             }
         }
+    }
+
+    public void addBot() {
+       entityManagerHub.createBot();
     }
 
     /**
@@ -169,15 +178,16 @@ public class Game extends Thread {
     /** Close the game simulation. */
     public void shutDown() {
         running = false;
+        for (VoConnection c : getConnections()) {
+            c.sendTCP(new GameEnd());
+        }
     }
 
     /**
      * @return A list of player objects in this game.
      */
     public List<Player> getPlayers() {
-       return connectionInputs.keySet().stream()
-               .map(c -> c.player)
-               .collect(Collectors.toList());
+        return new ArrayList<>(entityManagerHub.getAllPlayers());
     }
 
     public Set<VoConnection> getConnections() {
@@ -203,5 +213,17 @@ public class Game extends Thread {
 
     public TiledMap getCurrentMap() {
         return currentMap;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public GameMode getGameModeManager() {
+        return gameModeManager;
+    }
+
+    public static float timeElapsed() {
+        return (float) (1 / Game.TICK_RATE_IN_HZ);
     }
 }

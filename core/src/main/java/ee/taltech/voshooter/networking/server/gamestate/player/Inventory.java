@@ -2,16 +2,18 @@ package ee.taltech.voshooter.networking.server.gamestate.player;
 
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerSwappedWeapon;
 import ee.taltech.voshooter.weapon.Weapon;
-import ee.taltech.voshooter.weapon.WeaponBuilder;
+import ee.taltech.voshooter.weapon.WeaponFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class Inventory {
 
     private static final Weapon.Type DEFAULT_WEAPON = Weapon.Type.PISTOL;
     private static final int FREQ = 2400;
     private static final float PASSIVE_AMMO_REGENERATION_FACTOR = 0.1f;
+    private static final Random RANDOM = new Random();
 
     private final Map<Weapon.Type, Weapon> weapons = new HashMap<>();
     private final Player parent;
@@ -26,6 +28,8 @@ public class Inventory {
         pickUpWeapon(Weapon.Type.FLAMETHROWER);
         pickUpWeapon(Weapon.Type.ROCKET_LAUNCHER);
         pickUpWeapon(Weapon.Type.SHOTGUN);
+        pickUpWeapon(Weapon.Type.GRENADE_LAUNCHER);
+        pickUpWeapon(Weapon.Type.RAILGUN);
         swapToDefaultWeapon();
     }
 
@@ -90,12 +94,25 @@ public class Inventory {
         swapToWeapon(DEFAULT_WEAPON);
     }
 
+    public void swapToRandomWeapon() {
+        Weapon.Type[] weaponTypes = Weapon.Type.values();
+        swapToWeapon(weaponTypes[RANDOM.nextInt(weaponTypes.length)]);
+    }
+
+    public Weapon.Type getCurrentWeaponType() {
+        return currentWeapon.getType();
+    }
+
     protected Weapon getCurrentWeapon() {
         return currentWeapon;
     }
 
+    public Weapon getWeaponOfType(Weapon.Type type) {
+        return weapons.get(type);
+    }
+
     public void pickUpWeapon(Weapon.Type weaponType) {
         if (weapons.containsKey(weaponType)) weapons.get(weaponType).replenishAmmo();
-        else weapons.put(weaponType, WeaponBuilder.getWeaponOfType(weaponType, parent));
+        else weapons.put(weaponType, WeaponFactory.getWeaponOfType(weaponType, parent));
     }
 }

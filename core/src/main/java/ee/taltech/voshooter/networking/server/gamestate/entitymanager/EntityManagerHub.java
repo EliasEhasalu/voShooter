@@ -4,22 +4,26 @@ import com.badlogic.gdx.physics.box2d.World;
 import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class EntityManagerHub {
 
     private final World world;
     private final Game parent;
     private final Map<String, EntityManager> entityManagers = new LinkedHashMap<>();
+    private final StatisticsTracker statisticsTracker;
 
-    public EntityManagerHub(World world, Game parent) {
+    public EntityManagerHub(World world, Game parent, StatisticsTracker statisticsTracker) {
         this.world = world;
         this.parent = parent;
+        this.statisticsTracker = statisticsTracker;
 
-        this.entityManagers.put("Player", new PlayerManager(world, parent));
+        this.entityManagers.put("Player", new PlayerManager(world, parent, statisticsTracker));
         this.entityManagers.put("Projectile", new ProjectileManager(world, parent));
     }
 
@@ -42,5 +46,17 @@ public class EntityManagerHub {
 
     public void createPlayer(VoConnection connection) {
         ((PlayerManager) entityManagers.get("Player")).createPlayer(connection);
+    }
+
+    public void createBot() {
+        ((PlayerManager) entityManagers.get("Player")).createBot();
+    }
+
+    public Set<Player> getAllPlayers() {
+        return ((PlayerManager) entityManagers.get("Player")).getPlayers();
+    }
+
+    public Set<Projectile> getAllProjectiles() {
+        return ((ProjectileManager) entityManagers.get("Projectile")).getProjectiles();
     }
 }
