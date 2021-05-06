@@ -14,13 +14,15 @@ public abstract class Weapon implements AmmoWeapon {
     protected Type type;
     protected int remainingAmmo;
 
+    // This needs to be sorted by effective distance!!!
+    // See DefaultWeaponSwitchingStrategy.java
     public enum Type {
         PISTOL,
-        FLAMETHROWER,
-        ROCKET_LAUNCHER,
         SHOTGUN,
-        MACHINE_GUN,
+        FLAMETHROWER,
         GRENADE_LAUNCHER,
+        MACHINE_GUN,
+        ROCKET_LAUNCHER,
         RAILGUN
     }
 

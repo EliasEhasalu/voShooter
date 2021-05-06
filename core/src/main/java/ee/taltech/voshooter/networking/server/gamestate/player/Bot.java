@@ -5,9 +5,9 @@ import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerMana
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotAction;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.DefaultBotStrategy;
-import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy.DefaultMovingStrategy;
-import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.DefaultShootingStrategy;
-import ee.taltech.voshooter.weapon.Weapon;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.moving.DefaultMovingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shooting.DefaultShootingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.weaponswitching.DefaultWeaponSwitchingStrategy;
 
 public class Bot extends Player {
 
@@ -22,18 +22,17 @@ public class Bot extends Player {
         this.strategy = new DefaultBotStrategy(
             this,
             new DefaultShootingStrategy(),
-            new DefaultMovingStrategy()
+            new DefaultMovingStrategy(),
+            new DefaultWeaponSwitchingStrategy()
         );
         this.bot = true;
 
         setViewDirection(new MouseCoords(1, 1));
-        getInventory().swapToRandomWeapon();
     }
 
     @Override
     public void update() {
         performAction(strategy.getAction());
-        if (getWeapon().getType() == Weapon.Type.PISTOL) getInventory().swapToRandomWeapon();
         super.update();
     }
 
@@ -41,5 +40,6 @@ public class Bot extends Player {
         setViewDirection(action.getAim());
         addMoveDirection(action.getXMoveDir(), action.getYMoveDir());
         if (action.isShooting()) shoot();
+        if (action.getWeaponToSwitchTo() != null) getInventory().swapToWeapon(action.getWeaponToSwitchTo());
     }
 }
