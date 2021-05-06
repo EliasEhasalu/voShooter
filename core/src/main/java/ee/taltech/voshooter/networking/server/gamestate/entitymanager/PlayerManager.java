@@ -15,6 +15,11 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToS
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BalancingBotStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.DefaultBotStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy.DefaultMovingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.DefaultShootingStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
 import java.util.List;
@@ -39,7 +44,10 @@ public class PlayerManager extends EntityManager {
     }
 
     protected void createBot() {
-        addPlayerToWorld(new Bot(this, botManager.getNewBotId(), botManager.getNewBotName()));
+        BotStrategy botStrategy;
+        if (botManager.getBotCount() % 4 == 2) botStrategy = new BalancingBotStrategy(new DefaultShootingStrategy(), new DefaultMovingStrategy());
+        else botStrategy = new DefaultBotStrategy(new DefaultShootingStrategy(), new DefaultMovingStrategy());
+        addPlayerToWorld(new Bot(this, botManager.getNewBotId(), botManager.getNewBotName(), botStrategy));
     }
 
     private void addPlayerToWorld(Player p) {
