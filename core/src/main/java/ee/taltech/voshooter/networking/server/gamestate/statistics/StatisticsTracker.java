@@ -8,11 +8,13 @@ import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
 
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class StatisticsTracker {
 
@@ -119,5 +121,11 @@ public class StatisticsTracker {
 
     private void unsetImportant() {
         this.existImportantUpdates = false;
+    }
+
+    public Player getTopKiller() {
+        Optional<Player> player = killCount.keySet().stream().filter(Player::isAlive)
+                .max(Comparator.comparingInt(killCount::get));
+        return player.orElse(null);
     }
 }

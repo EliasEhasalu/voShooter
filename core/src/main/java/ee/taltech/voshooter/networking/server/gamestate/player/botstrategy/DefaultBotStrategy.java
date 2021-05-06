@@ -20,12 +20,12 @@ public class DefaultBotStrategy implements BotStrategy {
     private static final RayCaster rayCaster = new RayCaster();
     private final float turningSpeed = 720;
 
-    private final Bot bot;
-    private final PlayerManager playerManager;
-    private final ShootingStrategy shootingStrategy;
-    private final MovingStrategy movingStrategy;
+    private Bot bot;
+    protected PlayerManager playerManager;
+    protected final ShootingStrategy shootingStrategy;
+    protected final MovingStrategy movingStrategy;
 
-    private Body targetedBody;
+    protected Body targetedBody;
 
     public DefaultBotStrategy(Bot bot, ShootingStrategy shootingStrategy, MovingStrategy movingStrategy) {
         this.bot = bot;
@@ -33,6 +33,11 @@ public class DefaultBotStrategy implements BotStrategy {
 
         this.shootingStrategy = shootingStrategy; shootingStrategy.setBot(bot);
         this.movingStrategy = movingStrategy; movingStrategy.setBot(bot);
+    }
+
+    public DefaultBotStrategy(ShootingStrategy shootingStrategy, MovingStrategy movingStrategy) {
+        this.shootingStrategy = shootingStrategy;
+        this.movingStrategy = movingStrategy;
     }
 
     @Override
@@ -48,7 +53,7 @@ public class DefaultBotStrategy implements BotStrategy {
         return action;
     }
 
-    private MouseCoords determineAimDirection(Player closestEnemy) {
+    protected MouseCoords determineAimDirection(Player closestEnemy) {
         if (closestEnemy == null) return new MouseCoords(bot.getViewDirection().x, bot.getViewDirection().y);
         else return lookTowardsTargetMouseCoords(closestEnemy);
     }
@@ -80,7 +85,7 @@ public class DefaultBotStrategy implements BotStrategy {
     }
 
 
-    private Body getHitScannedTarget() {
+    protected Body getHitScannedTarget() {
         RayCollision collision = rayCaster.getFirstCollision(
                 bot.getGame(),
                 bot.getPos(),
@@ -95,7 +100,7 @@ public class DefaultBotStrategy implements BotStrategy {
         return b;
     }
 
-    private boolean targetIsHitScanned() {
+    protected boolean targetIsHitScanned() {
         return (targetedBody != null && targetedBody.getUserData() instanceof Player);
     }
 
@@ -105,5 +110,12 @@ public class DefaultBotStrategy implements BotStrategy {
 
     private Set<Player> getPlayers() {
         return playerManager.getPlayers();
+    }
+
+    public void setBot(Bot bot) {
+        this.bot = bot;
+        this.playerManager = bot.getPlayerManager();
+        shootingStrategy.setBot(bot);
+        movingStrategy.setBot(bot);
     }
 }

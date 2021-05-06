@@ -15,6 +15,12 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToS
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BalancingBotStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.DefaultBotStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy.DefaultMovingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.DefaultShootingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +32,11 @@ public class PlayerManager extends EntityManager {
     private final Set<Player> players = ConcurrentHashMap.newKeySet();
     private final PlayerSpawner playerSpawner = new PlayerSpawner();
     private final BotManager botManager = new BotManager();
+    private final StatisticsTracker statisticsTracker;
 
-    public PlayerManager(World world, Game game) {
+    public PlayerManager(World world, Game game, StatisticsTracker statisticsTracker) {
         super(world, game);
+        this.statisticsTracker = statisticsTracker;
     }
 
     protected void createPlayer(VoConnection c) {
@@ -36,7 +44,10 @@ public class PlayerManager extends EntityManager {
     }
 
     protected void createBot() {
-        addPlayerToWorld(new Bot(this, botManager.getNewBotId(), botManager.getNewBotName()));
+        BotStrategy botStrategy;
+        if (botManager.getBotCount() % 4 == 2) botStrategy = new BalancingBotStrategy(new DefaultShootingStrategy(), new DefaultMovingStrategy());
+        else botStrategy = new DefaultBotStrategy(new DefaultShootingStrategy(), new DefaultMovingStrategy());
+        addPlayerToWorld(new Bot(this, botManager.getNewBotId(), botManager.getNewBotName(), botStrategy));
     }
 
     private void addPlayerToWorld(Player p) {
@@ -89,6 +100,10 @@ public class PlayerManager extends EntityManager {
             player.get().purge();
             players.remove(player.get());
         }
+    }
+
+    public Player getTopPlayer() {
+        return statisticsTracker.getTopKiller();
     }
 
     public World getWorld() {

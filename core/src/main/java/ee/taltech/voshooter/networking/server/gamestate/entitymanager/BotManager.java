@@ -40,4 +40,8 @@ public class BotManager {
             j++;
         }
     }
+
+    public int getBotCount() {
+        return currentlyUsedBotNames.size();
+    }
 }
