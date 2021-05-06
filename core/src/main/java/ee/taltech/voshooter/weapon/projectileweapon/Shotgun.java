@@ -32,7 +32,7 @@ public class Shotgun extends ProjectileWeapon {
             Projectile p = new ShotgunPellet(
                     wielder,
                     wielder.getPos().cpy().add(offset.cpy().setLength(PistolBullet.RADIUS)),
-                    offset.cpy()
+                    offset.cpy(), type
             );
 
             wielder.getGame().getEntityManagerHub().add(p);

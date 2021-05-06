@@ -11,6 +11,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositio
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.rendering.Drawable;
+import ee.taltech.voshooter.weapon.Weapon;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -165,11 +166,11 @@ public class GameState {
      * @param playerId The player that died.
      * @param killerId The player that killed.
      */
-    public void addDeathMessage(long playerId, long killerId) {
+    public void addDeathMessage(long playerId, long killerId, Weapon.Type weaponType) {
         ClientPlayer player = players.getOrDefault(playerId, null);
         ClientPlayer killer = players.getOrDefault(killerId, null);
 
-        DeathMessage msg = new DeathMessage(player, killer);
+        DeathMessage msg = new DeathMessage(player, killer, weaponType);
         deathMessages.offer(msg);
     }
 

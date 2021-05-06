@@ -10,6 +10,7 @@ import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.PixelToSimulation;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.ShapeFactory;
 import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public abstract class Projectile implements DamageDealer {
 
@@ -25,6 +26,7 @@ public abstract class Projectile implements DamageDealer {
     protected Projectile.Type type;
     protected boolean isNew = true;
     protected Vector2 vel;
+    protected Weapon.Type weaponType;
 
     public enum Type {
         PISTOL_BULLET,
@@ -41,12 +43,13 @@ public abstract class Projectile implements DamageDealer {
      * @param pos The position of the projectile.
      * @param vel The velocity of the projectile.
      */
-    public Projectile(Projectile.Type type, Player owner, Vector2 pos, Vector2 vel, float lifeTime) {
+    public Projectile(Projectile.Type type, Player owner, Vector2 pos, Vector2 vel, float lifeTime, Weapon.Type weaponType) {
         this.vel = vel;
         this.type = type;
         this.owner = owner;
         this.lifeTime = lifeTime;
         this.id = ID_GENERATOR++;
+        this.weaponType = weaponType;
 
         this.body = ShapeFactory.constructProjectileBody(type, owner.getWorld(), pos, vel);
         this.body.setUserData(this);  // Have the body remember this rocket object.

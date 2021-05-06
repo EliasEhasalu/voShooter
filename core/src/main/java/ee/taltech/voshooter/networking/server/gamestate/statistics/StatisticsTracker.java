@@ -7,6 +7,7 @@ import ee.taltech.voshooter.networking.server.VoConnection;
 import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
+import ee.taltech.voshooter.weapon.Weapon;
 
 import java.util.Comparator;
 import java.util.Deque;
@@ -24,9 +25,10 @@ public class StatisticsTracker {
     private boolean existImportantUpdates = true;
 
     private final Map<Player, DamageDealer> lastDamageTakenFrom = new HashMap<>();  // receiver <- dealer
+    private final Map<Player, Weapon.Type> lastDamageTakenFromWeaponType = new HashMap<>();
     private final Map<Player, Integer> deathCount = new HashMap<>();
     private final Map<Player, Integer> killCount = new HashMap<>();
-    private final List<long[]> playerDeathEvents = new LinkedList<>();
+    private final List<PlayerDeath> playerDeathEvents = new LinkedList<>();
     private final Deque<PlayerTookDamage> playerDamageEvents = new LinkedList<>();
     private final Game parent;
 
@@ -34,9 +36,10 @@ public class StatisticsTracker {
         this.parent = parent;
     }
 
-    public void setLastDamageTakenFrom(Player receiver, DamageDealer dealer, int amount) {
+    public void setLastDamageTakenFrom(Player receiver, DamageDealer dealer, int amount, Weapon.Type type) {
         addPlayerDamageEvent(receiver, dealer, amount);
         lastDamageTakenFrom.put(receiver, dealer);
+        lastDamageTakenFromWeaponType.put(receiver, type);
     }
 
     private void addPlayerDamageEvent(Player receiver, DamageDealer dealer, int amount) {
@@ -59,10 +62,11 @@ public class StatisticsTracker {
             KillRewards.applyKillRewards(killingPlayer);
 
             killCount.put(killingPlayer, killCount.getOrDefault(killingPlayer, 0) + 1);
-            long[] deathEvent = new long[] {dyingPlayer.getId(), killingPlayer.getId()};
-            playerDeathEvents.add(deathEvent);
+            PlayerDeath death = new PlayerDeath(dyingPlayer.getId(), killingPlayer.getId(),
+                    lastDamageTakenFromWeaponType.get(dyingPlayer));
+            playerDeathEvents.add(death);
         } else if (killer instanceof Player) {
-            playerDeathEvents.add(new long[] {((Player) killer).getId(), dyingPlayer.getId()});
+            playerDeathEvents.add(new PlayerDeath(dyingPlayer.getId()));
         }
     }
 
@@ -99,8 +103,8 @@ public class StatisticsTracker {
 
     private void sendPlayerDeathEvents() {
         for (VoConnection c : parent.getConnections()) {
-            for (long[] deathEvent : playerDeathEvents) {
-                c.sendTCP(new PlayerDeath(deathEvent[0], deathEvent[1]));
+            for (PlayerDeath deathEvent : playerDeathEvents) {
+                c.sendTCP(deathEvent);
             }
         }
         playerDeathEvents.clear();

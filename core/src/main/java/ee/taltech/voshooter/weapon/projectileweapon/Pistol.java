@@ -18,7 +18,7 @@ public class Pistol extends ProjectileWeapon {
         Projectile p = new PistolBullet(
                 wielder,
                 wielder.getPos().cpy().add(wielder.getViewDirection().cpy().setLength(PistolBullet.RADIUS)),
-                wielder.getViewDirection().cpy().nor()
+                wielder.getViewDirection().cpy().nor(), type
         );
 
         wielder.getGame().getEntityManagerHub().add(p);
