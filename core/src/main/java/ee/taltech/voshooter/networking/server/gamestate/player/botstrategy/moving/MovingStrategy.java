@@ -1,4 +1,4 @@
-package ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy;
+package ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.moving;
 
 import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;

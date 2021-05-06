@@ -107,6 +107,10 @@ public class Inventory {
         return currentWeapon;
     }
 
+    public Weapon getWeaponOfType(Weapon.Type type) {
+        return weapons.get(type);
+    }
+
     public void pickUpWeapon(Weapon.Type weaponType) {
         if (weapons.containsKey(weaponType)) weapons.get(weaponType).replenishAmmo();
         else weapons.put(weaponType, WeaponFactory.getWeaponOfType(weaponType, parent));

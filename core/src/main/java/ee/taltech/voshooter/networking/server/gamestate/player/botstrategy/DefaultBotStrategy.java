@@ -9,8 +9,9 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.RayColli
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.PlayerManager;
 import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
-import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy.MovingStrategy;
-import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.ShootingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.moving.MovingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shooting.ShootingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.weaponswitching.WeaponSwitchingStrategy;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,31 +25,27 @@ public class DefaultBotStrategy implements BotStrategy {
     protected PlayerManager playerManager;
     protected final ShootingStrategy shootingStrategy;
     protected final MovingStrategy movingStrategy;
+    protected final WeaponSwitchingStrategy weaponSwitchingStrategy;
 
     protected Body targetedBody;
+    private Player closestEnemy;
 
-    public DefaultBotStrategy(Bot bot, ShootingStrategy shootingStrategy, MovingStrategy movingStrategy) {
-        this.bot = bot;
-        this.playerManager = bot.getPlayerManager();
-
-        this.shootingStrategy = shootingStrategy; shootingStrategy.setBot(bot);
-        this.movingStrategy = movingStrategy; movingStrategy.setBot(bot);
-    }
-
-    public DefaultBotStrategy(ShootingStrategy shootingStrategy, MovingStrategy movingStrategy) {
+    public DefaultBotStrategy(ShootingStrategy shootingStrategy, MovingStrategy movingStrategy, WeaponSwitchingStrategy weaponSwitchingStrategy) {
         this.shootingStrategy = shootingStrategy;
         this.movingStrategy = movingStrategy;
+        this.weaponSwitchingStrategy = weaponSwitchingStrategy;
     }
 
     @Override
     public BotAction getAction() {
-        BotAction action = new BotAction();
-        Player closestEnemy = determineClosestEnemy();
+        closestEnemy = determineClosestEnemy();
         targetedBody = getHitScannedTarget();
+        BotAction action = new BotAction();
 
         action.setAim(determineAimDirection(closestEnemy));
         action.setShooting(shootingStrategy.toShoot(targetIsHitScanned()));
         action.setMovementDirections(movingStrategy.getMovementDirections(closestEnemy, targetIsHitScanned()));
+        action.setWeaponToSwitchTo(weaponSwitchingStrategy.getWeaponToSwitchTo(closestEnemy));
 
         return action;
     }
@@ -100,7 +97,15 @@ public class DefaultBotStrategy implements BotStrategy {
         return b;
     }
 
-    protected boolean targetIsHitScanned() {
+    public Body getTargetedBody() {
+        return targetedBody;
+    }
+
+    public Player getClosestEnemy() {
+        return closestEnemy;
+    }
+
+    boolean targetIsHitScanned() {
         return (targetedBody != null && targetedBody.getUserData() instanceof Player);
     }
 
@@ -117,5 +122,6 @@ public class DefaultBotStrategy implements BotStrategy {
         this.playerManager = bot.getPlayerManager();
         shootingStrategy.setBot(bot);
         movingStrategy.setBot(bot);
+        weaponSwitchingStrategy.setBot(bot);
     }
 }

@@ -20,13 +20,11 @@ public class Bot extends Player {
         this.strategy.setBot(this);
 
         setViewDirection(new MouseCoords(1, 1));
-        getInventory().swapToRandomWeapon();
     }
 
     @Override
     public void update() {
         performAction(strategy.getAction());
-        if (getWeapon().getRemainingAmmo() == 0) getInventory().swapToRandomWeapon();
         super.update();
     }
 
@@ -34,5 +32,6 @@ public class Bot extends Player {
         setViewDirection(action.getAim());
         addMoveDirection(action.getXMoveDir(), action.getYMoveDir());
         if (action.isShooting()) shoot();
+        if (action.getWeaponToSwitchTo() != null) getInventory().swapToWeapon(action.getWeaponToSwitchTo());
     }
 }

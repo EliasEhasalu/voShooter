@@ -1,18 +1,14 @@
 package ee.taltech.voshooter.networking.server.gamestate.player.botstrategy;
 
-import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
-import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy.MovingStrategy;
-import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.ShootingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.moving.MovingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shooting.ShootingStrategy;
+import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.weaponswitching.WeaponSwitchingStrategy;
 
 public class BalancingBotStrategy extends DefaultBotStrategy implements BotStrategy {
 
-    public BalancingBotStrategy(Bot bot, ShootingStrategy shootingStrategy, MovingStrategy movingStrategy) {
-        super(bot, shootingStrategy, movingStrategy);
-    }
-
-    public BalancingBotStrategy(ShootingStrategy shootingStrategy, MovingStrategy movingStrategy) {
-        super(shootingStrategy, movingStrategy);
+    public BalancingBotStrategy(ShootingStrategy shootingStrategy, MovingStrategy movingStrategy, WeaponSwitchingStrategy weaponSwitchingStrategy) {
+        super(shootingStrategy, movingStrategy, weaponSwitchingStrategy);
     }
 
     @Override
