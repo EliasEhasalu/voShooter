@@ -22,17 +22,7 @@ public class DefaultShootingStrategy implements ShootingStrategy {
     @Override
     public boolean toShoot(boolean targetIsHitScanned) {
         handleReactionTime(targetIsHitScanned);
-
-        switch (bot.getInventory().getCurrentWeaponType()) {
-            case RAILGUN:
-                return railGunFiringStrategy();
-            case MACHINE_GUN:
-                return machineGunFiringStrategy();
-            case ROCKET_LAUNCHER:
-                return rocketLauncherFiringStrategy();
-            default:
-                return pistolFiringStrategy();
-        }
+        return defaultFiringStrategy();
     }
 
     private void handleReactionTime(boolean targetIsHitScanned) {
@@ -43,19 +33,7 @@ public class DefaultShootingStrategy implements ShootingStrategy {
     }
 
 
-    private boolean pistolFiringStrategy() {
-        return (timeToReaction <= 0f && aimIsLocked);
-    }
-
-    private boolean railGunFiringStrategy() {
-        return (timeToReaction <= 0f && aimIsLocked);
-    }
-
-    private boolean machineGunFiringStrategy() {
-        return (timeToReaction <= 0f && aimIsLocked);
-    }
-
-    private boolean rocketLauncherFiringStrategy() {
+    private boolean defaultFiringStrategy() {
         return (timeToReaction <= 0f && aimIsLocked);
     }
 
