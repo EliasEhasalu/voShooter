@@ -10,7 +10,8 @@ import static java.lang.Math.min;
 
 public class DefaultShootingStrategy implements ShootingStrategy {
 
-    private static final float REACTION_TIME = 0.2f;
+    private static final float REACTION_TIME = 0.3f;
+    private static final float REACTION_GRACE_PERIOD = 0.15f;
     private final RayCaster rayCaster = new RayCaster();
     private BotStrategy parent;
 
@@ -28,8 +29,8 @@ public class DefaultShootingStrategy implements ShootingStrategy {
     private void handleReactionTime(boolean targetIsHitScanned) {
         aimIsLocked = targetIsHitScanned;
 
-        if (aimIsLocked) timeToReaction = max(-REACTION_TIME, timeToReaction - Game.timeElapsed());
-        else timeToReaction = min(REACTION_TIME, timeToReaction + (Game.timeElapsed() / 2));
+        if (aimIsLocked) timeToReaction = max(-REACTION_GRACE_PERIOD, timeToReaction - Game.timeElapsed());
+        else timeToReaction = min(REACTION_TIME, timeToReaction + Game.timeElapsed());
     }
 
 
