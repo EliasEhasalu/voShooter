@@ -302,7 +302,6 @@ public class VoClient {
      * @param msg The message containing info about the death.
      */
     private void handlePlayerDeath(PlayerDeath msg) {
-        System.out.println(msg.weaponType);
         parent.gameState.addDeathMessage(msg.playerId, msg.killerId, msg.weaponType);
         if (msg.playerId != msg.killerId) {
             if (msg.killerId == parent.gameState.userPlayer.getId()) {

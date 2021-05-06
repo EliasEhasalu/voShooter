@@ -27,7 +27,6 @@ public class DefaultWeaponSwitchingStrategy implements WeaponSwitchingStrategy {
                 bot.getPos().x, bot.getPos().y,
                 closestEnemy.getPos().x, closestEnemy.getPos().y
         );
-        System.out.println(distance);
         return getBestWeaponForDistance(distance);
     }
 
