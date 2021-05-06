@@ -179,10 +179,12 @@ public class ClientLobby {
         }
         setGamemode(message.gameMode);
         setMaxUsers(message.maxPlayers);
+        setMapType(message.mapType);
+        setGameLength(message.gameLength);
+        setBotAmount(message.botAmount);
         addUser(parent.clientUser);
         setLobbyCode(message.lobbyCode);
         setUsers(message.users);
-        this.mapType = message.mapType;
     }
 
     public int getGameLength() {

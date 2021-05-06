@@ -4,7 +4,6 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
-import ee.taltech.voshooter.map.GameMap;
 import ee.taltech.voshooter.networking.Network;
 import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
@@ -22,7 +21,6 @@ import ee.taltech.voshooter.networking.messages.serverreceived.StartGame;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -143,7 +141,7 @@ public class VoServer {
         newLobby.setHost(connection);
 
         connection.sendTCP(new LobbyJoined(newLobby.getGameMode(), newLobby.getMaxPlayers(), code, newLobby.getUsers(), user,
-                        user.id, newLobby.getMapType()));
+                        user.id, newLobby.getMapType(), newLobby.getBotAmount(), newLobby.getGameLength()));
     }
 
     private void handleLobbyChanges(LobbySettingsChanged msg) {
@@ -167,14 +165,10 @@ public class VoServer {
             if (lobby.isFull()) {
                 connection.sendTCP(new LobbyFull());
             } else {
-                int gameMode = lobby.getGameMode();
-                int maxPlayers = lobby.getMaxPlayers();
-                List<User> users = lobby.getUsers();
-                User host = lobby.getHost().user;
-                GameMap.MapType mapType = lobby.getMapType();
-
                 connection.sendTCP(
-                        new LobbyJoined(gameMode, maxPlayers, code, users, host, connection.user.id, mapType));
+                        new LobbyJoined(lobby.getGameMode(), lobby.getMaxPlayers(), code, lobby.getUsers(),
+                                lobby.getHost().user, connection.user.id, lobby.getMapType(), lobby.getBotAmount(),
+                                lobby.getGameLength()));
                 lobby.addConnection(connection);
             }
         } else {
