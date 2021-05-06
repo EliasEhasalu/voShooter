@@ -125,7 +125,7 @@ public class MainScreen implements Screen {
     public static final int KILLFEED_TOP_MARGIN = 50;
     private static final int KILLFEED_RIGHT_MARGIN = 50;
     private static final int KILLFEED_GAP = 38;
-    private static final int KILLFEED_ICON_SPACE = 10;
+    private static final int KILLFEED_ICON_SPACE = 40;
 
     /**
      * Construct the menu screen.
@@ -485,16 +485,19 @@ public class MainScreen implements Screen {
                 GlyphLayout killerLayout = new GlyphLayout();
                 killerLayout.setText(killfeedFont, msg.getKiller().getName());
                 killfeedFont.setColor(Color.WHITE);
-
-                hudBatch.draw(killIcon,
+                Texture tex = WEAPON_TEXTURES.get(msg.getWeaponType());
+                Sprite sprite = new Sprite(tex);
+                sprite.flip(true, false);
+                hudBatch.draw(sprite,
                         playerX - killIcon.getWidth() - KILLFEED_ICON_SPACE,
-                        playerY - killIcon.getHeight() / 1.4f);
+                        playerY - killIcon.getHeight(),
+                        50, 50);
                 killfeedFont.draw(hudBatch, killerLayout,
-                        playerX - killIcon.getWidth() - killerLayout.width - 2 * KILLFEED_ICON_SPACE,
+                        playerX - killIcon.getWidth() - killerLayout.width - 1.5f * KILLFEED_ICON_SPACE,
                         playerY);
             } else {
                 hudBatch.draw(selfKillIcon,
-                        playerX - selfKillIcon.getWidth() - KILLFEED_ICON_SPACE,
+                        playerX - selfKillIcon.getWidth() - 10,
                         playerY - selfKillIcon.getHeight() / 1.4f);
             }
 

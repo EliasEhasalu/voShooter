@@ -303,7 +303,7 @@ public class VoClient {
      */
     private void handlePlayerDeath(PlayerDeath msg) {
         System.out.println(msg.weaponType);
-        parent.gameState.addDeathMessage(msg.playerId, msg.killerId);
+        parent.gameState.addDeathMessage(msg.playerId, msg.killerId, msg.weaponType);
         if (msg.playerId != msg.killerId) {
             if (msg.killerId == parent.gameState.userPlayer.getId()) {
                 SoundPlayer.play("soundfx/ui/kill.ogg");
