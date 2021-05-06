@@ -44,7 +44,7 @@ public class Lobby {
     private void sendLobbyUpdates() {
         List<User> users = getUsers();
         List<Player> players;
-        if (game.isAlive()) players = game.getPlayers();
+        if (game != null && game.isAlive()) players = game.getPlayers();
         else players = getPlayers();
 
         for (VoConnection con : connections) {
