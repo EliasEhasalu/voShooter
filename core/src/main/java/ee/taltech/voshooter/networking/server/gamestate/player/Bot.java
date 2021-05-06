@@ -7,6 +7,7 @@ import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.BotSt
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.DefaultBotStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movingstrategy.DefaultMovingStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shootingstrategy.DefaultShootingStrategy;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public class Bot extends Player {
 
@@ -32,7 +33,7 @@ public class Bot extends Player {
     @Override
     public void update() {
         performAction(strategy.getAction());
-        if (getWeapon().getRemainingAmmo() == 0) getInventory().swapToRandomWeapon();
+        if (getWeapon().getType() == Weapon.Type.PISTOL) getInventory().swapToRandomWeapon();
         super.update();
     }
 
