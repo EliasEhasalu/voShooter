@@ -43,7 +43,10 @@ public class Lobby {
     /** Send updates of people joining / leaving to this lobby's members. */
     private void sendLobbyUpdates() {
         List<User> users = getUsers();
-        List<Player> players = getPlayers();
+        List<Player> players;
+        if (game.isAlive()) players = game.getPlayers();
+        else players = getPlayers();
+
         for (VoConnection con : connections) {
             con.sendTCP(new LobbyUserUpdate(users, players));
         }
