@@ -111,15 +111,13 @@ public class Player {
      * Update the player's position.
      */
     private void move() {
-        if (body != null) {
-            body.applyLinearImpulse(playerAcc, body.getPosition(), true);
+        body.applyLinearImpulse(playerAcc, body.getPosition(), true);
 
-            if (body.getLinearVelocity().len() > maxPlayerVelocity) {
-                body.setLinearVelocity(body.getLinearVelocity().cpy().limit(maxPlayerVelocity));
-            }
-            playerAcc.limit(0);  // Reset player acceleration vector after application.
-            maxPlayerVelocity = max(REGULAR_MAX_PLAYER_VELOCITY, maxPlayerVelocity - 1f);
+        if (body.getLinearVelocity().len() > maxPlayerVelocity) {
+            body.setLinearVelocity(body.getLinearVelocity().cpy().limit(maxPlayerVelocity));
         }
+        playerAcc.limit(0);  // Reset player acceleration vector after application.
+        maxPlayerVelocity = max(REGULAR_MAX_PLAYER_VELOCITY, maxPlayerVelocity - 1f);
     }
 
     /**
