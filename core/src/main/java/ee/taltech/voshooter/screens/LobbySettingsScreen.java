@@ -149,7 +149,7 @@ public class LobbySettingsScreen implements Screen {
             });
         }
 
-        if (parent.doesNotContainChangeListener(playerCountDecrease.getListeners())) {
+        if (parent.doesNotContainChangeListener(playerCountIncrease.getListeners())) {
             playerCountIncrease.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {

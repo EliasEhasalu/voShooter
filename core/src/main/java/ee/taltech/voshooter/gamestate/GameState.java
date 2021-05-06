@@ -89,7 +89,7 @@ public class GameState {
                     break;
                 }
             }
-            if (!userFound) {
+            if (!userFound && !e.isBot()) {
                 entities.remove(e);
                 this.players.remove(e.getId());
                 drawableEntities.remove(e);
