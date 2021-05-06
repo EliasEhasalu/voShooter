@@ -34,7 +34,7 @@ public class Flamethrower extends ProjectileWeapon {
             Projectile p = new Fireball(
                     wielder,
                     wielder.getPos().cpy(),
-                    offset.cpy()
+                    offset.cpy(), type
             );
 
             wielder.getGame().getEntityManagerHub().add(p);

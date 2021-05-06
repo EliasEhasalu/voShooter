@@ -18,7 +18,7 @@ public class GrenadeLauncher extends ProjectileWeapon {
         Projectile p = new Grenade(
                 wielder,
                 wielder.getPos().cpy().add(wielder.getViewDirection().cpy().setLength(Grenade.RADIUS)),
-                wielder.getViewDirection().cpy().nor()
+                wielder.getViewDirection().cpy().nor(), type
         );
 
         wielder.getGame().getEntityManagerHub().add(p);

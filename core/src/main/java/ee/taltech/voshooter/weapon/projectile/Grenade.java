@@ -3,6 +3,7 @@ package ee.taltech.voshooter.weapon.projectile;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
+import ee.taltech.voshooter.weapon.Weapon;
 
 public class Grenade extends Projectile {
 
@@ -19,8 +20,8 @@ public class Grenade extends Projectile {
      * @param owner    The player who shot the projectile.
      * @param pos      The position of the projectile.
      */
-    public Grenade(Player owner, Vector2 pos, Vector2 dir) {
-        super(Type.GRENADE, owner, pos, dir.setLength(SPEED), LIFE_TIME);
+    public Grenade(Player owner, Vector2 pos, Vector2 dir, Weapon.Type weaponType) {
+        super(Type.GRENADE, owner, pos, dir.setLength(SPEED), LIFE_TIME, weaponType);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class Grenade extends Projectile {
                 && !(fix.isSensor())
                 && (fix.getBody().getUserData() instanceof Player)
         ) {
-            ((Player) fix.getBody().getUserData()).takeDamage(DIRECT_HIT_DAMAGE, this);
+            ((Player) fix.getBody().getUserData()).takeDamage(DIRECT_HIT_DAMAGE, this, weaponType);
             destroy();
         }
     }
@@ -51,7 +52,7 @@ public class Grenade extends Projectile {
         for (Player p : owner.getPlayerManager().getPlayers()) {
             if (Vector2.dst(currPos.x, currPos.y, p.getPos().x, p.getPos().y) < EXPLOSION_RADIUS) {
                 p.getBody().applyLinearImpulse(p.getPos().cpy().sub(currPos).scl(EXPLOSION_FORCE), p.getPos(), true);
-                p.takeDamage(EXPLOSION_DAMAGE, this);
+                p.takeDamage(EXPLOSION_DAMAGE, this, weaponType);
             }
         }
     }
