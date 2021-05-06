@@ -170,8 +170,8 @@ public class GameState {
         ClientPlayer player = players.getOrDefault(playerId, null);
         ClientPlayer killer = players.getOrDefault(killerId, null);
 
-        DeathMessage msg = new DeathMessage(player, killer, weaponType);
-        deathMessages.offer(msg);
+        DeathMessage msg = new DeathMessage(player, killer);
+        if (player != null && killer != null) deathMessages.offer(msg);
     }
 
     /** Remove a message from the set of death messages. */
