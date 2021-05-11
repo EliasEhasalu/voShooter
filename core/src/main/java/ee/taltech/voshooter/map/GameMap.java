@@ -62,6 +62,20 @@ public class GameMap {
                     new Vector2(25, 38),
                     new Vector2(38, 25),
                     new Vector2(38, 38))),
+            new AbstractMap.SimpleEntry<>(MapType.GRAND, Arrays.asList(
+                    new Vector2(8, 91 - 8),
+                    new Vector2(22, 91 - 9),
+                    new Vector2(9, 91 - 25),
+                    new Vector2(66, 91 - 15),
+                    new Vector2(85, 91 - 6),
+                    new Vector2(86, 91 - 18),
+                    new Vector2(8, 91 - 70),
+                    new Vector2(10, 91 - 82),
+                    new Vector2(25, 91 - 82),
+                    new Vector2(71, 91 - 82),
+                    new Vector2(77, 91 - 74),
+                    new Vector2(82, 91 - 65)
+                    )),
             new AbstractMap.SimpleEntry<>(MapType.FUNKY, Arrays.asList(
                     new Vector2(61, 32),
                     new Vector2(45, 47),
