@@ -6,26 +6,25 @@ import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.OptionalDouble;
 
-public class KingOfTheHillStatistics {
+public class KingOfTheHillStatistics extends StatisticsTracker {
 
-    private int updateTicker = 0;
-    private static final int FREQUENCY = 60;
-    private Game parent;
     public Player playerInArea;
     private Map<Long, Double> kothPlayers = new HashMap<>();
 
     public KingOfTheHillStatistics(Game parent) {
-        this.parent = parent;
+        super(parent);
     }
 
+    @Override
     public void sendUpdates() {
-        updateTicker++;
         refreshPlayers();
         updatePlayerScoreKoth();
         sendPlayerScoreKoth();
+        super.sendUpdates();
     }
 
     public OptionalDouble getHighestTimeHeld() {
@@ -52,5 +51,13 @@ public class KingOfTheHillStatistics {
                 c.sendTCP(new PlayerKothScores(kothPlayers));
             }
         }
+    }
+
+    @Override
+    public List<Player> getTopKiller() {
+        return super.getTopKiller();
+        /**return kothPlayers.keySet().stream().filter(Player::isAlive)
+                .sorted(Comparator.comparingDouble(player1 -> kothPlayers.get(player1)).reversed())
+                .collect(Collectors.toList());*/
     }
 }

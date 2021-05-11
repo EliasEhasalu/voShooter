@@ -47,8 +47,8 @@ public class Game extends Thread {
     public final int gameLength;
     private final World world = new World(new Vector2(0, 0), false);
 
-    private final StatisticsTracker statisticsTracker = new StatisticsTracker(this);
-    private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this, statisticsTracker);
+    private final StatisticsTracker statisticsTracker;
+    private final EntityManagerHub entityManagerHub;
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
     private final InputHandler inputHandler = new InputHandler();
     private final GameMode gameModeManager;
@@ -64,6 +64,8 @@ public class Game extends Thread {
         if (gameLength >= 15) this.gameLength = gameLength;
         else this.gameLength = Integer.MAX_VALUE;
         setCurrentMap();
+        statisticsTracker = GameModeManagerFactory.makeStatisticsTracker(this, gameMode);
+        entityManagerHub = new EntityManagerHub(world, this, statisticsTracker);
         gameModeManager = GameModeManagerFactory.makeGameModeManager(this, statisticsTracker, gameMode);
         LevelGenerator.generateLevel(world, currentMap);
         world.setContactListener(collisionHandler);

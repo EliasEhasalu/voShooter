@@ -105,7 +105,7 @@ public class PlayerManager extends EntityManager {
         }
     }
 
-    public Player getTopPlayer() {
+    public List<Player> getTopPlayer() {
         return statisticsTracker.getTopKiller();
     }
 

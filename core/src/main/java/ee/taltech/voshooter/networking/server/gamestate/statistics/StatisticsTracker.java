@@ -15,13 +15,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class StatisticsTracker {
 
-    private static final int FREQUENCY = 60;
+    protected static final int FREQUENCY = 60;
 
-    private int updateTicker = 0;
+    protected int updateTicker = 0;
     private boolean existImportantUpdates = true;
 
     private final Map<Player, DamageDealer> lastDamageTakenFrom = new HashMap<>();  // receiver <- dealer
@@ -30,7 +30,7 @@ public class StatisticsTracker {
     private final Map<Player, Integer> killCount = new HashMap<>();
     private final List<PlayerDeath> playerDeathEvents = new LinkedList<>();
     private final Deque<PlayerTookDamage> playerDamageEvents = new LinkedList<>();
-    private final Game parent;
+    protected final Game parent;
 
     public StatisticsTracker(Game parent) {
         this.parent = parent;
@@ -96,6 +96,7 @@ public class StatisticsTracker {
             for (Player p : parent.getPlayers()) {
                 int kills = killCount.getOrDefault(p, 0);
                 int deaths = deathCount.getOrDefault(p, 0);
+                if (p.getId() == 0) System.out.printf("%s: %s, %s%n", p.getId(), kills, deaths);
                 c.sendTCP(new PlayerStatistics(p.getId(), deaths, kills, parent.getGameModeManager().getTimePassed()));
             }
         }
@@ -127,9 +128,8 @@ public class StatisticsTracker {
         this.existImportantUpdates = false;
     }
 
-    public Player getTopKiller() {
-        Optional<Player> player = killCount.keySet().stream().filter(Player::isAlive)
-                .max(Comparator.comparingInt(killCount::get));
-        return player.orElse(null);
+    public List<Player> getTopKiller() {
+        return killCount.keySet().stream().filter(Player::isAlive)
+                .sorted(Comparator.comparingInt(killCount::get).reversed()).collect(Collectors.toList());
     }
 }

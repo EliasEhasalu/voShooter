@@ -22,7 +22,6 @@ public class ClientPlayer extends Entity implements Drawable {
     private boolean bot;
     private Weapon.Type weapon = Weapon.Type.PISTOL;
     public int currentAmmo = 0;
-    public int maxAmmo = 0;
     public ClientGameModeManager clientGameModeManager;
 
     /**
@@ -144,6 +143,7 @@ public class ClientPlayer extends Entity implements Drawable {
      * @param kills amount of kills.
      */
     public void setKills(int kills) {
+        if (this.id == 0) System.out.println(kills);
         this.kills = kills;
     }
 
