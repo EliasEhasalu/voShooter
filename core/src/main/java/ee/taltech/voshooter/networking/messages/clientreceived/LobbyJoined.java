@@ -17,6 +17,8 @@ public class LobbyJoined {
     public User host;
     public long id;
     public GameMap.MapType mapType;
+    public int gameLength;
+    public int botAmount;
 
     /** For serialization. */
     public LobbyJoined() {
@@ -32,7 +34,7 @@ public class LobbyJoined {
      * @param mapType The game map used in this lobby.
      */
     public LobbyJoined(int gameMode, int maxPlayers, String lobbyCode, List<User> users,
-                       User host, long id, GameMap.MapType mapType) {
+                       User host, long id, GameMap.MapType mapType, int botAmount, int gameLength) {
         this.gameMode = gameMode;
         this.maxPlayers = maxPlayers;
         this.lobbyCode = lobbyCode;
@@ -40,5 +42,7 @@ public class LobbyJoined {
         this.host = host;
         this.id = id;
         this.mapType = mapType;
+        this.botAmount = botAmount;
+        this.gameLength = gameLength;
     }
 }

@@ -79,6 +79,7 @@ public class VoClient {
             private Set<ChatReceiveMessage> receivedMessages = ConcurrentHashMap.newKeySet();
             private Set<ChatGamePlayerChange> receivedPlayerChanges = ConcurrentHashMap.newKeySet();
             private Set<PlayerDashed> playerDashedMessages = ConcurrentHashMap.newKeySet();
+            private GameEnd gameEnd;
 
             @Override
             public void connected(Connection connection) {
@@ -131,8 +132,9 @@ public class VoClient {
                 } else if (message instanceof LobbySettingsChanged) {
                     updateLobbySettings((LobbySettingsChanged) message);
                 } else if (message instanceof GameEnd) {
-                    handleGameOver();
-                    screenToChangeTo = VoShooter.Screen.LOBBY;
+                    handleGameOver((GameEnd) message);
+                    gameEnd = (GameEnd) message;
+                    screenToChangeTo = VoShooter.Screen.END_SCREEN;
                 } else if (message instanceof RailgunFired) {
                     railgunFiredSet.add((RailgunFired) message);
                 } else if (message instanceof PlayerDashed) {
@@ -146,6 +148,7 @@ public class VoClient {
                         if (screenToChangeTo != null) {
                             if (screenToChangeTo != VoShooter.Screen.MAIN) parent.screen = null;
                             parent.changeScreen(screenToChangeTo);
+                            if (screenToChangeTo == VoShooter.Screen.END_SCREEN) parent.endScreen.setStatistics(gameEnd);
                             screenToChangeTo = null;
                         }
                         if (gameStart != null) {
@@ -210,7 +213,7 @@ public class VoClient {
         }
     }
 
-    private void handleGameOver() {
+    private void handleGameOver(GameEnd msg) {
         parent.gameState.clearDrawables();
         parent.gameState.clearMessages();
     }

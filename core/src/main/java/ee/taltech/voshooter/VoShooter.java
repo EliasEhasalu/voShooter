@@ -10,6 +10,7 @@ import ee.taltech.voshooter.gamestate.GameState;
 import ee.taltech.voshooter.networking.VoClient;
 import ee.taltech.voshooter.screens.ChangeControlsScreen;
 import ee.taltech.voshooter.screens.CreateGameScreen;
+import ee.taltech.voshooter.screens.EndScreen;
 import ee.taltech.voshooter.screens.JoinGameScreen;
 import ee.taltech.voshooter.screens.LoadingScreen;
 import ee.taltech.voshooter.screens.LobbyScreen;
@@ -33,6 +34,7 @@ public class VoShooter extends Game {
     public JoinGameScreen joinGameScreen;
     private LobbyScreen lobbyScreen;
     public LobbySettingsScreen lobbySettingsScreen;
+    public EndScreen endScreen;
     private boolean codeCorrect;
     private String lobbyCode;
     private boolean cameFromGame;
@@ -52,7 +54,8 @@ public class VoShooter extends Game {
         JOIN_GAME,
         LOBBY,
         CHANGE_CONTROLS,
-        LOBBY_SETTINGS
+        LOBBY_SETTINGS,
+        END_SCREEN
     }
 
     public VoShooter(String[] args) {
@@ -119,6 +122,10 @@ public class VoShooter extends Game {
             case LOBBY_SETTINGS:
                 if (lobbySettingsScreen == null) lobbySettingsScreen = new LobbySettingsScreen(this);
                 setScreen(lobbySettingsScreen);
+                break;
+            case END_SCREEN:
+                if (endScreen == null) endScreen = new EndScreen(this);
+                setScreen(endScreen);
                 break;
             default:
                 // Noop.
