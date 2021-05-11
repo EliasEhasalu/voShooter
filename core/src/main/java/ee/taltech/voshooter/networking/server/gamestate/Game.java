@@ -21,6 +21,11 @@ import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
@@ -187,8 +192,32 @@ public class Game extends Thread {
         int playersAmount = (int) players.stream().filter(player -> !(player instanceof Bot)).count();
         int botAmount = (int) players.stream().filter(player -> player instanceof Bot).count();
         List<String> leaderBoard = statisticsTracker.generateEndLeaderBoard();
+        GameEnd gameEnd = new GameEnd(gameMode, gameLength, playersAmount, botAmount, mapType, leaderBoard);
         for (VoConnection c : getConnections()) {
-            c.sendTCP(new GameEnd(gameMode, gameLength, playersAmount, botAmount, mapType, leaderBoard));
+            c.sendTCP(gameEnd);
+        }
+        writeToFile(gameEnd);
+    }
+
+    private void writeToFile(GameEnd msg) {
+        String dir = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "VoShooter" + File.separator + "Games";
+        final File file = new File(dir, (LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy__HH-mm")) + ".txt"));
+        file.getParentFile().mkdirs();
+        try {
+            System.out.println(file.getAbsolutePath());
+            file.createNewFile();
+            FileWriter fWriter = new FileWriter(file);
+            fWriter.write(String.format("Time played: %s%nGamemode: %s%nMap: %s%nPlayer count: %s%nBot count: %s%n%n",
+                    Math.round(gameModeManager.getTimePassed() * 10f) / 10f, msg.gameMode, msg.mapType,
+                    msg.playerCount, msg.botAmount));
+            for (String line : msg.leaderBoard) {
+                fWriter.write(line);
+                fWriter.write("\n");
+            }
+            fWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
