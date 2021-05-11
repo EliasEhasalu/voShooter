@@ -176,7 +176,7 @@ public class ChangeControlsScreen implements Screen {
             } else {
                 put(shotgun, new TextButton(AppPreferences.repr(AppPreferences.getNumberTwo()), skin));
             }
-            rocketLauncher = new Label("Rocket launcher", skin);
+            rocketLauncher = new Label("Rocket Launcher", skin);
             if (AppPreferences.getNumberThreeIsKey()) {
                 put(rocketLauncher, new TextButton(Input.Keys.toString(AppPreferences.getNumberThree()), skin));
             } else {
@@ -194,7 +194,7 @@ public class ChangeControlsScreen implements Screen {
             } else {
                 put(machineGun, new TextButton(AppPreferences.repr(AppPreferences.getNumberFive()), skin));
             }
-            grenadeLauncher = new Label("Rocket Launcher", skin);
+            grenadeLauncher = new Label("Grenade Launcher", skin);
             if (AppPreferences.getNumberSixIsKey()) {
                 put(grenadeLauncher, new TextButton(Input.Keys.toString(AppPreferences.getNumberSix()), skin));
             } else {
