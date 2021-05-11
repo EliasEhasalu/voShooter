@@ -3,7 +3,7 @@ build-job:
   script:
     - echo "Building server jar"
     - cd $CI_PROJECT_DIR
-    - sudo gradle core:dist --no-daemon
+    - gradle core:dist
 
 deploy-prod:
   stage: deploy
