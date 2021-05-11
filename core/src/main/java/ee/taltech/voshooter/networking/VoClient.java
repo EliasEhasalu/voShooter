@@ -41,7 +41,11 @@ import ee.taltech.voshooter.screens.MainScreen;
 import ee.taltech.voshooter.soundeffects.SoundPlayer;
 import ee.taltech.voshooter.weapon.projectile.Projectile;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -216,6 +220,7 @@ public class VoClient {
     private void handleGameOver(GameEnd msg) {
         parent.gameState.clearDrawables();
         parent.gameState.clearMessages();
+        writeToFile(msg);
     }
 
     private void updateKingOfTheHillAreaHolder(PlayerKothChange msg) {
@@ -460,5 +465,27 @@ public class VoClient {
         entry.setBroadcast(true);
         entry.setPrefix("Server");
         parent.gameState.addChatEntry(entry);
+    }
+
+    private void writeToFile(GameEnd msg) {
+        String dir = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "VoShooter" + File.separator + "Games";
+        final File file = new File(dir, (LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy__HH-mm-ss")) + ".txt"));
+        file.getParentFile().mkdirs();
+        try {
+            System.out.println(file.getAbsolutePath());
+            file.createNewFile();
+            FileWriter fWriter = new FileWriter(file);
+            fWriter.write(String.format("Time played: %s%nGamemode: %s%nMap: %s%nPlayer count: %s%nBot count: %s%n%n",
+                   msg.gameLength, msg.gameMode, msg.mapType,
+                    msg.playerCount, msg.botAmount));
+            for (String line : msg.leaderBoard) {
+                fWriter.write(line);
+                fWriter.write("\n");
+            }
+            fWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

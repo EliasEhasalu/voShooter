@@ -252,6 +252,7 @@ public class VoServer {
                lobby.removeConnection(connection);
                if (lobby.getPlayerCount() == 0) {
                    if (lobby.getGame() != null) {
+                       lobby.getGame().writeToFile();
                        lobby.getGame().shutDown();
                    }
                    if (lobbyExists(lobby.getLobbyCode())) {

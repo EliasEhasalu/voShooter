@@ -23,7 +23,7 @@ public class EndScreen implements Screen {
     private double timeElapsed = 0;
 
     private int gameMode;
-    private int gameLength;
+    private double gameLength;
     private int playerCount;
     private int botAmount;
     private GameMap.MapType mapType;
