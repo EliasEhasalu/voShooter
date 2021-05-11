@@ -199,10 +199,18 @@ public class Game extends Thread {
         writeToFile(gameEnd);
     }
 
+    public void writeToFile() {
+        List<Player> players = getPlayers();
+        int playersAmount = (int) players.stream().filter(player -> !(player instanceof Bot)).count();
+        int botAmount = (int) players.stream().filter(player -> player instanceof Bot).count();
+        List<String> leaderBoard = statisticsTracker.generateEndLeaderBoard();
+        writeToFile(new GameEnd(gameMode, Math.round(gameModeManager.getTimePassed() * 10f) / 10, playersAmount, botAmount, mapType, leaderBoard));
+    }
+
     private void writeToFile(GameEnd msg) {
-        String dir = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "VoShooter" + File.separator + "Games";
+        String dir = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "VoShooter" + File.separator + "ServerGames";
         final File file = new File(dir, (LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy__HH-mm")) + ".txt"));
+                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy__HH-mm-ss")) + ".txt"));
         file.getParentFile().mkdirs();
         try {
             System.out.println(file.getAbsolutePath());
