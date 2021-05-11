@@ -6,7 +6,6 @@ import ee.taltech.voshooter.networking.server.gamestate.Game;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.LevelGenerator;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.statistics.KingOfTheHillStatistics;
-import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +15,12 @@ import java.util.OptionalDouble;
 public class KingOfTheHillManager extends GameMode {
 
     private final Game parent;
-    private final StatisticsTracker statisticsTracker;
-    private final KingOfTheHillStatistics kingOfTheHillStatistics;
+    private final KingOfTheHillStatistics statisticsTracker;
     public Map<Integer, Float> location;
 
-    public KingOfTheHillManager(Game parent, StatisticsTracker statisticsTracker) {
+    public KingOfTheHillManager(Game parent, KingOfTheHillStatistics statisticsTracker) {
         this.parent = parent;
         this.statisticsTracker = statisticsTracker;
-        this.kingOfTheHillStatistics = new KingOfTheHillStatistics(parent);
         this.location = LevelGenerator.getKothLocation(parent.getCurrentMap());
     }
 
@@ -36,7 +33,7 @@ public class KingOfTheHillManager extends GameMode {
 
     @Override
     public void calculateTimeLeft() {
-        OptionalDouble time = kingOfTheHillStatistics.getHighestTimeHeld();
+        OptionalDouble time = statisticsTracker.getHighestTimeHeld();
         double highestTime = 0;
         if (time.isPresent()) highestTime = time.getAsDouble();
         if (highestTime >= parent.gameLength) {
@@ -47,7 +44,6 @@ public class KingOfTheHillManager extends GameMode {
     @Override
     public void statisticsUpdates() {
         statisticsTracker.sendUpdates();
-        kingOfTheHillStatistics.sendUpdates();
     }
 
     private void sendKothAreaUpdates() {
@@ -63,15 +59,15 @@ public class KingOfTheHillManager extends GameMode {
             }
         }
         if (playersInArea.size() == 1) {
-            if (kingOfTheHillStatistics.playerInArea == null
-                    || !kingOfTheHillStatistics.playerInArea.equals(playersInArea.get(0))) {
-                kingOfTheHillStatistics.playerInArea = playersInArea.get(0);
+            if (statisticsTracker.playerInArea == null
+                    || !statisticsTracker.playerInArea.equals(playersInArea.get(0))) {
+                statisticsTracker.playerInArea = playersInArea.get(0);
                 for (VoConnection c : parent.getConnections()) {
                     c.sendTCP(new PlayerKothChange(playersInArea.get(0)));
                 }
             }
         } else {
-            kingOfTheHillStatistics.playerInArea = null;
+            statisticsTracker.playerInArea = null;
         }
     }
 }

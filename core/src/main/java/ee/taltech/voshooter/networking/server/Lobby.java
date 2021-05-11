@@ -194,4 +194,12 @@ public class Lobby {
     protected Game getGame() {
         return game;
     }
+
+    public int getGameLength() {
+        return gameLength;
+    }
+
+    public int getBotAmount() {
+        return botAmount;
+    }
 }

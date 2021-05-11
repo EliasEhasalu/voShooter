@@ -9,28 +9,29 @@ import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
 import ee.taltech.voshooter.weapon.Weapon;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class StatisticsTracker {
 
-    private static final int FREQUENCY = 60;
+    protected static final int FREQUENCY = 60;
 
-    private int updateTicker = 0;
+    protected int updateTicker = 0;
     private boolean existImportantUpdates = true;
 
     private final Map<Player, DamageDealer> lastDamageTakenFrom = new HashMap<>();  // receiver <- dealer
     private final Map<Player, Weapon.Type> lastDamageTakenFromWeaponType = new HashMap<>();
-    private final Map<Player, Integer> deathCount = new HashMap<>();
-    private final Map<Player, Integer> killCount = new HashMap<>();
+    protected final Map<Player, Integer> deathCount = new HashMap<>();
+    protected final Map<Player, Integer> killCount = new HashMap<>();
     private final List<PlayerDeath> playerDeathEvents = new LinkedList<>();
     private final Deque<PlayerTookDamage> playerDamageEvents = new LinkedList<>();
-    private final Game parent;
+    protected final Game parent;
 
     public StatisticsTracker(Game parent) {
         this.parent = parent;
@@ -127,9 +128,25 @@ public class StatisticsTracker {
         this.existImportantUpdates = false;
     }
 
-    public Player getTopKiller() {
-        Optional<Player> player = killCount.keySet().stream().filter(Player::isAlive)
-                .max(Comparator.comparingInt(killCount::get));
-        return player.orElse(null);
+    public List<Player> getTopKiller() {
+        return killCount.keySet().stream().filter(Player::isAlive)
+                .sorted(Comparator.comparingInt(killCount::get).reversed()).collect(Collectors.toList());
+    }
+
+    public List<String> generateEndLeaderBoard() {
+        List<String> leaderBoard = new ArrayList<>();
+        List<Player> playerSet = parent.getPlayers().stream()
+                .sorted(Comparator.comparingInt(player -> killCount.getOrDefault(player, 0)).reversed())
+                .collect(Collectors.toList());
+        for (Player player : playerSet) {
+            int kills = killCount.getOrDefault(player, 0);
+            int deaths = deathCount.getOrDefault(player, 0);
+            String kdr;
+            if (deaths != 0) kdr = String.valueOf((double) Math.round((kills / (double) deaths) * 100) / 100);
+            else kdr = String.valueOf(kills);
+            leaderBoard.add(String.format("%-12s Kills: %-3d Deaths: %-3d Kdr: %-5s", player.getName(),
+                    killCount.getOrDefault(player, 0), deathCount.getOrDefault(player, 0), kdr));
+        }
+        return leaderBoard;
     }
 }
