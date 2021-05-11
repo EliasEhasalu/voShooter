@@ -1,0 +1,18 @@
+build-job:
+  only:
+    - master
+  stage: build
+  script:
+    - echo "Building server jar"
+    - cd $CI_PROJECT_DIR
+    - gradle core:dist --no-daemon
+    - cp $CI_PROJECT_DIR/core/build/libs/core-1.0.jar ~/deploy/
+
+deploy-prod:
+  only:
+    - master
+  stage: deploy
+  script:
+    - echo "Running server jar"
+    - cd
+    - ./start-voshooter-server

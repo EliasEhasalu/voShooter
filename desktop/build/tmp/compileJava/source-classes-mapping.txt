@@ -1,0 +1,2 @@
+ee/taltech/voshooter/desktop/DesktopLauncher.java
+ ee.taltech.voshooter.desktop.DesktopLauncher
