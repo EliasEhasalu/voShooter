@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="343">
+ <tileset firstgid="1" source="tileset.tsx"/>
+ <layer id="5" name="Floor" width="64" height="64">
+  <data encoding="base64" compression="zlib">
+   eJzt0lENgEAQQ8GTCSgAFADq6fcigEt2XtKkAmYMLdmabU1+bc+O7Gzya1d2Z0+TX5vBJP/8888///zzzz///PPPP//8888///zzzz///PPPP//8888///zzzz///PPPP//8888///zzzz///PPPP//8888//99mMMk//3/5l7r2AmbSxNw=
+  </data>
+ </layer>
+ <layer id="1" name="Walls" width="64" height="64">
+  <data encoding="base64" compression="zlib">
+   eJztmstqxDAMRf2LnWnpetL+QB9DF11N++NNaRYi4FSKHr52dEHEhGDnkiOhgKZSyuvBYiLxVI6nS0n/6T/9p//0v+X/bo7THOeIlwoU1/+F8UyP4vp/KX/9wlvESwUKJf9b5ReK/1b5heK/VX61rP90z9raWy3rP92ztvZWy/pP96ytvYWS/1bMS/MIxb8V89I8QvFvxbw0j7T+71dXiTzqfzT/z6urRB71P5p/jX+P+h/B/22OryU+lntXco/GN3PP7P/76f/p939c7j0U3fdH7/9r0uQ/gtJ/+q/559Rkjf/a/ij/v5yabNX/SM+10pZ/Tk226n+k51opmn8p2965EM2/lG3vXNDy/766/icp2965oOW/d2n5t9Rn0DlUWv57VzT/o9X/veeNUv+l6qn+ewu9/486G7X/9xZ6/38Epf/0j+zfey4C3b/3XAS6f++5CET/kXNBiP4j54IQ/UfOBaHMP3OYb8l/1H/oFvMt+ffuyTnMj8a/lPnR+JcyPxr/UuZR+EdYW2kP/whrK+3hH2FtJer/N04HiykjY4kfkLWQBQ==
+  </data>
+ </layer>
+ <objectgroup id="2" name="WallsObjects">
+  <object id="306" x="896" y="608" width="288" height="96"/>
+  <object id="307" x="896" y="416" width="288" height="96"/>
+  <object id="308" x="992" y="320" width="96" height="480"/>
+  <object id="309" x="896" y="896" width="96" height="96"/>
+  <object id="310" x="800" y="992" width="96" height="96"/>
+  <object id="311" x="800" y="1184" width="96" height="96"/>
+  <object id="312" x="896" y="1280" width="96" height="96"/>
+  <object id="313" x="1088" y="1280" width="96" height="96"/>
+  <object id="314" x="1184" y="1184" width="96" height="96"/>
+  <object id="315" x="1184" y="992" width="96" height="96"/>
+  <object id="316" x="1088" y="896" width="96" height="96"/>
+  <object id="317" x="480" y="768" width="32" height="320"/>
+  <object id="318" x="512" y="768" width="192" height="32"/>
+  <object id="319" x="480" y="608" width="32" height="128"/>
+  <object id="320" x="512" y="704" width="192" height="32"/>
+  <object id="321" x="416" y="608" width="32" height="128"/>
+  <object id="322" x="320" y="704" width="96" height="32"/>
+  <object id="323" x="320" y="768" width="128" height="32"/>
+  <object id="324" x="416" y="800" width="32" height="288"/>
+  <object id="325" x="128" y="896" width="96" height="384"/>
+  <object id="326" x="224" y="1664" width="96" height="288"/>
+  <object id="327" x="320" y="1856" width="1056" height="96"/>
+  <object id="328" x="896" y="1760" width="480" height="96"/>
+  <object id="329" x="992" y="1664" width="384" height="96"/>
+  <object id="330" x="1088" y="1568" width="288" height="96"/>
+  <object id="331" x="1184" y="1472" width="192" height="96"/>
+  <object id="332" x="1568" y="512" width="192" height="192"/>
+  <object id="333" x="224" y="416" width="96" height="96"/>
+  <object id="334" x="224" y="224" width="96" height="96"/>
+  <object id="335" x="0" y="0" width="2048" height="32"/>
+  <object id="336" x="0" y="1952" width="2048" height="96"/>
+  <object id="337" x="1952" y="32" width="96" height="1920"/>
+  <object id="338" x="0" y="32" width="32" height="1920"/>
+ </objectgroup>
+ <objectgroup id="6" name="koth">
+  <object id="339" x="896" y="992" width="288" height="288"/>
+ </objectgroup>
+</map>
