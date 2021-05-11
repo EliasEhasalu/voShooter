@@ -2,12 +2,12 @@ build-job:
   stage: build
   script:
     - echo "Building server jar"
-    - cd ~/$CI_PROJECT_NAME/
+    - cd ~/voshooter/
     - gradle core:dist
 
 deploy-prod:
   stage: deploy
   script:
     - echo "Running server jar"
-    - cd ~/$CI_PROJECT_NAME/core/build/libs/
+    - cd ~/voshooter/core/build/libs/
     - nohup java -jar core-1.0.jar &
