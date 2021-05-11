@@ -5,13 +5,10 @@ build-job:
     - cd $CI_PROJECT_DIR
     - gradle core:dist
     - cp $CI_PROJECT_DIR/core/build/libs/core-1.0.jar ~/deploy/
-  artifacts:
-    paths:
-      - ~/deploy/
 
 deploy-prod:
   stage: deploy
   script:
     - echo "Running server jar"
-    - cd ~
+    - cd
     - ./start-voshooter-server
