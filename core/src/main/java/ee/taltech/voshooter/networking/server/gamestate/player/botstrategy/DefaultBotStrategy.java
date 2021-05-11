@@ -21,7 +21,7 @@ public class DefaultBotStrategy implements BotStrategy {
     private static final RayCaster rayCaster = new RayCaster();
     private final float turningSpeed = 720;
 
-    private Bot bot;
+    protected Bot bot;
     protected PlayerManager playerManager;
     protected final ShootingStrategy shootingStrategy;
     protected final MovingStrategy movingStrategy;

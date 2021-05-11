@@ -5,6 +5,8 @@ import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.movin
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.shooting.ShootingStrategy;
 import ee.taltech.voshooter.networking.server.gamestate.player.botstrategy.weaponswitching.WeaponSwitchingStrategy;
 
+import java.util.Optional;
+
 public class BalancingBotStrategy extends DefaultBotStrategy implements BotStrategy {
 
     public BalancingBotStrategy(ShootingStrategy shootingStrategy, MovingStrategy movingStrategy, WeaponSwitchingStrategy weaponSwitchingStrategy) {
@@ -25,6 +27,7 @@ public class BalancingBotStrategy extends DefaultBotStrategy implements BotStrat
     }
 
     private Player determineTopEnemy() {
-        return playerManager.getTopPlayer();
+        Optional<Player> p = playerManager.getTopPlayer().stream().filter(player -> !player.equals(bot)).findFirst();
+        return p.orElse(null);
     }
 }

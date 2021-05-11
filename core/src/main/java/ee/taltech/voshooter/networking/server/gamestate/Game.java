@@ -17,6 +17,7 @@ import ee.taltech.voshooter.networking.server.gamestate.collision.utils.LevelGen
 import ee.taltech.voshooter.networking.server.gamestate.entitymanager.EntityManagerHub;
 import ee.taltech.voshooter.networking.server.gamestate.gamemodes.GameMode;
 import ee.taltech.voshooter.networking.server.gamestate.gamemodes.GameModeManagerFactory;
+import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.statistics.StatisticsTracker;
 
@@ -45,10 +46,11 @@ public class Game extends Thread {
     private final GameMap.MapType mapType;
     private TiledMap currentMap;
     public final int gameLength;
+    private final int gameMode;
     private final World world = new World(new Vector2(0, 0), false);
 
-    private final StatisticsTracker statisticsTracker = new StatisticsTracker(this);
-    private final EntityManagerHub entityManagerHub = new EntityManagerHub(world, this, statisticsTracker);
+    private final StatisticsTracker statisticsTracker;
+    private final EntityManagerHub entityManagerHub;
     private final CollisionHandler collisionHandler = new CollisionHandler(world, this);
     private final InputHandler inputHandler = new InputHandler();
     private final GameMode gameModeManager;
@@ -61,9 +63,12 @@ public class Game extends Thread {
      */
     public Game(int gameMode, GameMap.MapType mapType, int gameLength) {
         this.mapType = mapType;
+        this.gameMode = gameMode;
         if (gameLength >= 15) this.gameLength = gameLength;
         else this.gameLength = Integer.MAX_VALUE;
         setCurrentMap();
+        statisticsTracker = GameModeManagerFactory.makeStatisticsTracker(this, gameMode);
+        entityManagerHub = new EntityManagerHub(world, this, statisticsTracker);
         gameModeManager = GameModeManagerFactory.makeGameModeManager(this, statisticsTracker, gameMode);
         LevelGenerator.generateLevel(world, currentMap);
         world.setContactListener(collisionHandler);
@@ -178,8 +183,12 @@ public class Game extends Thread {
     /** Close the game simulation. */
     public void shutDown() {
         running = false;
+        List<Player> players = getPlayers();
+        int playersAmount = (int) players.stream().filter(player -> !(player instanceof Bot)).count();
+        int botAmount = (int) players.stream().filter(player -> player instanceof Bot).count();
+        List<String> leaderBoard = statisticsTracker.generateEndLeaderBoard();
         for (VoConnection c : getConnections()) {
-            c.sendTCP(new GameEnd());
+            c.sendTCP(new GameEnd(gameMode, gameLength, playersAmount, botAmount, mapType, leaderBoard));
         }
     }
 

@@ -22,7 +22,6 @@ public class ClientPlayer extends Entity implements Drawable {
     private boolean bot;
     private Weapon.Type weapon = Weapon.Type.PISTOL;
     public int currentAmmo = 0;
-    public int maxAmmo = 0;
     public ClientGameModeManager clientGameModeManager;
 
     /**
