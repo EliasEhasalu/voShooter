@@ -4,6 +4,9 @@ build-job:
     - echo "Building server jar"
     - cd $CI_PROJECT_DIR
     - gradle core:dist
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/core/build/libs/
 
 deploy-prod:
   stage: deploy
