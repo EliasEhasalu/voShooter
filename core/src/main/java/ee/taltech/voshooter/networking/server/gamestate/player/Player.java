@@ -89,7 +89,6 @@ public class Player {
         statusManager.update();
         inventory.update();
         move();
-        System.out.println(getBody().getPosition());
     }
 
     public void dash() {
