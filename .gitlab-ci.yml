@@ -5,6 +5,7 @@ build-job:
   script:
     - echo "Building server jar"
     - cd $CI_PROJECT_DIR
+    - gradle desktop:dist --no-daemon
     - gradle core:dist --no-daemon
     - cp $CI_PROJECT_DIR/core/build/libs/core-1.0.jar ~/deploy/
 
