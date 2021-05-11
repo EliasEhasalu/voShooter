@@ -143,7 +143,6 @@ public class ClientPlayer extends Entity implements Drawable {
      * @param kills amount of kills.
      */
     public void setKills(int kills) {
-        if (this.id == 0) System.out.println(kills);
         this.kills = kills;
     }
 

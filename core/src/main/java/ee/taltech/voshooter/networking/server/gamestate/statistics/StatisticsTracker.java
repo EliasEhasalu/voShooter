@@ -9,6 +9,7 @@ import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.networking.server.gamestate.player.status.DamageDealer;
 import ee.taltech.voshooter.weapon.Weapon;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
@@ -26,8 +27,8 @@ public class StatisticsTracker {
 
     private final Map<Player, DamageDealer> lastDamageTakenFrom = new HashMap<>();  // receiver <- dealer
     private final Map<Player, Weapon.Type> lastDamageTakenFromWeaponType = new HashMap<>();
-    private final Map<Player, Integer> deathCount = new HashMap<>();
-    private final Map<Player, Integer> killCount = new HashMap<>();
+    protected final Map<Player, Integer> deathCount = new HashMap<>();
+    protected final Map<Player, Integer> killCount = new HashMap<>();
     private final List<PlayerDeath> playerDeathEvents = new LinkedList<>();
     private final Deque<PlayerTookDamage> playerDamageEvents = new LinkedList<>();
     protected final Game parent;
@@ -96,7 +97,6 @@ public class StatisticsTracker {
             for (Player p : parent.getPlayers()) {
                 int kills = killCount.getOrDefault(p, 0);
                 int deaths = deathCount.getOrDefault(p, 0);
-                if (p.getId() == 0) System.out.printf("%s: %s, %s%n", p.getId(), kills, deaths);
                 c.sendTCP(new PlayerStatistics(p.getId(), deaths, kills, parent.getGameModeManager().getTimePassed()));
             }
         }
@@ -131,5 +131,22 @@ public class StatisticsTracker {
     public List<Player> getTopKiller() {
         return killCount.keySet().stream().filter(Player::isAlive)
                 .sorted(Comparator.comparingInt(killCount::get).reversed()).collect(Collectors.toList());
+    }
+
+    public List<String> generateEndLeaderBoard() {
+        List<String> leaderBoard = new ArrayList<>();
+        List<Player> playerSet = parent.getPlayers().stream()
+                .sorted(Comparator.comparingInt(player -> killCount.getOrDefault(player, 0)).reversed())
+                .collect(Collectors.toList());
+        for (Player player : playerSet) {
+            int kills = killCount.getOrDefault(player, 0);
+            int deaths = deathCount.getOrDefault(player, 0);
+            String kdr;
+            if (deaths != 0) kdr = String.valueOf((double) Math.round((kills / (double) deaths) * 100) / 100);
+            else kdr = String.valueOf(kills);
+            leaderBoard.add(String.format("%-12s Kills: %-3d Deaths: %-3d Kdr: %-5s", player.getName(),
+                    killCount.getOrDefault(player, 0), deathCount.getOrDefault(player, 0), kdr));
+        }
+        return leaderBoard;
     }
 }

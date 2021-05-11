@@ -9,7 +9,7 @@ public abstract class GameModeManagerFactory {
         GameMode gameModeManager = null;
         if (gameMode == 0) gameModeManager = new FunkyManager(parent, statisticsTracker);
         if (gameMode == 1) gameModeManager = new FreeForAllManager(parent, statisticsTracker);
-        if (gameMode == 2) gameModeManager = new KingOfTheHillManager(parent, statisticsTracker);
+        if (gameMode == 2) gameModeManager = new KingOfTheHillManager(parent, (KingOfTheHillStatistics) statisticsTracker);
         return gameModeManager;
     }
 
