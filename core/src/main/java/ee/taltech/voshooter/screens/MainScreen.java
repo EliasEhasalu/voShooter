@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -63,7 +64,6 @@ import java.util.Queue;
 
 public class MainScreen implements Screen {
 
-    public static final float MINIMAP_ZOOM = 20f;
     public static final int STATS_ROW_PAD = 120;
     public final VoShooter parent;
     private final Stage stage;
@@ -83,11 +83,13 @@ public class MainScreen implements Screen {
     private final SpriteBatch minimapBatch = new SpriteBatch();
     private final Texture minimapPlayer = new Texture("textures/playerIcon.png");
     public static final float MINIMAP_RATIO = 16f / 9f;
-    public static final int MINIMAP_HEIGHT = 100;
-    public static final int MINIMAP_WIDTH = (int) (MINIMAP_HEIGHT * MINIMAP_RATIO);
     public static final int MINIMAP_MARGIN = 50;
     public static final int MARKER_SIZE = 20;
-    public static final float MINIMAP_SCALE = 0.22f;
+    public static final float MINIMAP_ZOOM = 20f;
+
+    private float minimapWidth;
+    private float minimapHeight;
+    private float minimapScale;
 
     public static final Map<Weapon.Type, Sprite> WEAPON_SPRITES = new HashMap<Weapon.Type, Sprite>() {{
         put(Weapon.Type.PISTOL,             new Sprite(new Texture("textures/player/playerpistol.png")));
@@ -166,8 +168,12 @@ public class MainScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         stage.clear();
 
-        miniMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, MINIMAP_SCALE);
-        minimapCamera = new OrthographicCamera(MINIMAP_WIDTH, MINIMAP_HEIGHT);
+        MapProperties props = tiledMap.getProperties();
+        minimapWidth = props.get("width", Integer.class) * props.get("tilewidth", Integer.class) * MINIMAP_RATIO;
+        minimapHeight = props.get("height", Integer.class) * props.get("tileheight", Integer.class);
+        minimapScale = (450 / minimapHeight);
+        miniMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, minimapScale);
+        minimapCamera = new OrthographicCamera(minimapWidth, minimapHeight);
         minimapCamera.zoom = MINIMAP_ZOOM;
         minimapCamera.setToOrtho(false, Gdx.graphics.getWidth() / 10f,
                 Gdx.graphics.getHeight() / 10f);
@@ -599,7 +605,7 @@ public class MainScreen implements Screen {
             ClientPlayer player = parent.gameState.userPlayer;
             Vector2 pos = player.getPosition();
             minimapBatch.draw(minimapPlayer,
-                    pos.x * MINIMAP_SCALE - MARKER_SIZE / 2f, pos.y * MINIMAP_SCALE - MARKER_SIZE / 2f,
+                    pos.x * minimapScale - MARKER_SIZE / 2f, pos.y * minimapScale - MARKER_SIZE / 2f,
                     MARKER_SIZE, MARKER_SIZE);
             minimapBatch.end();
         }
