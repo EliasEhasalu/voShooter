@@ -17,7 +17,9 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerCha
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameEnd;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyPlayerNameExists;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
@@ -94,6 +96,7 @@ public class VoClient {
 
                 if (message instanceof LobbyJoined) {
                     screenToChangeTo = VoShooter.Screen.LOBBY;
+                    parent.setDisconnectReason(VoShooter.BadConnectionReason.LOBBY_JOINED);
                     joinLobby((LobbyJoined) message);
                 } else if (message instanceof LobbyUserUpdate) {
                     updateLobby((LobbyUserUpdate) message);
@@ -111,8 +114,12 @@ public class VoClient {
                 } else if (message instanceof ProjectilePositions) {
                    projectileUpdate = (ProjectilePositions) message;
                 } else if (message instanceof NoSuchLobby) {
-                    parent.setCodeCorrect(false);
+                    parent.setDisconnectReason(VoShooter.BadConnectionReason.NO_SUCH_LOBBY);
                     parent.setLobbyCode(((NoSuchLobby) message).lobbyCode);
+                } else if (message instanceof LobbyFull) {
+                    parent.setDisconnectReason(VoShooter.BadConnectionReason.LOBBY_FULL);
+                } else if (message instanceof LobbyPlayerNameExists) {
+                    parent.setDisconnectReason(VoShooter.BadConnectionReason.NOT_A_UNIQUE_NAME);
                 } else if (message instanceof PlayerHealthUpdate) {
                     updatePlayerHealth((PlayerHealthUpdate) message);
                 } else if (message instanceof PlayerDeath) {

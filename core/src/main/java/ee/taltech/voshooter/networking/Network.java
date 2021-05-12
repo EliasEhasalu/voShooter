@@ -15,6 +15,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.GameEnd;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyPlayerNameExists;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
@@ -127,6 +128,7 @@ public final class Network {
         kryo.register(JoinLobby.class);
         kryo.register(LeaveLobby.class);
         kryo.register(LobbyFull.class);
+        kryo.register(LobbyPlayerNameExists.class);
         kryo.register(NoSuchLobby.class);
         kryo.register(LobbyUserUpdate.class);
         kryo.register(StartGame.class);

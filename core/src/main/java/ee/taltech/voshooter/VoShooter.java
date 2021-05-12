@@ -35,7 +35,7 @@ public class VoShooter extends Game {
     private LobbyScreen lobbyScreen;
     public LobbySettingsScreen lobbySettingsScreen;
     public EndScreen endScreen;
-    private boolean codeCorrect;
+    private BadConnectionReason disconnectReason;
     private String lobbyCode;
     private boolean cameFromGame;
     public VoClient client;
@@ -56,6 +56,13 @@ public class VoShooter extends Game {
         CHANGE_CONTROLS,
         LOBBY_SETTINGS,
         END_SCREEN
+    }
+
+    public enum BadConnectionReason {
+        NO_SUCH_LOBBY,
+        NOT_A_UNIQUE_NAME,
+        LOBBY_FULL,
+        LOBBY_JOINED
     }
 
     public VoShooter(String[] args) {
@@ -150,16 +157,16 @@ public class VoShooter extends Game {
      * Get the code correct boolean.
      * @return boolean
      */
-    public boolean isCodeCorrect() {
-        return codeCorrect;
+    public BadConnectionReason getDisconnectReason() {
+        return disconnectReason;
     }
 
     /**
      * Set a boolean if the code was incorrect.
-     * @param codeCorrect boolean
+     * @param disconnectReason boolean
      */
-    public void setCodeCorrect(boolean codeCorrect) {
-        this.codeCorrect = codeCorrect;
+    public void setDisconnectReason(BadConnectionReason disconnectReason) {
+        this.disconnectReason = disconnectReason;
     }
 
     /**

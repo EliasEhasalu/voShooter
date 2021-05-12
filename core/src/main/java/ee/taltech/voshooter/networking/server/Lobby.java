@@ -119,6 +119,17 @@ public class Lobby {
         return (connections.size() == maxUsers);
     }
 
+    /**
+     * @param name of the joining player.
+     * @return whether the name already exists.
+     */
+    protected boolean isRepeatingName(String name) {
+        for (VoConnection connection : connections) {
+            if (connection.user.name.equals(name)) return true;
+        }
+        return false;
+    }
+
     /** @return Amount of players in this lobby. */
     protected int getPlayerCount() {
         return connections.size();
