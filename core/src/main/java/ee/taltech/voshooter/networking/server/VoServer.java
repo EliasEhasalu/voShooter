@@ -9,6 +9,7 @@ import ee.taltech.voshooter.networking.messages.User;
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyPlayerNameExists;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChatSendMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
@@ -164,6 +165,8 @@ public class VoServer {
 
             if (lobby.isFull()) {
                 connection.sendTCP(new LobbyFull());
+            } else if (lobby.isRepeatingName(connection.user.name)) {
+                connection.sendTCP(new LobbyPlayerNameExists());
             } else {
                 connection.sendTCP(
                         new LobbyJoined(lobby.getGameMode(), lobby.getMaxPlayers(), code, lobby.getUsers(),
