@@ -212,7 +212,12 @@ public class VoClient {
     }
 
     private void updateKingOfTheHillStatistics(PlayerKothScores msg) {
-        if (parent.gameState.userPlayer.clientGameModeManager instanceof ClientKingOfTheHillManager) {
+        if (
+                parent.gameState != null
+                && parent.gameState.userPlayer != null
+                && parent.gameState.userPlayer.clientGameModeManager != null
+                && parent.gameState.userPlayer.clientGameModeManager instanceof ClientKingOfTheHillManager
+        ) {
             ((ClientKingOfTheHillManager) parent.gameState.userPlayer.clientGameModeManager).players = msg.players;
         }
     }
