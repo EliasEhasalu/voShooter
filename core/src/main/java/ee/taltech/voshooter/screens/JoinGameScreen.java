@@ -146,7 +146,6 @@ public class JoinGameScreen implements Screen {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     if (isNameGood && isCodeGood) {
-                        gameCodeCheck.setText("Joining.");
                         try {
                             String name = playerName.getText().trim();
                             parent.gameState.clientUser.setName(name);
