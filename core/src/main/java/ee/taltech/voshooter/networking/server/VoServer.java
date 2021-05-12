@@ -13,6 +13,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChatSendMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.KeepAlive;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
@@ -122,8 +123,19 @@ public class VoServer {
             }
         });
 
+        server.addListener(new RunMethodListener<KeepAlive>(KeepAlive.class) {
+            @Override
+            public void run(VoConnection c, KeepAlive msg) {
+                keepClientAlive(c);
+            }
+        });
+
         server.bind(port);
         server.start();
+    }
+
+    private void keepClientAlive(VoConnection c) {
+        c.player.resetKeepAlive();
     }
 
     /**
@@ -134,7 +146,7 @@ public class VoServer {
     private void handleCreateLobby(VoConnection connection, CreateLobby msg) {
         String code = generateLobbyCode();
         User user = connection.user;
-        Lobby newLobby = new Lobby(code);
+        Lobby newLobby = new Lobby(this, code);
         lobbies.put(code, newLobby);
 
         newLobby.addConnection(connection);
@@ -244,23 +256,23 @@ public class VoServer {
      * Handle severed connections.
      * @param connection The connection that disconnected.
      */
-    private void handleDisconnects(VoConnection connection) {
-       if (connection != null) {
-           connections.remove(connection);
-           if (connection.user != null && connection.user.currentLobby != null) {
-               Lobby lobby = lobbies.get(connection.user.currentLobby);
-               lobby.removeConnection(connection);
-               if (lobby.getPlayerCount() == 0) {
-                   if (lobby.getGame() != null) {
-                       lobby.getGame().writeToFile();
-                       lobby.getGame().shutDown();
-                   }
-                   if (lobbyExists(lobby.getLobbyCode())) {
-                       lobbies.remove(lobby.getLobbyCode());
-                   }
-               }
-           }
-       }
+    public void handleDisconnects(VoConnection connection) {
+        if (connection != null) {
+            connections.remove(connection);
+            if (connection.user != null && connection.user.currentLobby != null) {
+                Lobby lobby = lobbies.get(connection.user.currentLobby);
+                lobby.removeConnection(connection);
+                if (lobby.getPlayerCount() == 0) {
+                    if (lobby.getGame() != null) {
+                        lobby.getGame().writeToFile();
+                        lobby.getGame().shutDown();
+                    }
+                    if (lobbyExists(lobby.getLobbyCode())) {
+                        lobbies.remove(lobby.getLobbyCode());
+                    }
+                }
+            }
+        }
     }
 
     /**

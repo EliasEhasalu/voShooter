@@ -35,6 +35,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.clientreceived.RailgunFired;
+import ee.taltech.voshooter.networking.messages.serverreceived.KeepAlive;
 import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.screens.MainScreen;
@@ -57,6 +58,7 @@ public class VoClient {
     public User clientUser = new User();
     public VoShooter parent;
     public Client client;
+    private double keepAliveTimer = 0;
 
     private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
 
@@ -149,6 +151,7 @@ public class VoClient {
                 // of the OpenGL rendering thread.
                 Gdx.app.postRunnable(new Runnable() {
                     public void run() {
+                        keepAlive();
                         if (screenToChangeTo != null) {
                             if (screenToChangeTo != VoShooter.Screen.MAIN) parent.screen = null;
                             parent.changeScreen(screenToChangeTo);
@@ -209,6 +212,14 @@ public class VoClient {
         }));
 
         client.connect(MILLISECONDS_BEFORE_TIMEOUT, address, port);
+    }
+
+    private void keepAlive() {
+        keepAliveTimer += 1 / 60f;
+        if (keepAliveTimer >= 10) {
+            client.sendTCP(new KeepAlive());
+            keepAliveTimer = 0;
+        }
     }
 
     private void updateKingOfTheHillStatistics(PlayerKothScores msg) {
@@ -473,7 +484,6 @@ public class VoClient {
                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy__HH-mm-ss")) + ".txt"));
         file.getParentFile().mkdirs();
         try {
-            System.out.println(file.getAbsolutePath());
             file.createNewFile();
             FileWriter fWriter = new FileWriter(file);
             fWriter.write(String.format("Time played: %s%nGamemode: %s%nMap: %s%nPlayer count: %s%nBot count: %s%n%n",

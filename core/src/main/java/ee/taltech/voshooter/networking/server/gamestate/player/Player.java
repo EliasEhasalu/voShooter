@@ -30,6 +30,7 @@ public class Player {
     public Vector2 initialPos;
     protected boolean bot = false;
     private float respawnTime = 5f;
+    private double keepAliveTimer = 0;
 
     private transient VoConnection connection;
     private transient Body body;
@@ -88,6 +89,7 @@ public class Player {
         if (!(isAlive())) respawn();
         statusManager.update();
         inventory.update();
+        keepAliveTimer += 1 / Game.TICK_RATE_IN_HZ;
         move();
     }
 
@@ -154,6 +156,14 @@ public class Player {
     private void die() {
         getStatisticsTracker().incrementDeaths(this);
         fixture.setSensor(true);
+    }
+
+    public void resetKeepAlive() {
+        keepAliveTimer = 0;
+    }
+
+    public double getKeepAliveTimer() {
+        return keepAliveTimer;
     }
 
     /** Respawn the player. */

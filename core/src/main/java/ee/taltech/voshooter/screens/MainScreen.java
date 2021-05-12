@@ -67,6 +67,7 @@ public class MainScreen implements Screen {
     public static final int STATS_ROW_PAD = 120;
     public final VoShooter parent;
     private final Stage stage;
+    private VoShooter nullShooter;
     private final Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     private BitmapFont font;
     private BitmapFont killfeedFont;
@@ -202,7 +203,8 @@ public class MainScreen implements Screen {
         tiledMapRenderer.render();
         healthFraction = parent.gameState.userPlayer.getHealth() / 100f;
 
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 64f));  // Cap FPS to 64.
+
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f));  // Cap FPS to 60.
         stage.draw();
 
         stage.getBatch().setProjectionMatrix(camera.combined);
@@ -442,6 +444,7 @@ public class MainScreen implements Screen {
             font.draw(stage.getBatch(),
                     String.format("Respawning in %s seconds", (double) Math.round(player.respawnTimer * 10) / 10),
                     player.getPosition().x, player.getPosition().y);
+            nullShooter.gameState.getPlayers();
         }
     }
 

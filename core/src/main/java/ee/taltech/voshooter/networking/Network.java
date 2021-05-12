@@ -38,6 +38,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChatSendMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.KeepAlive;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
@@ -142,5 +143,6 @@ public final class Network {
         kryo.register(LobbySettingsChanged.class);
         kryo.register(ChatSendMessage.class);
         kryo.register(ChatReceiveMessage.class);
+        kryo.register(KeepAlive.class);
     }
 }
