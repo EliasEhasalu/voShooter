@@ -83,11 +83,8 @@ public class MainScreen implements Screen {
     private final SpriteBatch minimapBatch = new SpriteBatch();
     private final Texture minimapPlayer = new Texture("textures/playerIcon.png");
     public static final float MINIMAP_RATIO = 16f / 9f;
-    public static final int MINIMAP_HEIGHT = 100;
-    public static final int MINIMAP_WIDTH = (int) (MINIMAP_HEIGHT * MINIMAP_RATIO);
     public static final int MINIMAP_MARGIN = 50;
     public static final int MARKER_SIZE = 20;
-    public static final float MINIMAP_SCALE = 0.22f;
     public static final float MINIMAP_ZOOM = 20f;
 
     private float minimapWidth;
