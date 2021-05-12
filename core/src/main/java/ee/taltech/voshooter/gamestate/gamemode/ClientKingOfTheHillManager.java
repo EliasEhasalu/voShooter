@@ -49,6 +49,7 @@ public class ClientKingOfTheHillManager extends ClientGameModeManager {
         for (ClientPlayer player : mainScreen.parent.gameState.getPlayers().values().stream()
                 .sorted(Comparator.comparing(player -> players.getOrDefault(((ClientPlayer) player).getId(), 0.0))
                         .reversed()).collect(Collectors.toList())) {
+            if (!players.containsKey(player.getId())) break;
             if (player.isBot()) font.setColor(Color.CYAN);
             else font.setColor(Color.WHITE);
             font.draw(hudBatch, player.getName(), tableLeft, tableTop);
@@ -63,7 +64,7 @@ public class ClientKingOfTheHillManager extends ClientGameModeManager {
             } else {
                 font.draw(hudBatch, String.valueOf(player.getKills()), tableLeft + (STATS_ROW_PAD * 4), tableTop);
             }
-            font.draw(hudBatch, String.valueOf(Math.round(players.get(player.getId()) * 10) / 10.0),
+            font.draw(hudBatch, String.valueOf(Math.round(players.getOrDefault(player.getId(), 0.0) * 10.0) / 10.0),
                     tableLeft + (STATS_ROW_PAD * 5), tableTop);
             tableTop -= 20;
         }
