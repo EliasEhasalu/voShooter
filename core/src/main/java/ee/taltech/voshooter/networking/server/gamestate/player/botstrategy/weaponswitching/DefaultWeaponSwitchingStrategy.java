@@ -5,18 +5,19 @@ import ee.taltech.voshooter.networking.server.gamestate.player.Bot;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.weapon.Weapon;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class DefaultWeaponSwitchingStrategy implements WeaponSwitchingStrategy {
 
-    private static final Map<Weapon.Type, Float> effectiveDistances = new HashMap<Weapon.Type, Float>(){{
-        put(Weapon.Type.SHOTGUN, 2.5f);
-        put(Weapon.Type.FLAMETHROWER, 5f);
-        put(Weapon.Type.GRENADE_LAUNCHER, 8f);
-        put(Weapon.Type.MACHINE_GUN, 12f);
-        put(Weapon.Type.ROCKET_LAUNCHER, 17f);
-        put(Weapon.Type.RAILGUN, 200f);
+    private static final LinkedHashMap<Float, Weapon.Type> EFFECTIVE_DISTANCES = new LinkedHashMap<Float, Weapon.Type>(){{
+        put(2.5f, Weapon.Type.SHOTGUN);
+        put(5f, Weapon.Type.FLAMETHROWER);
+        put(8f, Weapon.Type.GRENADE_LAUNCHER);
+        put(12f, Weapon.Type.MACHINE_GUN);
+        put(18f, Weapon.Type.ROCKET_LAUNCHER);
+        put(26f, Weapon.Type.RAILGUN);
+        put(200f, Weapon.Type.ROCKET_LAUNCHER);
     }};
     private Bot bot;
 
@@ -31,18 +32,13 @@ public class DefaultWeaponSwitchingStrategy implements WeaponSwitchingStrategy {
     }
 
     private Weapon.Type getBestWeaponForDistance(float distance) {
-        for (Weapon.Type type : Weapon.Type.values()) {
+        for (Map.Entry<Float, Weapon.Type> e : EFFECTIVE_DISTANCES.entrySet()) {
             if (
-                type != Weapon.Type.PISTOL
-                && getEffectiveDistance(type) > distance
-                && bot.getInventory().getWeaponOfType(type).getRemainingAmmo() > 0
-            ) return type;
+                e.getKey() >= distance
+                && bot.getInventory().getWeaponOfType(e.getValue()).getRemainingAmmo() > 0
+            ) return e.getValue();
         }
         return Weapon.Type.PISTOL;
-    }
-
-    private float getEffectiveDistance(Weapon.Type type) {
-        return effectiveDistances.get(type);
     }
 
     @Override
