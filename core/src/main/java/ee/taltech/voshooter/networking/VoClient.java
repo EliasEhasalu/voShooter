@@ -17,7 +17,9 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ChatGamePlayerCha
 import ee.taltech.voshooter.networking.messages.clientreceived.ChatReceiveMessage;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameEnd;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyPlayerNameExists;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
@@ -35,6 +37,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileCreated
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectileDestroyed;
 import ee.taltech.voshooter.networking.messages.clientreceived.ProjectilePositions;
 import ee.taltech.voshooter.networking.messages.clientreceived.RailgunFired;
+import ee.taltech.voshooter.networking.messages.serverreceived.KeepAlive;
 import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.server.gamestate.player.Player;
 import ee.taltech.voshooter.screens.MainScreen;
@@ -57,6 +60,7 @@ public class VoClient {
     public User clientUser = new User();
     public VoShooter parent;
     public Client client;
+    private double keepAliveTimer = 0;
 
     private static final int MILLISECONDS_BEFORE_TIMEOUT = 5000;
 
@@ -94,6 +98,7 @@ public class VoClient {
 
                 if (message instanceof LobbyJoined) {
                     screenToChangeTo = VoShooter.Screen.LOBBY;
+                    parent.setDisconnectReason(VoShooter.BadConnectionReason.LOBBY_JOINED);
                     joinLobby((LobbyJoined) message);
                 } else if (message instanceof LobbyUserUpdate) {
                     updateLobby((LobbyUserUpdate) message);
@@ -111,8 +116,12 @@ public class VoClient {
                 } else if (message instanceof ProjectilePositions) {
                    projectileUpdate = (ProjectilePositions) message;
                 } else if (message instanceof NoSuchLobby) {
-                    parent.setCodeCorrect(false);
+                    parent.setDisconnectReason(VoShooter.BadConnectionReason.NO_SUCH_LOBBY);
                     parent.setLobbyCode(((NoSuchLobby) message).lobbyCode);
+                } else if (message instanceof LobbyFull) {
+                    parent.setDisconnectReason(VoShooter.BadConnectionReason.LOBBY_FULL);
+                } else if (message instanceof LobbyPlayerNameExists) {
+                    parent.setDisconnectReason(VoShooter.BadConnectionReason.NOT_A_UNIQUE_NAME);
                 } else if (message instanceof PlayerHealthUpdate) {
                     updatePlayerHealth((PlayerHealthUpdate) message);
                 } else if (message instanceof PlayerDeath) {
@@ -149,6 +158,7 @@ public class VoClient {
                 // of the OpenGL rendering thread.
                 Gdx.app.postRunnable(new Runnable() {
                     public void run() {
+                        keepAlive();
                         if (screenToChangeTo != null) {
                             if (screenToChangeTo != VoShooter.Screen.MAIN) parent.screen = null;
                             parent.changeScreen(screenToChangeTo);
@@ -211,8 +221,21 @@ public class VoClient {
         client.connect(MILLISECONDS_BEFORE_TIMEOUT, address, port);
     }
 
+    private void keepAlive() {
+        keepAliveTimer += 1 / 60f;
+        if (keepAliveTimer >= 10) {
+            client.sendTCP(new KeepAlive());
+            keepAliveTimer = 0;
+        }
+    }
+
     private void updateKingOfTheHillStatistics(PlayerKothScores msg) {
-        if (parent.gameState.userPlayer.clientGameModeManager instanceof ClientKingOfTheHillManager) {
+        if (
+                parent.gameState != null
+                && parent.gameState.userPlayer != null
+                && parent.gameState.userPlayer.clientGameModeManager != null
+                && parent.gameState.userPlayer.clientGameModeManager instanceof ClientKingOfTheHillManager
+        ) {
             ((ClientKingOfTheHillManager) parent.gameState.userPlayer.clientGameModeManager).players = msg.players;
         }
     }
@@ -473,7 +496,6 @@ public class VoClient {
                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy__HH-mm-ss")) + ".txt"));
         file.getParentFile().mkdirs();
         try {
-            System.out.println(file.getAbsolutePath());
             file.createNewFile();
             FileWriter fWriter = new FileWriter(file);
             fWriter.write(String.format("Time played: %s%nGamemode: %s%nMap: %s%nPlayer count: %s%nBot count: %s%n%n",

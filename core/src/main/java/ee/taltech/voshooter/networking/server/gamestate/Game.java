@@ -11,6 +11,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.GameEnd;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerAction;
 import ee.taltech.voshooter.networking.messages.serverreceived.PlayerInput;
 import ee.taltech.voshooter.networking.server.VoConnection;
+import ee.taltech.voshooter.networking.server.VoServer;
 import ee.taltech.voshooter.networking.server.gamestate.collision.CollisionHandler;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.HijackedTmxLoader;
 import ee.taltech.voshooter.networking.server.gamestate.collision.utils.LevelGenerator;
@@ -37,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Game extends Thread {
 
     private boolean running = false;
+    private VoServer parent;
 
     public static final double TICK_RATE_IN_HZ = 60.0;
     private static final double TICK_RATE = 1000000000.0 / TICK_RATE_IN_HZ;
@@ -66,7 +68,8 @@ public class Game extends Thread {
      * @param mapType The game map used in this game.
      * @param gameLength Length of the round.
      */
-    public Game(int gameMode, GameMap.MapType mapType, int gameLength) {
+    public Game(VoServer parent, int gameMode, GameMap.MapType mapType, int gameLength) {
+        this.parent = parent;
         this.mapType = mapType;
         this.gameMode = gameMode;
         if (gameLength >= 15) this.gameLength = gameLength;
@@ -128,6 +131,16 @@ public class Game extends Thread {
 
         entityManagerHub.sendUpdates();                   // Send updates to players.
         clearPlayerInputs();                              // Clear inputs.
+
+        checkKeepAliveTimerPerConnection();
+    }
+
+    private void checkKeepAliveTimerPerConnection() {
+        for (VoConnection connection : getConnections()) {
+            if (connection.player.getKeepAliveTimer() > 15) {
+                parent.handleDisconnects(connection);
+            }
+        }
     }
 
     /**
@@ -213,7 +226,6 @@ public class Game extends Thread {
                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy__HH-mm-ss")) + ".txt"));
         file.getParentFile().mkdirs();
         try {
-            System.out.println(file.getAbsolutePath());
             file.createNewFile();
             FileWriter fWriter = new FileWriter(file);
             fWriter.write(String.format("Time played: %s%nGamemode: %s%nMap: %s%nPlayer count: %s%nBot count: %s%n%n",

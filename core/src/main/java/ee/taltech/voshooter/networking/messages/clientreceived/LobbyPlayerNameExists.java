@@ -1,8 +1,8 @@
 package ee.taltech.voshooter.networking.messages.clientreceived;
 
-public class LobbyFull {
+public class LobbyPlayerNameExists {
 
     /** Serialization. */
-    public LobbyFull() {
+    public LobbyPlayerNameExists() {
     }
 }

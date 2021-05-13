@@ -31,12 +31,15 @@ public class Lobby {
     private GameMap.MapType mapType = GameMap.MapType.DEFAULT;
 
     private Game game;
+    private VoServer parent;
     private final Set<VoConnection> connections = ConcurrentHashMap.newKeySet();
 
     /**
+     * @param parent VoServer that hosts the lobby.
      * @param lobbyCode The lobby code assigned to this lobby.
      */
-    protected Lobby(String lobbyCode) {
+    protected Lobby(VoServer parent, String lobbyCode) {
+        this.parent = parent;
         this.lobbyCode = lobbyCode;
     }
 
@@ -54,7 +57,7 @@ public class Lobby {
 
     /** Send all users in this lobby a message that the game has started. */
     protected void sendGameStart() {
-        game = new Game(gameMode, mapType, gameLength);
+        game = new Game(parent, gameMode, mapType, gameLength);
         for (VoConnection con : connections) game.addConnection(con);
         for (int i = 0; i < botAmount; i++) game.addBot();
 
@@ -117,6 +120,17 @@ public class Lobby {
     /** @return Whether the lobby is full or not. */
     protected boolean isFull() {
         return (connections.size() == maxUsers);
+    }
+
+    /**
+     * @param name of the joining player.
+     * @return whether the name already exists.
+     */
+    protected boolean isRepeatingName(String name) {
+        for (VoConnection connection : connections) {
+            if (connection.user.name.equals(name)) return true;
+        }
+        return false;
     }
 
     /** @return Amount of players in this lobby. */

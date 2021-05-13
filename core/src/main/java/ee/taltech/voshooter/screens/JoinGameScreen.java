@@ -29,6 +29,7 @@ public class JoinGameScreen implements Screen {
     private Stage stage;
     private TextButton join;
     private Table popUpTable;
+    private TextField gameCode;
     private Label nameLengthCheck;
     private boolean isNameGood = false;
     private Label gameCodeCheck;
@@ -91,7 +92,7 @@ public class JoinGameScreen implements Screen {
         // Lobby code field and label.
         Table codeTable = new Table();
         Label enterCode = new Label("Enter lobby code: ", skin);
-        TextField gameCode = new TextField("", skin);
+        gameCode = new TextField("", skin);
         gameCode.setMaxLength(6);
         gameCodeCheck = new Label("Too short", skin);
         gameCodeCheck.setColor(255, 0, 0, 255);
@@ -152,10 +153,6 @@ public class JoinGameScreen implements Screen {
                             parent.createNetworkClient();
                             parent.getClient().sendTCP(new SetUsername(name));
                             parent.getClient().sendTCP(new JoinLobby(gameCode.getText().trim()));
-                            if (!parent.isCodeCorrect()) {
-                                gameCodeCheck.setText("No such lobby");
-                                gameCodeCheck.setColor(255, 0, 0, 255);
-                            }
                         } catch (IOException e) {
                             popUpTable.setVisible(true);
                             table.setVisible(false);
@@ -255,6 +252,29 @@ public class JoinGameScreen implements Screen {
         // Refresh the graphics renderer every cycle.
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if (gameCode.getText().length() < 6) {
+            gameCodeCheck.setText("Too short");
+            gameCodeCheck.setColor(255, 0, 0, 255);
+            isCodeGood = false;
+        } else if (gameCode.getText().length() > 6) {
+            gameCodeCheck.setText("Too long");
+            gameCodeCheck.setColor(255, 0, 0, 255);
+            isCodeGood = false;
+        } else if (!gameCode.getText().matches("^[a-zA-Z]*$")) {
+            gameCodeCheck.setText("Only letters A-Z");
+            gameCodeCheck.setColor(255, 0, 0, 255);
+            isCodeGood = false;
+        } else {
+            isCodeGood = true;
+            if (parent.getDisconnectReason() != null) {
+                gameCodeCheck.setText(String.valueOf(parent.getDisconnectReason()));
+                gameCodeCheck.setColor(255, 0, 0, 255);
+            } else if (parent.getLobbyCode() == null) {
+                gameCodeCheck.setText("Good code");
+                gameCodeCheck.setColor(0, 255, 0, 255);
+            }
+        }
 
         // And draw over it again.
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));  // Cap menu FPS to 30.

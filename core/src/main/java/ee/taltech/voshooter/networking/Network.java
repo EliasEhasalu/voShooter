@@ -15,6 +15,7 @@ import ee.taltech.voshooter.networking.messages.clientreceived.GameEnd;
 import ee.taltech.voshooter.networking.messages.clientreceived.GameStarted;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyFull;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyJoined;
+import ee.taltech.voshooter.networking.messages.clientreceived.LobbyPlayerNameExists;
 import ee.taltech.voshooter.networking.messages.clientreceived.LobbyUserUpdate;
 import ee.taltech.voshooter.networking.messages.clientreceived.NoSuchLobby;
 import ee.taltech.voshooter.networking.messages.clientreceived.PlayerAmmoUpdate;
@@ -38,6 +39,7 @@ import ee.taltech.voshooter.networking.messages.serverreceived.ChangeWeapon;
 import ee.taltech.voshooter.networking.messages.serverreceived.ChatSendMessage;
 import ee.taltech.voshooter.networking.messages.serverreceived.CreateLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.JoinLobby;
+import ee.taltech.voshooter.networking.messages.serverreceived.KeepAlive;
 import ee.taltech.voshooter.networking.messages.serverreceived.LeaveLobby;
 import ee.taltech.voshooter.networking.messages.serverreceived.LobbySettingsChanged;
 import ee.taltech.voshooter.networking.messages.serverreceived.MouseCoords;
@@ -127,6 +129,7 @@ public final class Network {
         kryo.register(JoinLobby.class);
         kryo.register(LeaveLobby.class);
         kryo.register(LobbyFull.class);
+        kryo.register(LobbyPlayerNameExists.class);
         kryo.register(NoSuchLobby.class);
         kryo.register(LobbyUserUpdate.class);
         kryo.register(StartGame.class);
@@ -142,5 +145,6 @@ public final class Network {
         kryo.register(LobbySettingsChanged.class);
         kryo.register(ChatSendMessage.class);
         kryo.register(ChatReceiveMessage.class);
+        kryo.register(KeepAlive.class);
     }
 }
